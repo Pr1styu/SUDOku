@@ -6,6 +6,7 @@
 #include <vector>
 #include <iostream>
 #include <string>
+#include <algorithm>
 typedef unsigned char BYTE;
 
 std::vector<BYTE> readFile(const char* filename)
@@ -29,7 +30,7 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& string) {
     int length = 0;
     if(fileData[0] != 1){
         printf("Error first block is not the header");
-        return 10;
+        return 50;
     }
     printf("First block id %i \n",fileData[0]);
     for(int i=1;i<9;i++){
@@ -44,7 +45,7 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& string) {
     magic[4] = '\0';
     printf("%s",magic);
     if(std::strcmp(reinterpret_cast<const char *>(magic), "CAFF\0") != 0){
-        return 11;
+        return 51;
     }
 
 
@@ -111,48 +112,57 @@ int main(int argc, char* argv []){
                     if (checkFileAvailability(argv[i + 1])) {
                         caffFile = readFile(argv[i + 1]);
                     }
+                    else{
+                        std::cout << "File not found" << std::endl;
+                        return 5;
+                    }
                 } else {
                     std::cout << "Not expected -i as last argument" << std::endl;
-                    return 5;
+                    return 6;
                 }
             }
             if (std::strcmp(argv[i], "-o\0") == 0) {
                 oa++;
                 if (oa > 1) {
                     std::cout << "More than one -o arg is not allowed" << std::endl;
-                    return 6;
+                    return 7;
                 }
                 if (i < argc - 1) {
                     unsigned int name_len = 0;
                     std::string out(argv[i+1]);
-                    unsigned int name_start_idx = out.find_last_of('\\');
-                    if(name_start_idx == -1){
-                        name_start_idx = 0;
-                    }
-                    unsigned int extension_start_idx = out.find_last_of('.');
+                    std::string filename;
+                    std::string extension;
+                    std::replace(out.begin(),out.end(),'/','\\');
+                    int name_start_idx = out.find_last_of('\\');
+                    int extension_start_idx = out.find_last_of('.');
                     if(extension_start_idx < name_start_idx){
                         extension_start_idx = -1;
                     }
                     if(extension_start_idx == -1){
                         std::cout << "Using jpg as default extension" << std::endl;
+                        filename = out.substr(name_start_idx+1);
                     }
                     else if( extension_start_idx == 0 || name_start_idx+1 == extension_start_idx){
                         std::cout << "Output name is mandatory" << std::endl;
-                        return 7;
+                        return 8;
                     }
+                    else{
+                        filename = out.substr(name_start_idx+1,extension_start_idx-1-name_start_idx);
+                        extension = out.substr(extension_start_idx+1);
+                    }
+                    //std::cout << filename << std::endl;
 
-                    std::string filename(out.substr(name_start_idx+1,extension_start_idx-1-name_start_idx));
-                    std::string extension(out.substr(extension_start_idx+1));
+                    //std::cout << extension << std::endl;
                     if(extension != "jpg" && extension_start_idx != -1){
                         std::cout << "Only jpg is supported as output" << std::endl;
-                        return 8;
+                        return 9;
                     }
 
                     out_path = out;
 
                 } else {
                     std::cout << "Not expected -o as last argument" << std::endl;
-                    return 9;
+                    return 10;
                 }
             }
         }
