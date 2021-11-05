@@ -29,7 +29,7 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& string) {
     int length = 0;
     if(fileData[0] != 1){
         printf("Error first block is not the header");
-        return 1;
+        return 10;
     }
     printf("First block id %i \n",fileData[0]);
     for(int i=1;i<9;i++){
@@ -44,7 +44,7 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& string) {
     magic[4] = '\0';
     printf("%s",magic);
     if(std::strcmp(reinterpret_cast<const char *>(magic), "CAFF\0") != 0){
-        return 2;
+        return 11;
     }
 
 
