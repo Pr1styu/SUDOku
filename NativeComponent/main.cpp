@@ -260,7 +260,7 @@ bool checkFileAvailability(const char * filename){
 
 
 int main(int argc, char* argv []){
-    /*std::vector<BYTE> caffFile;
+    std::vector<BYTE> caffFile;
     std::string out_path;
     if(argc !=2 && argc !=3 && argc != 5){
         std::cout << "The number of arguments given are not 2, 3 or 5" << std::endl;
@@ -360,12 +360,7 @@ int main(int argc, char* argv []){
                 }
             }
         }
-    }*/
+    }
 
-    //int ret = parseCAFF(caffFile, out_path);
-
-    //return ret;
-
-    std::vector<BYTE> caffFile = readFile(R"(C:\Users\Tibor\Desktop\caff_files\1.caff)");
-    return parseCAFF(caffFile, "semmi");
+    return parseCAFF(caffFile, out_path);
 }
