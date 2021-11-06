@@ -3,11 +3,11 @@
 //
 
 #include <fstream>
+#include <utility>
 #include <vector>
 #include <iostream>
 #include <string>
 #include <algorithm>
-#include <cstring>
 
 typedef unsigned char BYTE;
 
@@ -16,7 +16,7 @@ struct CIFF {
     std::string caption;
     std::vector<std::string> tags;
     BYTE* pixels;
-    CIFF(uint64_t s, std::string c) : size(s), caption(c) { pixels = new BYTE[size]; }
+    CIFF(uint64_t s, std::string c) : size(s), caption(std::move(c)) { pixels = new BYTE[size]; }
 };
 
 struct DateTime {
@@ -32,14 +32,14 @@ struct DateTime {
 struct Animation {
     uint64_t duration;
     CIFF image;
-    Animation(uint64_t d, CIFF i) : duration(d), image(i) {}
+    Animation(uint64_t d, CIFF i) : duration(d), image(std::move(i)) {}
 };
 
 struct CAFF {
     DateTime creation;
     std::string  creator;
     std::vector<Animation> images;
-    CAFF(DateTime ct, std::string c) : creation(ct), creator(c) {}
+    CAFF(DateTime ct, std::string c) : creation(ct), creator(std::move(c)) {}
 };
 
 std::vector<BYTE> readFile(const char* filename)
@@ -84,32 +84,32 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& string) {
     };
 
     //header block length
-    bytes64 h_length;
-    for(int i = 0; i < 8; i++)
-        h_length.c[i] = fileData[read++];
+    bytes64 h_length{};
+    for(unsigned char & i : h_length.c)
+        i = fileData[read++];
     std::cout << "Header length: " << h_length.ll << std::endl;
 
     //***CAFF HEADER***//
 
     //magic
-    std::string magic = "";
+    std::string magic;
     for(int i = 0; i < 4; i++)
        magic += fileData[read++];
-    if(magic.compare("CAFF") != 0) {
+    if(magic != "CAFF") {
         std::cout << "Error: not a CAFF file" << std::endl;
         return 51;
     }
 
     //header size
-    bytes64 h_size;
-    for(int i = 0; i < 8; i++)
-        h_size.c[i] = fileData[read++];
+    bytes64 h_size{};
+    for(unsigned char & i : h_size.c)
+        i = fileData[read++];
     std::cout << "Header size: " << h_size.ll << std::endl;
 
     //number of CIFFs
-    bytes64 ciff_num;
-    for(int i = 0; i < 8; i++)
-        ciff_num.c[i] = fileData[read++];
+    bytes64 ciff_num{};
+    for(unsigned char & i : ciff_num.c)
+        i = fileData[read++];
     std::cout << "Number of CIFFs: " << ciff_num.ll << std::endl;
 
     //***CAFF CREDITS***//
@@ -120,31 +120,32 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& string) {
     read++;
 
     //credits block length
-    bytes64 c_length;
-    for(int i = 0; i < 8; i++)
-        c_length.c[i] = fileData[read++];
+    bytes64 c_length{};
+    for(unsigned char & i : c_length.c)
+        i = fileData[read++];
     std::cout << "Credits length: " << c_length.ll << std::endl;
 
     //creation date and time
-    bytes16 year;
-    for(int i = 0; i < 2; i++)
-        year.c[i] = fileData[read++];
-    char month = fileData[read++];
-    char day = fileData[read++];
-    char hour = fileData[read++];
-    char minute = fileData[read++];
+    bytes16 year{};
+    for(unsigned char & i : year.c)
+        i = fileData[read++];
+    unsigned char month = fileData[read++];
+    unsigned char day = fileData[read++];
+    unsigned char hour = fileData[read++];
+    unsigned char minute = fileData[read++];
     DateTime creation = DateTime(year.sh, month, day, hour, minute);
-    std::cout << "Creation: " << creation.year << "-" << creation.month << "-" << creation.day
-        << ", " << creation.hour << ":" << creation.minute << std::endl;
+    /*std::cout << "Creation: " << creation.year << "-" << creation.month << "-" << creation.day
+        << ", " << creation.hour << ":" << creation.minute << std::endl;*/
+    printf("Creation: %i-%i-%i, %i:%i\n",creation.year,creation.month,creation.day,creation.hour,creation.minute);
 
     //creator length
-    bytes64 creator_len;
-    for(int i = 0; i < 8; i++)
-        creator_len.c[i] = fileData[read++];
+    bytes64 creator_len{};
+    for(unsigned char & i : creator_len.c)
+        i = fileData[read++];
     std::cout << "Creator length: " << creator_len.ll << std::endl;
 
     //creator
-    std::string creator = "";
+    std::string creator;
     for(int i = 0; i < creator_len.ll; i++)
         creator += fileData[read++];
     std::cout << "Creator: " << creator << std::endl;
@@ -162,51 +163,51 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& string) {
         read++;
 
         //animation block length
-        bytes64 a_length;
-        for(int i = 0; i < 8; i++)
-            a_length.c[i] = fileData[read++];
+        bytes64 a_length{};
+        for(unsigned char & j : a_length.c)
+            j = fileData[read++];
         std::cout << "Animation length: " << a_length.ll << std::endl;
 
         //*duration*//
-        bytes64 duration;
-        for(int j = 0; j < 8; j++)
-            duration.c[j] = fileData[read++];
+        bytes64 duration{};
+        for(unsigned char & j : duration.c)
+            j = fileData[read++];
         std::cout << "CIFF" << i << " duration: " << duration.ll << std::endl;
 
         //*CIFF data*//
 
         //magic
-        std::string ciff_magic = "";
+        std::string ciff_magic;
         for(int j = 0; j < 4; j++)
             ciff_magic += fileData[read++];
-        if(ciff_magic.compare("CIFF") != 0) {
+        if(ciff_magic != "CIFF") {
             std::cout << "Error: not a CIFF file" << std::endl;
             std::cout << ciff_magic << std::endl;
             return 51;
         }
 
         //header size
-        bytes64 ciff_header_size;
-        for(int j = 0; j < 8; j++)
-            ciff_header_size.c[j] = fileData[read++];
+        bytes64 ciff_header_size{};
+        for(unsigned char & j : ciff_header_size.c)
+            j = fileData[read++];
         std::cout << "CIFF" << i << " header size:" << ciff_header_size.ll << std::endl;
 
         //content size
-        bytes64 ciff_content_size;
-        for(int j = 0; j < 8; j++)
-            ciff_content_size.c[j] = fileData[read++];
+        bytes64 ciff_content_size{};
+        for(unsigned char & j : ciff_content_size.c)
+            j = fileData[read++];
         std::cout << "CIFF" << i << " content size:" << ciff_content_size.ll << std::endl;
 
         //width
-        bytes64 width;
-        for(int j = 0; j < 8; j++)
-            width.c[j] = fileData[read++];
+        bytes64 width{};
+        for(unsigned char & j : width.c)
+            j = fileData[read++];
         std::cout << "CIFF" << i << " width:" << width.ll << std::endl;
 
         //height
-        bytes64 height;
-        for(int j = 0; j < 8; j++)
-            height.c[j] = fileData[read++];
+        bytes64 height{};
+        for(unsigned char & j : height.c)
+            j = fileData[read++];
         std::cout << "CIFF" << i << " height:" << height.ll << std::endl;
 
         if(ciff_content_size.ll != (3*width.ll*height.ll)) {
@@ -215,7 +216,7 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& string) {
         }
 
         //caption
-        std::string caption = "";
+        std::string caption;
         while (fileData[read] != '\n')
             caption += fileData[read++];
         std::cout << "CIFF" << i << " caption:" << caption << std::endl;
@@ -226,7 +227,7 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& string) {
         //tags
         int tag_len = ciff_header_size.ll - 36 - caption.size();
         for(int j = 0; j < tag_len; j++) {
-            std::string tag = "";
+            std::string tag;
             while (fileData[read] != '\0')
                 tag += fileData[read++];
             j += (tag.length()+2);
