@@ -3,20 +3,24 @@
 //
 
 #include <fstream>
+#include <utility>
 #include <vector>
 #include <iostream>
 #include <string>
 #include <algorithm>
 #include <cstring>
-
+//Imported libjpeg for image processing
+#include "jpeg-9d/jpeglib.h"
 typedef unsigned char BYTE;
 
 struct CIFF {
     uint64_t size;
+    uint64_t width;
+    uint64_t height;
     std::string caption;
     std::vector<std::string> tags;
     BYTE* pixels;
-    CIFF(uint64_t s, std::string c) : size(s), caption(c) { pixels = new BYTE[size]; }
+    CIFF(uint64_t s, uint64_t w, uint64_t h ,std::string c) : size(s), width(w), height(h), caption(std::move(c)) { pixels = new BYTE[size]; }
 };
 
 struct DateTime {
@@ -32,7 +36,7 @@ struct DateTime {
 struct Animation {
     uint64_t duration;
     CIFF image;
-    Animation(uint64_t d, CIFF i) : duration(d), image(i) {}
+    Animation(uint64_t d, CIFF i) : duration(d), image(std::move(i)) {}
 };
 
 struct CAFF {
@@ -79,7 +83,7 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& file_out, co
     };
 
     //header block length
-    bytes64 h_length;
+    bytes64 h_length{};
     for(int i = 0; i < 8; i++)
         h_length.c[i] = fileData[read++];
     std::cout << "Header length: " << h_length.ll << std::endl;
@@ -87,7 +91,7 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& file_out, co
     //***CAFF HEADER***//
 
     //magic
-    std::string magic = "";
+    std::string magic;
     for(int i = 0; i < 4; i++)
        magic += fileData[read++];
     if(magic.compare("CAFF") != 0) {
@@ -96,13 +100,13 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& file_out, co
     }
 
     //header size
-    bytes64 h_size;
+    bytes64 h_size{};
     for(int i = 0; i < 8; i++)
         h_size.c[i] = fileData[read++];
     std::cout << "Header size: " << h_size.ll << std::endl;
 
     //number of CIFFs
-    bytes64 ciff_num;
+    bytes64 ciff_num{};
     for(int i = 0; i < 8; i++)
         ciff_num.c[i] = fileData[read++];
     std::cout << "Number of CIFFs: " << ciff_num.ll << std::endl;
@@ -115,13 +119,13 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& file_out, co
     read++;
 
     //credits block length
-    bytes64 c_length;
+    bytes64 c_length{};
     for(int i = 0; i < 8; i++)
         c_length.c[i] = fileData[read++];
     std::cout << "Credits length: " << c_length.ll << std::endl;
 
     //creation date and time
-    bytes16 year;
+    bytes16 year{};
     for(int i = 0; i < 2; i++)
         year.c[i] = fileData[read++];
     char month = fileData[read++];
@@ -133,13 +137,13 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& file_out, co
         << ", " << creation.hour << ":" << creation.minute << std::endl;
 
     //creator length
-    bytes64 creator_len;
+    bytes64 creator_len{};
     for(int i = 0; i < 8; i++)
         creator_len.c[i] = fileData[read++];
     std::cout << "Creator length: " << creator_len.ll << std::endl;
 
     //creator
-    std::string creator = "";
+    std::string creator;
     for(int i = 0; i < creator_len.ll; i++)
         creator += fileData[read++];
     std::cout << "Creator: " << creator << std::endl;
@@ -157,13 +161,13 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& file_out, co
         read++;
 
         //animation block length
-        bytes64 a_length;
+        bytes64 a_length{};
         for(int j = 0; j < 8; j++)
             a_length.c[j] = fileData[read++];
         std::cout << "Animation length: " << a_length.ll << std::endl;
 
         //*duration*//
-        bytes64 duration;
+        bytes64 duration{};
         for(int j = 0; j < 8; j++)
             duration.c[j] = fileData[read++];
         std::cout << "CIFF" << i << " duration: " << duration.ll << std::endl;
@@ -171,7 +175,7 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& file_out, co
         //*CIFF data*//
 
         //magic
-        std::string ciff_magic = "";
+        std::string ciff_magic;
         for(int j = 0; j < 4; j++)
             ciff_magic += fileData[read++];
         if(ciff_magic.compare("CIFF") != 0) {
@@ -181,25 +185,25 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& file_out, co
         }
 
         //header size
-        bytes64 ciff_header_size;
+        bytes64 ciff_header_size{};
         for(int j = 0; j < 8; j++)
             ciff_header_size.c[j] = fileData[read++];
         std::cout << "CIFF" << i << " header size:" << ciff_header_size.ll << std::endl;
 
         //content size
-        bytes64 ciff_content_size;
+        bytes64 ciff_content_size{};
         for(int j = 0; j < 8; j++)
             ciff_content_size.c[j] = fileData[read++];
         std::cout << "CIFF" << i << " content size:" << ciff_content_size.ll << std::endl;
 
         //width
-        bytes64 width;
+        bytes64 width{};
         for(int j = 0; j < 8; j++)
             width.c[j] = fileData[read++];
         std::cout << "CIFF" << i << " width:" << width.ll << std::endl;
 
         //height
-        bytes64 height;
+        bytes64 height{};
         for(int j = 0; j < 8; j++)
             height.c[j] = fileData[read++];
         std::cout << "CIFF" << i << " height:" << height.ll << std::endl;
@@ -210,18 +214,18 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& file_out, co
         }
 
         //caption
-        std::string caption = "";
+        std::string caption;
         while (fileData[read] != '\n')
             caption += fileData[read++];
         std::cout << "CIFF" << i << " caption:" << caption << std::endl;
         read++; //the new line character
 
-        CIFF ciff_file = CIFF(ciff_content_size.ll, caption);
+        CIFF ciff_file = CIFF(ciff_content_size.ll, width.ll, height.ll, caption);
 
         //tags
         int tag_len = ciff_header_size.ll - 36 - caption.size();
         for(int j = 0; j < tag_len; j++) {
-            std::string tag = "";
+            std::string tag;
             while (fileData[read] != '\0')
                 tag += fileData[read++];
             j += (tag.length()+2);
@@ -242,6 +246,36 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& file_out, co
         std::cout << "Error: parse bug" << std::endl;
         std::cout << "Read = " << read << ", Size = " << fileData.size() << std::endl;
         return 51;
+    }
+
+    FILE *outfile;
+    fopen_s(&outfile,file_out.c_str(), "wb");
+    if ( outfile == nullptr) {
+        std::cout << "Can't open output file" << std::endl;
+        return 52;
+    }
+    struct jpeg_compress_struct cinfo{};
+    struct jpeg_error_mgr jerr;
+
+    JSAMPROW row_pointer[1];
+
+    jpeg_create_compress(&cinfo);
+    jpeg_stdio_dest(&cinfo, outfile);
+    cinfo.err = jpeg_std_error(&jerr);
+    cinfo.image_width = caff_file.images.at(0).image.width;
+    cinfo.image_height = caff_file.images.at(0).image.height;
+    cinfo.input_components = 3;
+    cinfo.in_color_space = JCS_RGB;
+
+    jpeg_set_defaults(&cinfo);
+
+    jpeg_start_compress(&cinfo, TRUE);
+
+    uint64_t row_stride = caff_file.images.at(0).image.width * 3;
+
+    while (cinfo.next_scanline < cinfo.image_height) {
+        row_pointer[0] = & caff_file.images.at(0).image.pixels[cinfo.next_scanline * row_stride];
+        (void) jpeg_write_scanlines(&cinfo, row_pointer, 1);
     }
 
     return 0;
@@ -266,7 +300,7 @@ int checkOutputValidity(std::string& out, const std::string& expected_extension)
         extension_start_idx = -1;
     }
     if(extension_start_idx == -1){
-        if(expected_extension == "jpg"){
+        if(expected_extension == "jpeg"){
             std::cout << "Using " << expected_extension << " as default image extension" << std::endl;
         }
         if(expected_extension == "txt"){
@@ -282,9 +316,7 @@ int checkOutputValidity(std::string& out, const std::string& expected_extension)
     else{
         extension = out.substr(extension_start_idx+1);
     }
-    //std::cout << filename << std::endl;
 
-    //std::cout << extension << std::endl;
     if(extension != expected_extension && extension_start_idx != -1){
         std::cout << "Not supported extension expected " << expected_extension << std::endl;
         return 9;
@@ -357,7 +389,7 @@ int main(int argc, char* argv []){
                 if (i < argc - 1) {
                     std::string out(argv[i + 1]);
                     std::replace(out.begin(), out.end(), '/', '\\');
-                    int out_check = checkOutputValidity(out,"jpg");
+                    int out_check = checkOutputValidity(out,"jpeg");
                     if (out_check == 0) {
                         image_out = out;
                     } else {
