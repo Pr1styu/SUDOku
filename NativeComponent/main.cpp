@@ -21,11 +21,11 @@ struct CIFF {
 
 struct DateTime {
     uint16_t year;
-    BYTE month;
-    BYTE day;
-    BYTE hour;
-    BYTE minute;
-    DateTime(uint16_t y, BYTE m, BYTE d, BYTE h, BYTE min)
+    uint16_t month;
+    uint16_t day;
+    uint16_t hour;
+    uint16_t minute;
+    DateTime(uint16_t y, uint16_t m, uint16_t d, uint16_t h, uint16_t min)
         : year(y), month(m), day(d), hour(h), minute(min) {}
 };
 
@@ -76,11 +76,6 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& string) {
     union bytes16 {
         BYTE c[2];
         uint16_t sh;
-    };
-
-    union bytes8 {
-        BYTE c;
-        uint8_t sh;
     };
 
     //header block length
