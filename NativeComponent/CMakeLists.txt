@@ -6,4 +6,4 @@ set(CMAKE_CXX_STANDARD 14)            # Enable c++14 standard
 set(SOURCE_FILES main.cpp)
 
 # Add executable target with source files listed in SOURCE_FILES variable
-add_executable(simple_example ${SOURCE_FILES})
+add_executable(CAFFParser ${SOURCE_FILES})

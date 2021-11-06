@@ -59,7 +59,7 @@ std::vector<BYTE> readFile(const char* filename)
     return fileData;
 }
 
-int parseCAFF(const std::vector<BYTE> &fileData, const std::string& string) {
+int parseCAFF(const std::vector<BYTE> &fileData, const std::string& file_out, const std::string& txt_out) {
     long read = 0; //the number of bytes already read
 
     if(fileData[read] != 1) {
@@ -247,7 +247,7 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& string) {
     return 0;
 }
 
-bool checkFileAvailability(const char * filename){
+bool checkFileAvailability(const std::string& filename){
     std::ifstream file(filename);
     if(!file.is_open()){
         return false;
@@ -258,12 +258,65 @@ bool checkFileAvailability(const char * filename){
     return true;
 }
 
+int checkOutputValidity(std::string& out, const std::string& expected_extension){
+    std::string extension;
+    int name_start_idx = out.find_last_of('\\');
+    int extension_start_idx = out.find_last_of('.');
+    if(extension_start_idx < name_start_idx){
+        extension_start_idx = -1;
+    }
+    if(extension_start_idx == -1){
+        if(expected_extension == "jpg"){
+            std::cout << "Using " << expected_extension << " as default image extension" << std::endl;
+        }
+        if(expected_extension == "txt"){
+            std::cout << "Using " << expected_extension << " as default description extension" << std::endl;
+        }
+        out += ".";
+        out += expected_extension;
+    }
+    else if( extension_start_idx == 0 || name_start_idx+1 == extension_start_idx){
+        std::cout << "Output name is mandatory" << std::endl;
+        return 8;
+    }
+    else{
+        extension = out.substr(extension_start_idx+1);
+    }
+    //std::cout << filename << std::endl;
+
+    //std::cout << extension << std::endl;
+    if(extension != expected_extension && extension_start_idx != -1){
+        std::cout << "Not supported extension expected " << expected_extension << std::endl;
+        return 9;
+    }
+    return 0;
+}
+
 
 int main(int argc, char* argv []){
     std::vector<BYTE> caffFile;
-    std::string out_path;
-    if(argc !=2 && argc !=3 && argc != 5){
-        std::cout << "The number of arguments given are not 2, 3 or 5" << std::endl;
+    std::string image_out;
+    std::string txt_out;
+
+    int ia =0;
+    int ofa =0;
+    int ota = 0;
+    for (int i = 0; i < argc; i++) {
+        if (std::strcmp(argv[i], "-i\0") == 0) {
+            ia++;
+        }
+        if (std::strcmp(argv[i], "-of\0") == 0) {
+            ofa++;
+        }
+        if (std::strcmp(argv[i], "-ot\0") == 0) {
+            ota++;
+        }
+    }
+    if(ia == 0){
+
+    }
+    if(argc !=3 && argc != 5 && argc != 7){
+        std::cout << "The number of arguments given are not 3, 5 or 7" << std::endl;
         return 1;
     }
     // No output, just caff validation
@@ -277,36 +330,21 @@ int main(int argc, char* argv []){
             }
         }
         else{
-            std::cout << "Wrong argument format, expected -i \"filepath\"" << std::endl;
+            std::cout << "Wrong argument format" << std::endl;
             return 3;
         }
     }
-    //No -i arg just the input path
-    else if(argc == 2){
-        if(checkFileAvailability(argv[1])) {
-            caffFile = readFile(argv[1]);
-        }
-        else{
-            return 2;
-        }
-    }
     else {
-        //-i and -o args
-        int ia =0;
-        int oa =0;
-
+        if (ia > 1 || ofa > 1 || ota > 1) {
+            std::cout << "Wrong argument format" << std::endl;
+            return 3;
+        }
         for (int i = 0; i < argc; i++) {
             if (std::strcmp(argv[i], "-i\0") == 0) {
-                ia++;
-                if (ia > 1) {
-                    std::cout << "More than one -i arg is not allowed" << std::endl;
-                    return 4;
-                }
                 if (i < argc - 1) {
                     if (checkFileAvailability(argv[i + 1])) {
                         caffFile = readFile(argv[i + 1]);
-                    }
-                    else{
+                    } else {
                         std::cout << "File not found" << std::endl;
                         return 5;
                     }
@@ -315,52 +353,42 @@ int main(int argc, char* argv []){
                     return 6;
                 }
             }
-            if (std::strcmp(argv[i], "-o\0") == 0) {
-                oa++;
-                if (oa > 1) {
-                    std::cout << "More than one -o arg is not allowed" << std::endl;
-                    return 7;
-                }
+            if (std::strcmp(argv[i], "-of\0") == 0) {
                 if (i < argc - 1) {
-                    unsigned int name_len = 0;
-                    std::string out(argv[i+1]);
-                    std::string filename;
-                    std::string extension;
-                    std::replace(out.begin(),out.end(),'/','\\');
-                    int name_start_idx = out.find_last_of('\\');
-                    int extension_start_idx = out.find_last_of('.');
-                    if(extension_start_idx < name_start_idx){
-                        extension_start_idx = -1;
+                    std::string out(argv[i + 1]);
+                    std::replace(out.begin(), out.end(), '/', '\\');
+                    int out_check = checkOutputValidity(out,"jpg");
+                    if (out_check == 0) {
+                        image_out = out;
+                    } else {
+                        return out_check;
                     }
-                    if(extension_start_idx == -1){
-                        std::cout << "Using jpg as default extension" << std::endl;
-                        filename = out.substr(name_start_idx+1);
-                    }
-                    else if( extension_start_idx == 0 || name_start_idx+1 == extension_start_idx){
-                        std::cout << "Output name is mandatory" << std::endl;
-                        return 8;
-                    }
-                    else{
-                        filename = out.substr(name_start_idx+1,extension_start_idx-1-name_start_idx);
-                        extension = out.substr(extension_start_idx+1);
-                    }
-                    //std::cout << filename << std::endl;
-
-                    //std::cout << extension << std::endl;
-                    if(extension != "jpg" && extension_start_idx != -1){
-                        std::cout << "Only jpg is supported as output" << std::endl;
-                        return 9;
-                    }
-
-                    out_path = out;
-
                 } else {
-                    std::cout << "Not expected -o as last argument" << std::endl;
+                    std::cout << "Not expected -of as last argument" << std::endl;
                     return 10;
                 }
             }
+            if (std::strcmp(argv[i], "-ot\0") == 0) {
+                if (i < argc - 1) {
+                    std::string out(argv[i + 1]);
+                    std::replace(out.begin(), out.end(), '/', '\\');
+                    int out_check = checkOutputValidity(out,"txt");
+                    if (out_check == 0) {
+                        txt_out = out;
+                    } else {
+                        return out_check;
+                    }
+                } else {
+                    std::cout << "Not expected -ot as last argument" << std::endl;
+                    return 11;
+                }
+            }
+
         }
     }
+    std::cout << image_out << std::endl;
+    std::cout << txt_out << std::endl;
+    int ret = parseCAFF(caffFile, image_out, txt_out);
 
-    return parseCAFF(caffFile, out_path);
+    return ret;
 }
