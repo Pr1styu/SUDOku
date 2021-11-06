@@ -43,7 +43,7 @@ struct CAFF {
     DateTime creation;
     std::string  creator;
     std::vector<Animation> images;
-    CAFF(DateTime ct, std::string c) : creation(ct), creator(c) {}
+    CAFF(DateTime ct, std::string c) : creation(ct), creator(std::move(c)) {}
 };
 
 std::vector<BYTE> readFile(const char* filename)
@@ -94,7 +94,7 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& file_out, co
     std::string magic;
     for(int i = 0; i < 4; i++)
        magic += fileData[read++];
-    if(magic.compare("CAFF") != 0) {
+    if(magic != "CAFF") {
         std::cout << "Error: not a CAFF file" << std::endl;
         return 51;
     }
@@ -178,7 +178,7 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& file_out, co
         std::string ciff_magic;
         for(int j = 0; j < 4; j++)
             ciff_magic += fileData[read++];
-        if(ciff_magic.compare("CIFF") != 0) {
+        if(ciff_magic != "CIFF") {
             std::cout << "Error: not a CIFF file" << std::endl;
             std::cout << ciff_magic << std::endl;
             return 51;
@@ -224,6 +224,7 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& file_out, co
 
         //tags
         int tag_len = ciff_header_size.ll - 36 - caption.size();
+        std::cout << "Tags: ";
         for(int j = 0; j < tag_len; j++) {
             std::string tag;
             while (fileData[read] != '\0')
@@ -231,8 +232,9 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& file_out, co
             j += (tag.length()+2);
             read++;
             ciff_file.tags.push_back(tag);
-            std::cout << tag << std::endl;
+            std::cout << tag << " ";
         }
+        std::cout << std::endl;
 
         //pixels
         for(int j = 0; j < ciff_content_size.ll; j++)
@@ -247,37 +249,37 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& file_out, co
         std::cout << "Read = " << read << ", Size = " << fileData.size() << std::endl;
         return 51;
     }
+    if(!file_out.empty()){
+        FILE *outfile;
+        fopen_s(&outfile,file_out.c_str(), "wb");
+        if ( outfile == nullptr) {
+            std::cout << "Can't open output file" << std::endl;
+            return 52;
+        }
+        struct jpeg_compress_struct cinfo{};
+        struct jpeg_error_mgr jerr{};
 
-    FILE *outfile;
-    fopen_s(&outfile,file_out.c_str(), "wb");
-    if ( outfile == nullptr) {
-        std::cout << "Can't open output file" << std::endl;
-        return 52;
+        JSAMPROW row_pointer[1];
+
+        jpeg_create_compress(&cinfo);
+        jpeg_stdio_dest(&cinfo, outfile);
+        cinfo.err = jpeg_std_error(&jerr);
+        cinfo.image_width = caff_file.images.at(0).image.width;
+        cinfo.image_height = caff_file.images.at(0).image.height;
+        cinfo.input_components = 3;
+        cinfo.in_color_space = JCS_RGB;
+
+        jpeg_set_defaults(&cinfo);
+
+        jpeg_start_compress(&cinfo, TRUE);
+
+        uint64_t row_stride = caff_file.images.at(0).image.width * 3;
+
+        while (cinfo.next_scanline < cinfo.image_height) {
+            row_pointer[0] = & caff_file.images.at(0).image.pixels[cinfo.next_scanline * row_stride];
+            (void) jpeg_write_scanlines(&cinfo, row_pointer, 1);
+        }
     }
-    struct jpeg_compress_struct cinfo{};
-    struct jpeg_error_mgr jerr;
-
-    JSAMPROW row_pointer[1];
-
-    jpeg_create_compress(&cinfo);
-    jpeg_stdio_dest(&cinfo, outfile);
-    cinfo.err = jpeg_std_error(&jerr);
-    cinfo.image_width = caff_file.images.at(0).image.width;
-    cinfo.image_height = caff_file.images.at(0).image.height;
-    cinfo.input_components = 3;
-    cinfo.in_color_space = JCS_RGB;
-
-    jpeg_set_defaults(&cinfo);
-
-    jpeg_start_compress(&cinfo, TRUE);
-
-    uint64_t row_stride = caff_file.images.at(0).image.width * 3;
-
-    while (cinfo.next_scanline < cinfo.image_height) {
-        row_pointer[0] = & caff_file.images.at(0).image.pixels[cinfo.next_scanline * row_stride];
-        (void) jpeg_write_scanlines(&cinfo, row_pointer, 1);
-    }
-
     return 0;
 }
 
@@ -345,11 +347,12 @@ int main(int argc, char* argv []){
         }
     }
     if(ia == 0){
-
+        std::cout << "No -i was found" << std::endl;
+        return 1;
     }
     if(argc !=3 && argc != 5 && argc != 7){
         std::cout << "The number of arguments given are not 3, 5 or 7" << std::endl;
-        return 1;
+        return 2;
     }
     // No output, just caff validation
     else if(argc == 3){
@@ -358,18 +361,18 @@ int main(int argc, char* argv []){
                 caffFile = readFile(argv[2]);
             }
             else{
-                return 2;
+                return 3;
             }
         }
         else{
             std::cout << "Wrong argument format" << std::endl;
-            return 3;
+            return 4;
         }
     }
     else {
         if (ia > 1 || ofa > 1 || ota > 1) {
             std::cout << "Wrong argument format" << std::endl;
-            return 3;
+            return 4;
         }
         for (int i = 0; i < argc; i++) {
             if (std::strcmp(argv[i], "-i\0") == 0) {
@@ -418,8 +421,6 @@ int main(int argc, char* argv []){
 
         }
     }
-    std::cout << image_out << std::endl;
-    std::cout << txt_out << std::endl;
     int ret = parseCAFF(caffFile, image_out, txt_out);
 
     return ret;
