@@ -163,8 +163,8 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& string) {
 
         //animation block length
         bytes64 a_length;
-        for(int i = 0; i < 8; i++)
-            a_length.c[i] = fileData[read++];
+        for(int j = 0; j < 8; j++)
+            a_length.c[j] = fileData[read++];
         std::cout << "Animation length: " << a_length.ll << std::endl;
 
         //*duration*//
