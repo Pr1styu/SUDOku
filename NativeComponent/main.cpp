@@ -152,20 +152,21 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& string) {
     CAFF caff_file = CAFF(creation, creator);
 
     //***CAFF ANIMATION***//
-    if(fileData[read] != 3) {
-        std::cout << "Error: third block is not the animation" << std::endl;
-        return 50;
-    }
-    read++;
 
-    //animation block length
-    bytes64 a_length;
-    for(int i = 0; i < 8; i++)
-        a_length.c[i] = fileData[read++];
-    std::cout << "Animation length: " << a_length.ll << std::endl;
-
-    //animation blocks, CIFF parse
     for(int i = 0; i < ciff_num.ll; i++) {
+
+        if(fileData[read] != 3) {
+            std::cout << "Error: not an animation block" << std::endl;
+            return 50;
+        }
+        read++;
+
+        //animation block length
+        bytes64 a_length;
+        for(int i = 0; i < 8; i++)
+            a_length.c[i] = fileData[read++];
+        std::cout << "Animation length: " << a_length.ll << std::endl;
+
         //*duration*//
         bytes64 duration;
         for(int j = 0; j < 8; j++)
@@ -180,6 +181,7 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& string) {
             ciff_magic += fileData[read++];
         if(ciff_magic.compare("CIFF") != 0) {
             std::cout << "Error: not a CIFF file" << std::endl;
+            std::cout << ciff_magic << std::endl;
             return 51;
         }
 
