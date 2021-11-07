@@ -3,7 +3,6 @@
 //
 
 #include <fstream>
-#include <utility>
 #include <vector>
 #include <iostream>
 #include <string>
@@ -20,8 +19,20 @@ struct CIFF {
     std::string caption;
     std::vector<std::string> tags;
     BYTE* pixels;
-    CIFF(uint64_t s, uint64_t w, uint64_t h ,std::string c) : size(s), width(w), height(h), caption(std::move(c)) { pixels = new BYTE[size]; }
+    CIFF(uint64_t s, uint64_t w, uint64_t h ,std::string c) : size(s), width(w),
+        height(h), caption(std::move(c)) { pixels = new BYTE[size]; }
+    std::string toString();
 };
+
+std::string CIFF::toString() {
+    std::string t;
+    for (int i = 0; i < tags.size()-1; i++)
+        t += "\"" + tags.at(i) + "\", ";
+    t += "\"" + tags.at(tags.size()-1) + "\"";
+
+    return "\n\t\t\"size\":" + std::to_string(size) + ",\n\t\t\"width\":" + std::to_string(width) + ",\n\t\t\"height\":"
+            + std::to_string(height) + ",\n\t\t\"caption\":\"" + caption + "\",\n\t\t\"tags\":[" + t + "]";
+}
 
 struct DateTime {
     uint16_t year;
@@ -31,20 +42,44 @@ struct DateTime {
     uint16_t minute;
     DateTime(uint16_t y, uint16_t m, uint16_t d, uint16_t h, uint16_t min)
         : year(y), month(m), day(d), hour(h), minute(min) {}
+    std::string toString();
 };
 
+std::string DateTime::toString() {
+    return "\"" + std::to_string(year) + "-" + std::to_string(month) + "-" + std::to_string(day) + " "
+        + std::to_string(hour) + ":" + std::to_string(minute) + "\"";
+}
+
 struct Animation {
+    uint64_t id;
     uint64_t duration;
     CIFF image;
-    Animation(uint64_t d, CIFF i) : duration(d), image(std::move(i)) {}
+    Animation(uint64_t i, uint64_t d, CIFF im) : id(i), duration(d), image(std::move(im)) {}
+    std::string toString();
 };
+
+std::string Animation::toString() {
+    return "\n\t\t\"id\":" + std::to_string(id) + ",\n\t\t\"duration\":" + std::to_string(duration)
+        + image.toString();
+}
 
 struct CAFF {
     DateTime creation;
     std::string  creator;
     std::vector<Animation> images;
     CAFF(DateTime ct, std::string c) : creation(ct), creator(std::move(c)) {}
+    std::string toString();
 };
+
+std::string CAFF::toString() {
+    std::string ims;
+    for (int i = 0; i < images.size()-1; i++)
+        ims += images.at(i).toString() + ",\n";
+    ims += images.at(images.size()-1).toString();
+
+    return "{\n\t\"creation\":" + creation.toString() + ",\n\t\"creator\":\"" + creator
+        + "\",\n\t\"ciffs\":\n\t[" + ims + "\n\t]\n}";
+}
 
 std::vector<BYTE> readFile(const char* filename)
 {
@@ -240,7 +275,7 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& file_out, co
         for(int j = 0; j < ciff_content_size.ll; j++)
             ciff_file.pixels[j] = fileData[read++];
 
-        Animation animation = Animation(duration.ll, ciff_file);
+        Animation animation = Animation(i, duration.ll, ciff_file);
         caff_file.images.push_back(animation);
     }
 
@@ -249,6 +284,7 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& file_out, co
         std::cout << "Read = " << read << ", Size = " << fileData.size() << std::endl;
         return 51;
     }
+
     if(!file_out.empty()){
         FILE *outfile;
         fopen_s(&outfile,file_out.c_str(), "wb");
@@ -280,6 +316,22 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& file_out, co
             (void) jpeg_write_scanlines(&cinfo, row_pointer, 1);
         }
     }
+
+    if(!txt_out.empty()) {
+        std::ofstream ofs;
+        ofs.open(txt_out);
+
+        if (ofs.is_open()) {
+            ofs << caff_file.toString();
+            ofs.close();
+        }
+
+        else {
+            std::cout << "Can't open text file" << std::endl;
+            return 52;
+        }
+    }
+
     return 0;
 }
 
