@@ -299,9 +299,11 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& file_out, co
 
         JSAMPROW row_pointer[1];
 
+        cinfo.err = jpeg_std_error(&jerr);
+
         jpeg_create_compress(&cinfo);
         jpeg_stdio_dest(&cinfo, outfile);
-        cinfo.err = jpeg_std_error(&jerr);
+
         cinfo.image_width = caff_file.images.at(0).image.width;
         cinfo.image_height = caff_file.images.at(0).image.height;
         cinfo.input_components = 3;
@@ -317,7 +319,12 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& file_out, co
             row_pointer[0] = & caff_file.images.at(0).image.pixels[cinfo.next_scanline * row_stride];
             (void) jpeg_write_scanlines(&cinfo, row_pointer, 1);
         }
+
+        jpeg_finish_compress(&cinfo);
+
         fclose(outfile);
+
+        jpeg_destroy_compress(&cinfo);
     }
 
     if(!txt_out.empty()) {
