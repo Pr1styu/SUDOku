@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.20)  # CMake version check
-project(CAFFParser)               # Create project "simple_example"
+cmake_minimum_required(VERSION 3.14)  # CMake version check
+project(CAFFParser)               # Create project
 set(CMAKE_CXX_STANDARD 14)            # Enable c++14 standard
 
 set(SOURCE_FILES main.cpp)

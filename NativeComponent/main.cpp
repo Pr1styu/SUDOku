@@ -3,6 +3,7 @@
 //
 
 #include <fstream>
+#include <utility>
 #include <vector>
 #include <iostream>
 #include <string>
@@ -10,6 +11,7 @@
 #include <cstring>
 //Imported libjpeg for image processing
 #include "jpeg-9d/jpeglib.h"
+
 typedef unsigned char BYTE;
 
 struct CIFF {
@@ -18,9 +20,9 @@ struct CIFF {
     uint64_t height;
     std::string caption;
     std::vector<std::string> tags;
-    BYTE* pixels;
+    std::vector<BYTE> pixels;
     CIFF(uint64_t s, uint64_t w, uint64_t h ,std::string c) : size(s), width(w),
-        height(h), caption(std::move(c)) { pixels = new BYTE[size]; }
+        height(h), caption(std::move(c)) { }
     std::string toString();
 };
 
@@ -42,10 +44,10 @@ struct DateTime {
     uint16_t minute;
     DateTime(uint16_t y, uint16_t m, uint16_t d, uint16_t h, uint16_t min)
         : year(y), month(m), day(d), hour(h), minute(min) {}
-    std::string toString();
+    std::string toString() const;
 };
 
-std::string DateTime::toString() {
+std::string DateTime::toString() const {
     return "\"" + std::to_string(year) + "-" + std::to_string(month) + "-" + std::to_string(day) + " "
         + std::to_string(hour) + ":" + std::to_string(minute) + "\"";
 }
@@ -54,7 +56,7 @@ struct Animation {
     uint64_t id;
     uint64_t duration;
     CIFF image;
-    Animation(uint64_t i, uint64_t d, CIFF im) : id(i), duration(d), image(std::move(im)) {}
+    Animation(uint64_t i, uint64_t d, CIFF  im) : id(i), duration(d), image(std::move(im)) {}
     std::string toString();
 };
 
@@ -273,7 +275,7 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& file_out, co
 
         //pixels
         for(int j = 0; j < ciff_content_size.ll; j++)
-            ciff_file.pixels[j] = fileData[read++];
+            ciff_file.pixels.push_back(fileData[read++]);
 
         Animation animation = Animation(i, duration.ll, ciff_file);
         caff_file.images.push_back(animation);
@@ -287,7 +289,7 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& file_out, co
 
     if(!file_out.empty()){
         FILE *outfile;
-        fopen_s(&outfile,file_out.c_str(), "wb");
+        outfile = fopen(file_out.c_str(), "wb");
         if ( outfile == nullptr) {
             std::cout << "Can't open output file" << std::endl;
             return 57;
@@ -315,6 +317,7 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& file_out, co
             row_pointer[0] = & caff_file.images.at(0).image.pixels[cinfo.next_scanline * row_stride];
             (void) jpeg_write_scanlines(&cinfo, row_pointer, 1);
         }
+        fclose(outfile);
     }
 
     if(!txt_out.empty()) {
@@ -348,7 +351,7 @@ bool checkFileAvailability(const std::string& filename){
 
 int checkOutputValidity(std::string& out, const std::string& expected_extension){
     std::string extension;
-    int name_start_idx = out.find_last_of('\\');
+    int name_start_idx = out.find_last_of('/');
     int extension_start_idx = out.find_last_of('.');
     if(extension_start_idx < name_start_idx){
         extension_start_idx = -1;
@@ -443,7 +446,7 @@ int main(int argc, char* argv []){
             if (std::strcmp(argv[i], "-of\0") == 0) {
                 if (i < argc - 1) {
                     std::string out(argv[i + 1]);
-                    std::replace(out.begin(), out.end(), '/', '\\');
+                    std::replace(out.begin(), out.end(), '\\', '/');
                     int out_check = checkOutputValidity(out,"jpeg");
                     if (out_check == 0) {
                         image_out = out;
@@ -458,7 +461,7 @@ int main(int argc, char* argv []){
             if (std::strcmp(argv[i], "-ot\0") == 0) {
                 if (i < argc - 1) {
                     std::string out(argv[i + 1]);
-                    std::replace(out.begin(), out.end(), '/', '\\');
+                    std::replace(out.begin(), out.end(), '\\', '/');
                     int out_check = checkOutputValidity(out,"txt");
                     if (out_check == 0) {
                         txt_out = out;
