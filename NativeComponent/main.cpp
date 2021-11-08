@@ -149,7 +149,7 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& file_out, co
     //***CAFF CREDITS***//
     if(fileData[read] != 2) {
         std::cout << "Error: second block is not the credits" << std::endl;
-        return 50;
+        return 52;
     }
     read++;
 
@@ -191,7 +191,7 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& file_out, co
 
         if(fileData[read] != 3) {
             std::cout << "Error: not an animation block" << std::endl;
-            return 50;
+            return 53;
         }
         read++;
 
@@ -216,7 +216,7 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& file_out, co
         if(ciff_magic != "CIFF") {
             std::cout << "Error: not a CIFF file" << std::endl;
             std::cout << ciff_magic << std::endl;
-            return 51;
+            return 54;
         }
 
         //header size
@@ -245,7 +245,7 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& file_out, co
 
         if(ciff_content_size.ll != (3*width.ll*height.ll)) {
             std::cout << "Error: wrong content size" << std::endl;
-            return 51;
+            return 55;
         }
 
         //caption
@@ -282,7 +282,7 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& file_out, co
     if (read != fileData.size()) {
         std::cout << "Error: parse bug" << std::endl;
         std::cout << "Read = " << read << ", Size = " << fileData.size() << std::endl;
-        return 51;
+        return 56;
     }
 
     if(!file_out.empty()){
@@ -290,7 +290,7 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& file_out, co
         fopen_s(&outfile,file_out.c_str(), "wb");
         if ( outfile == nullptr) {
             std::cout << "Can't open output file" << std::endl;
-            return 52;
+            return 57;
         }
         struct jpeg_compress_struct cinfo{};
         struct jpeg_error_mgr jerr{};
@@ -328,7 +328,7 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& file_out, co
 
         else {
             std::cout << "Can't open text file" << std::endl;
-            return 52;
+            return 58;
         }
     }
 
