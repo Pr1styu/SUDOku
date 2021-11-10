@@ -27,7 +27,7 @@ struct CIFF {
 
 std::string CIFF::toString() {
     std::string t;
-    for (int i = 0; i < tags.size()-1; i++)
+    for (unsigned int i = 0; i < tags.size()-1; i++)
         t += "\"" + tags.at(i) + "\", ";
     t += "\"" + tags.at(tags.size()-1) + "\"";
 
@@ -74,7 +74,7 @@ struct CAFF {
 
 std::string CAFF::toString() {
     std::string ims;
-    for (int i = 0; i < images.size()-1; i++)
+    for (unsigned int i = 0; i < images.size()-1; i++)
         ims += images.at(i).toString() + ",\n";
     ims += images.at(images.size()-1).toString();
 
@@ -259,9 +259,9 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& file_out, co
         CIFF ciff_file = CIFF(ciff_content_size.ll, width.ll, height.ll, caption);
 
         //tags
-        int tag_len = ciff_header_size.ll - 36 - caption.size();
+        uint64_t tag_len = ciff_header_size.ll - 36 - caption.size();
         std::cout << "Tags: ";
-        for(int j = 0; j < tag_len; j++) {
+        for(unsigned int j = 0; j < tag_len; j++) {
             std::string tag;
             while (fileData[read] != '\0')
                 tag += fileData[read++];
