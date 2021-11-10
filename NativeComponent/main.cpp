@@ -164,10 +164,10 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& file_out, co
     bytes16 year{};
     for(int i = 0; i < 2; i++)
         year.c[i] = fileData[read++];
-    char month = fileData[read++];
-    char day = fileData[read++];
-    char hour = fileData[read++];
-    char minute = fileData[read++];
+    unsigned char month = fileData[read++];
+    unsigned char day = fileData[read++];
+    unsigned char hour = fileData[read++];
+    unsigned char minute = fileData[read++];
     DateTime creation = DateTime(year.sh, month, day, hour, minute);
     std::cout << "Creation: " << creation.year << "-" << creation.month << "-" << creation.day
         << ", " << creation.hour << ":" << creation.minute << std::endl;
