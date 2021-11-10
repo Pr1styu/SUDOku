@@ -286,7 +286,7 @@ int parseCAFF(const std::vector<BYTE> &fileData, const std::string& file_out, co
         return 56;
     }
 
-    if(!file_out.empty()){
+    if(!file_out.empty() && !caff_file.images.empty()){
         FILE *outfile;
         outfile = fopen(file_out.c_str(), "wb");
         if ( outfile == nullptr) {
