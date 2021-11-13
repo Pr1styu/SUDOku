@@ -1,7 +1,10 @@
 package hu.bme.compsec.sudoku.presentation.mapping;
 
 import hu.bme.compsec.sudoku.data.domain.CAFFFile;
-import hu.bme.compsec.sudoku.presentation.dto.CAFFPreviewDTO;
+import hu.bme.compsec.sudoku.data.domain.Comment;
+import hu.bme.compsec.sudoku.presentation.dto.CAFFFileDetailDTO;
+import hu.bme.compsec.sudoku.presentation.dto.CAFFFilePreviewDTO;
+import hu.bme.compsec.sudoku.presentation.dto.CommentDTO;
 import org.mapstruct.Mapper;
 
 import java.util.Base64;
@@ -9,10 +12,14 @@ import java.util.Base64;
 @Mapper(componentModel = "spring")
 public interface CAFFMapper {
 
-    CAFFPreviewDTO toPreviewDTO(CAFFFile entity);
+    CAFFFilePreviewDTO toPreviewDTO(CAFFFile entity);
 
     default String getBase64EncodedString(byte[] preview) {
         return Base64.getEncoder().encodeToString(preview);
     }
+
+    CAFFFileDetailDTO toDetailDTO(CAFFFile entity);
+
+    CommentDTO toCommentDTO(Comment comment);
 
 }

@@ -3,6 +3,8 @@ package hu.bme.compsec.sudoku.data.domain;
 import lombok.Data;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.persistence.*;
 import java.nio.charset.StandardCharsets;
@@ -35,26 +37,40 @@ public class CAFFFile {
     @ElementCollection
     private List<String> metaData;
 
-
-    // TODO: Figure out the comment representation
-    //private final List<Comment> comments;
-
     private Timestamp previewGenerationTime;
 
     private Timestamp creationTime;
 
     private Timestamp modificationTime;
 
+    @OneToMany(mappedBy = "caffFile", cascade = CascadeType.ALL)
+    private final List<Comment> comments = new ArrayList<>();
+
+    public Comment addComment(String commentText) {
+        var comment = new Comment();
+        comment.setCaffFile(this);
+        comment.setText(commentText);
+
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        // TODO: Fetch userid with actual username
+        log.info(auth.getName());
+        comment.setUserId(1l);
+
+        this.comments.add(comment);
+
+        return comment;
+    }
 
     @PrePersist
     public void onCreate() {
         this.creationTime = this.modificationTime = new Timestamp(Instant.now().toEpochMilli());
 
-        // TODO: REMOVE THIS
-        this.preview = UUID.randomUUID().toString().getBytes(StandardCharsets.UTF_8);
-        this.metaData = List.of("test", "hodl", "kaposzta", "hello", "hohoho", "hullaho");
-
-
+        // TODO: REMOVE THESE
+        {
+            this.preview = UUID.randomUUID().toString().getBytes(StandardCharsets.UTF_8);
+            this.metaData = List.of("test", "hodl", "kaposzta", "hello", "hohoho", "hullaho");
+            addComment("test comment, this is awesome!");
+        }
 
         log.info("Saving CAFF file: {}", this);
     }

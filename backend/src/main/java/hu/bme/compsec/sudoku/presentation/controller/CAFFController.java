@@ -1,9 +1,11 @@
 package hu.bme.compsec.sudoku.presentation.controller;
 
-import hu.bme.compsec.sudoku.presentation.dto.CAFFPreviewDTO;
+import hu.bme.compsec.sudoku.presentation.dto.CAFFFileDetailDTO;
+import hu.bme.compsec.sudoku.presentation.dto.CAFFFilePreviewDTO;
 import hu.bme.compsec.sudoku.presentation.dto.CommentDTO;
 import hu.bme.compsec.sudoku.presentation.mapping.CAFFMapper;
 import hu.bme.compsec.sudoku.service.CAFFService;
+import hu.bme.compsec.sudoku.service.CommentService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
@@ -17,7 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,9 +33,10 @@ public class CAFFController {
     private CAFFService caffService;
     private CAFFMapper caffMapper;
 
+    private CommentService commentService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<CAFFPreviewDTO> getCAFFFile(@PathVariable Long id) {
+    public ResponseEntity<CAFFFilePreviewDTO> getCAFFFile(@PathVariable Long id) {
         return caffService.getCAFFFileById(id)
                 .map(caffMapper::toPreviewDTO)
                 .map(ResponseEntity::ok)
@@ -42,15 +44,15 @@ public class CAFFController {
     }
 
     @PostMapping(value = "/upload", consumes = "multipart/form-data")
-    public ResponseEntity<CAFFPreviewDTO> uploadCaffFile(@RequestPart ("caffFile") MultipartFile uploadedCaffFile,
-                                                         @RequestPart ("fileName") String fileName,
-                                                         UriComponentsBuilder b) {
+    public ResponseEntity<CAFFFilePreviewDTO> uploadCaffFile(@RequestPart ("caffFile") MultipartFile uploadedCaffFile,
+                                                             @RequestPart ("fileName") String fileName,
+                                                             UriComponentsBuilder b) {
 
         // TODO: Should we check the file format/integrity before persisting?
 
         var createdCaffFileEntity = caffService.saveCaffFile(uploadedCaffFile, StringUtils.cleanPath(fileName));
 
-        UriComponents uriComponents = b.path("/download/{id}").buildAndExpand(createdCaffFileEntity.getId());
+        UriComponents uriComponents = b.path("/{id}").buildAndExpand(createdCaffFileEntity.getId());
         return ResponseEntity.created(uriComponents.toUri()).body(caffMapper.toPreviewDTO(createdCaffFileEntity));
     }
 
@@ -84,12 +86,37 @@ public class CAFFController {
     }
 
     @GetMapping("/search/{metaData}")
-    public ResponseEntity<List<CAFFPreviewDTO>> getCaffFilesByMetaData(@PathVariable String metaData) {
+    public ResponseEntity<List<CAFFFilePreviewDTO>> getCaffFilesByMetaData(@PathVariable String metaData) {
         var caffFiles = caffService.searchCaffFilesByMetaData(metaData).parallelStream()
                 .map(caffMapper::toPreviewDTO)
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(caffFiles);
+    }
+
+    /* COMMENTS */
+
+    @GetMapping("/{id}/comment")
+    public ResponseEntity<List<CommentDTO>> getCommentForCaffFile(@PathVariable Long id) {
+        var comments = commentService.getAllCommentForCaffFile(id).parallelStream()
+                .map(caffMapper::toCommentDTO)
+                .collect(Collectors.toList());
+
+        // TODO: Improve responses based on more possible scenario
+        return ResponseEntity.ok(comments);
+    }
+
+    @PostMapping("/{id}/comment")
+    public ResponseEntity addCommentForCaffFile(@PathVariable Long id, @RequestBody CommentDTO commentDTO) {
+
+        log.info("Adding comment {} for caff file with id {}.", commentDTO.getText(), id);
+
+        var commentAdded = commentService.addCommentToCaffFile(id, commentDTO);
+        if (commentAdded) {
+            return ResponseEntity.accepted().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
 }
