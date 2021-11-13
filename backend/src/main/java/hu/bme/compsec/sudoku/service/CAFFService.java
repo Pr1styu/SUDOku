@@ -21,6 +21,7 @@ public class CAFFService {
 
     private CAFFRepository caffRepository;
 
+
     @PreAuthorize("hasAuthority('caff:read')")
     public Optional<CAFFFile> getCAFFFileById(Long id) {
         log.info("Fetching CAFF file with id: {}", id);
@@ -49,7 +50,6 @@ public class CAFFService {
         return caffRepository.save(caffFileEntity);
     }
 
-
     /**
      * This method responsible for the Caff file deletion.
      * @return true if the entity has been successfully deleted, false if it does not exist in the database.
@@ -63,5 +63,12 @@ public class CAFFService {
             return false;
         }
     }
+
+    @PreAuthorize("hasAuthority('caff:read')")
+    public List<CAFFFile> searchCaffFilesByMetaData(String metaData) {
+        return caffRepository.findAllByMetaDataIgnoreCase(metaData);
+    }
+
+
 
 }

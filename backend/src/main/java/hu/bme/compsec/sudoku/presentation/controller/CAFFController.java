@@ -1,6 +1,7 @@
 package hu.bme.compsec.sudoku.presentation.controller;
 
 import hu.bme.compsec.sudoku.presentation.dto.CAFFPreviewDTO;
+import hu.bme.compsec.sudoku.presentation.dto.CommentDTO;
 import hu.bme.compsec.sudoku.presentation.mapping.CAFFMapper;
 import hu.bme.compsec.sudoku.service.CAFFService;
 import lombok.AllArgsConstructor;
@@ -17,6 +18,8 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 
@@ -27,8 +30,8 @@ import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 public class CAFFController {
 
     private CAFFService caffService;
-
     private CAFFMapper caffMapper;
+
 
     @GetMapping("/{id}")
     public ResponseEntity<CAFFPreviewDTO> getCAFFFile(@PathVariable Long id) {
@@ -52,7 +55,7 @@ public class CAFFController {
     }
 
     @GetMapping("/download/{id}")
-    public ResponseEntity<Resource> downloadFiles(@PathVariable Long id) throws IOException {
+    public ResponseEntity<Resource> downloadFiles(@PathVariable Long id) {
         return caffService.getCAFFFileById(id)
                 .map(caffFile -> {
                             Resource resource = new ByteArrayResource(caffFile.getRawBytes());
@@ -78,6 +81,15 @@ public class CAFFController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/search/{metaData}")
+    public ResponseEntity<List<CAFFPreviewDTO>> getCaffFilesByMetaData(@PathVariable String metaData) {
+        var caffFiles = caffService.searchCaffFilesByMetaData(metaData).parallelStream()
+                .map(caffMapper::toPreviewDTO)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(caffFiles);
     }
 
 }
