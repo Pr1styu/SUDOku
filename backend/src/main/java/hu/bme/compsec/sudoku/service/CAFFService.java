@@ -2,13 +2,16 @@ package hu.bme.compsec.sudoku.service;
 
 import hu.bme.compsec.sudoku.data.CAFFRepository;
 import hu.bme.compsec.sudoku.data.domain.CAFFFile;
+import hu.bme.compsec.sudoku.data.domain.Comment;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -32,6 +35,13 @@ public class CAFFService {
     public CAFFFile saveCaffFile(MultipartFile uploadedCaffFile, String fileName) {
 
         // TODO: Process raw CAFF file with native component
+
+        /*
+        * 1. Save uploaded caff file (uploadedCaffFile) to the filesystem.
+        * 2. Call the native components with proper params
+        * 3. Load preview image (generated jpg) bytes and get meta data from generated txt. (After we can clean the workdir.)
+        * 4. Save CAFFFile entity.
+        * */
 
 
         var caffFileEntity = new CAFFFile();
@@ -69,6 +79,9 @@ public class CAFFService {
         return caffRepository.findAllByMetaDataIgnoreCase(metaData);
     }
 
+    @PostConstruct
+    public void seed() {
 
+    }
 
 }

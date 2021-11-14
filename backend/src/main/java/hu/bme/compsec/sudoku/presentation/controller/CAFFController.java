@@ -65,7 +65,7 @@ public class CAFFController {
                             HttpHeaders httpHeaders = new HttpHeaders();
                             httpHeaders.add("File-Name", caffFile.getFileName());
                             httpHeaders.add(CONTENT_DISPOSITION, "attachment;File-Name=" + resource.getFilename());
-                            return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM)
+                            return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM) // TODO: Check this with frontend
                                     .headers(httpHeaders).body(resource);
 
                         }
