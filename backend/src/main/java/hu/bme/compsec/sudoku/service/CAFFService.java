@@ -24,9 +24,13 @@ public class CAFFService {
 
     private CAFFRepository caffRepository;
 
+    @PreAuthorize("hasAuthority('caff:read')")
+    public List<CAFFFile> getAllCaffFile() {
+        return caffRepository.findAll();
+    }
 
     @PreAuthorize("hasAuthority('caff:read')")
-    public Optional<CAFFFile> getCAFFFileById(Long id) {
+    public Optional<CAFFFile> getCaffFileById(Long id) {
         log.info("Fetching CAFF file with id: {}", id);
         return caffRepository.findById(id);
     }

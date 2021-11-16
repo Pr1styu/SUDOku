@@ -2,8 +2,6 @@ package hu.bme.compsec.sudoku.presentation.dto;
 
 import lombok.Data;
 
-import java.util.List;
-
 @Data
 public class CAFFFilePreviewDTO {
 
@@ -14,6 +12,6 @@ public class CAFFFilePreviewDTO {
     // First CIFF file in Base64 string
     private String preview;
 
-    private List<String> metaData;
+    private Integer size;
 
 }

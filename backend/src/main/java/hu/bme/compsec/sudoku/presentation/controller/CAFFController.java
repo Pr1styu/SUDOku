@@ -35,30 +35,40 @@ public class CAFFController {
 
     private CommentService commentService;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<CAFFFilePreviewDTO> getCAFFFile(@PathVariable Long id) {
-        return caffService.getCAFFFileById(id)
+
+    @GetMapping("")
+    public ResponseEntity<List<CAFFFilePreviewDTO>> getAllCaffFilePreview() {
+        var caffFiles = caffService.getAllCaffFile().parallelStream()
                 .map(caffMapper::toPreviewDTO)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(caffFiles);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<CAFFFileDetailDTO> getCAFFFile(@PathVariable Long id) {
+        return caffService.getCaffFileById(id)
+                .map(caffMapper::toDetailDTO)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping(value = "/upload", consumes = "multipart/form-data")
-    public ResponseEntity<CAFFFilePreviewDTO> uploadCaffFile(@RequestPart ("caffFile") MultipartFile uploadedCaffFile,
-                                                             @RequestPart ("fileName") String fileName,
-                                                             UriComponentsBuilder b) {
+    public ResponseEntity<CAFFFileDetailDTO> uploadCaffFile(@RequestPart ("caffFile") MultipartFile uploadedCaffFile,
+                                                            @RequestPart ("fileName") String fileName,
+                                                            UriComponentsBuilder b) {
 
         // TODO: Should we check the file format/integrity before persisting?
 
         var createdCaffFileEntity = caffService.saveCaffFile(uploadedCaffFile, StringUtils.cleanPath(fileName));
 
         UriComponents uriComponents = b.path("/{id}").buildAndExpand(createdCaffFileEntity.getId());
-        return ResponseEntity.created(uriComponents.toUri()).body(caffMapper.toPreviewDTO(createdCaffFileEntity));
+        return ResponseEntity.created(uriComponents.toUri()).body(caffMapper.toDetailDTO(createdCaffFileEntity));
     }
 
     @GetMapping("/download/{id}")
     public ResponseEntity<Resource> downloadFiles(@PathVariable Long id) {
-        return caffService.getCAFFFileById(id)
+        return caffService.getCaffFileById(id)
                 .map(caffFile -> {
                             Resource resource = new ByteArrayResource(caffFile.getRawBytes());
 

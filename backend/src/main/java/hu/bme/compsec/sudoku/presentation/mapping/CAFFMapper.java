@@ -5,20 +5,28 @@ import hu.bme.compsec.sudoku.data.domain.Comment;
 import hu.bme.compsec.sudoku.presentation.dto.CAFFFileDetailDTO;
 import hu.bme.compsec.sudoku.presentation.dto.CAFFFilePreviewDTO;
 import hu.bme.compsec.sudoku.presentation.dto.CommentDTO;
+import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 import java.util.Base64;
 
 @Mapper(componentModel = "spring")
 public interface CAFFMapper {
 
+    @Mapping(target = "size", source = "rawBytes")
     CAFFFilePreviewDTO toPreviewDTO(CAFFFile entity);
+
+    @Mapping(target = "size", source = "rawBytes")
+    CAFFFileDetailDTO toDetailDTO(CAFFFile entity);
 
     default String getBase64EncodedString(byte[] preview) {
         return Base64.getEncoder().encodeToString(preview);
     }
 
-    CAFFFileDetailDTO toDetailDTO(CAFFFile entity);
+    default Integer setCaffFileSize(byte[] rawBytes) {
+        return rawBytes.length;
+    }
 
     CommentDTO toCommentDTO(Comment comment);
 

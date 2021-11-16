@@ -7,6 +7,8 @@ import java.util.List;
 @Data
 public class CAFFFileDetailDTO extends CAFFFilePreviewDTO {
 
+    private List<String> metaData;
+
     private List<CommentDTO> comments;
 
 }
