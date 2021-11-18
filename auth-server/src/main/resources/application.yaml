@@ -1,0 +1,17 @@
+
+server:
+  port: 9000
+
+logging:
+  level:
+    root: INFO
+    org.springframework.boot: INFO
+    org.springframework.security: INFO
+    org.springframework.security.oauth2: INFO
+
+#spring:
+#  h2:
+#    console:
+#      enabled: true
+#      settings:
+#        web-allow-others: true
