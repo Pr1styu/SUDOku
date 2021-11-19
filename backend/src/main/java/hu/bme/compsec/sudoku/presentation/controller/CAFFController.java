@@ -8,6 +8,7 @@ import hu.bme.compsec.sudoku.service.CAFFService;
 import hu.bme.compsec.sudoku.service.CommentService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -55,12 +56,11 @@ public class CAFFController {
 
     @PostMapping(value = "/upload", consumes = "multipart/form-data")
     public ResponseEntity<CAFFFileDetailDTO> uploadCaffFile(@RequestPart ("caffFile") MultipartFile uploadedCaffFile,
-                                                            @RequestPart ("fileName") String fileName,
+                                                            @RequestPart ("fileName") String clientFileName,
                                                             UriComponentsBuilder b) {
 
         // TODO: Should we check the file format/integrity before persisting?
-
-        var createdCaffFileEntity = caffService.saveCaffFile(uploadedCaffFile, StringUtils.cleanPath(fileName));
+        var createdCaffFileEntity = caffService.saveCaffFile(uploadedCaffFile, FilenameUtils.getBaseName(StringUtils.cleanPath(clientFileName)));
 
         UriComponents uriComponents = b.path("/{id}").buildAndExpand(createdCaffFileEntity.getId());
         return ResponseEntity.created(uriComponents.toUri()).body(caffMapper.toDetailDTO(createdCaffFileEntity));
