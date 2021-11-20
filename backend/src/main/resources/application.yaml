@@ -5,8 +5,7 @@ spring:
     console:
       enabled: true
   datasource:
-    url: jdbc:h2:mem:h2db
-    #driverClassName: org.h2.Driver
+    url: jdbc:h2:file:./db/caffdb
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
