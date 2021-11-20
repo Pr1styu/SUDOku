@@ -9,9 +9,9 @@ logging:
     org.springframework.security: INFO
     org.springframework.security.oauth2: INFO
 
-#spring:
-#  h2:
-#    console:
-#      enabled: true
-#      settings:
-#        web-allow-others: true
+spring:
+  h2:
+    console:
+      enabled: true
+      settings:
+        web-allow-others: true
