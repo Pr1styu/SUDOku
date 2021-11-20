@@ -1,7 +1,6 @@
 package hu.bme.compsec.sudoku.data.domain;
 
-import lombok.Data;
-import lombok.ToString;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,6 +16,9 @@ import java.util.UUID;
 @Data
 @Slf4j
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CAFFFile {
 
     @Id
@@ -36,8 +38,6 @@ public class CAFFFile {
 
     @ElementCollection
     private List<String> metaData;
-
-    private Timestamp previewGenerationTime;
 
     private Timestamp creationTime;
 
@@ -67,7 +67,6 @@ public class CAFFFile {
 
         // TODO: REMOVE THESE
         {
-            this.preview = UUID.randomUUID().toString().getBytes(StandardCharsets.UTF_8);
             this.metaData = List.of("test", "hodl", "kaposzta", "hello", "hohoho", "hullaho");
             addComment("test comment, this is awesome!");
         }

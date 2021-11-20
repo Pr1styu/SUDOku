@@ -1,17 +1,16 @@
 package hu.bme.compsec.sudoku.service;
 
+import hu.bme.compsec.sudoku.common.exception.CaffFileFormatExpression;
 import hu.bme.compsec.sudoku.data.CAFFRepository;
 import hu.bme.compsec.sudoku.data.domain.CAFFFile;
-import hu.bme.compsec.sudoku.data.domain.Comment;
+import hu.bme.compsec.sudoku.service.processor.CaffProcessor;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -24,8 +23,10 @@ public class CAFFService {
 
     private CAFFRepository caffRepository;
 
+
     @PreAuthorize("hasAuthority('caff:read')")
     public List<CAFFFile> getAllCaffFile() {
+        log.info("Fetching all caff files.");
         return caffRepository.findAll();
     }
 
@@ -36,30 +37,28 @@ public class CAFFService {
     }
 
     @PreAuthorize("hasAuthority('caff:write')")
-    public CAFFFile saveCaffFile(MultipartFile uploadedCaffFile, String fileName) {
+    public CAFFFile saveCaffFile(MultipartFile uploadedCaffFile, String clientFileName) {
 
         // TODO: Process raw CAFF file with native component
 
-        /*
-        * 1. Save uploaded caff file (uploadedCaffFile) to the filesystem.
-        * 2. Call the native components with proper params
-        * 3. Load preview image (generated jpg) bytes and get meta data from generated txt. (After we can clean the workdir.)
-        * 4. Save CAFFFile entity.
-        * */
-
-
         var caffFileEntity = new CAFFFile();
-        caffFileEntity.setFileName(fileName);
+        caffFileEntity.setFileName(clientFileName);
+
+        var processor = new CaffProcessor();
+        try {
+            processor.process(uploadedCaffFile, clientFileName);
+            //TODO: Load generated preview (jpeg file) and metadata (txt)
+            caffFileEntity.setPreview(processor.getPreview());
+            caffFileEntity.setMetaData(null);
+        } catch (CaffFileFormatExpression e) {
+            return null;
+        }
 
         try {
             caffFileEntity.setRawBytes(uploadedCaffFile.getBytes());
         } catch (IOException e) {
             log.error("Error while getting raw bytes of uploaded CAFF file: {}", e.getMessage());
         }
-
-        //TODO: Load generated preview (jpeg file) and metadata (txt)
-        caffFileEntity.setPreview(null);
-        caffFileEntity.setMetaData(null);
 
         return caffRepository.save(caffFileEntity);
     }
@@ -83,9 +82,5 @@ public class CAFFService {
         return caffRepository.findAllByMetaDataIgnoreCase(metaData);
     }
 
-    @PostConstruct
-    public void seed() {
-
-    }
 
 }
