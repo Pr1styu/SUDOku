@@ -47,7 +47,7 @@ public final class CaffProcessor {
          * DONE 2. Call the native component with proper params
          * DONE 3. Load preview image (generated jpg) bytes
          * 3.5 and get meta data from generated txt. (After we can clean the workdir.)
-         * DONE 4. Save CAFFFile entity.
+         * DONE 4. Save CAFFFile entity. ( in service level calling this method)
          * */
 
         saveCaffFileToFileSystem(uploadedCaffFile, clientFileName);
@@ -84,7 +84,7 @@ public final class CaffProcessor {
     }
 
     private void saveCaffFileToFileSystem(MultipartFile uploadedCaffFile, String clientFileName) {
-        log.info("Trying to save caff file {} to the filesystem.", clientFileName);
+        log.info("Trying to save caff file {} to the filesystem with name {}.", clientFileName, savedBaseName);
         try {
             workDir = Paths.get(workDirPath);
             if (!Files.exists(workDir)) {
@@ -139,7 +139,7 @@ public final class CaffProcessor {
         if (SystemUtils.IS_OS_WINDOWS) {
             parserCommand.add(NATIVE_CAFF_PARSER_PATH_WIN);
         } else {
-            // TODO: Create unix binary and call this here
+            // TODO: Create unix binary and use this here
 //            parserCmd.add(NATIVE_CAFF_PARSER_PATH_UNIX);
         }
         parserCommand

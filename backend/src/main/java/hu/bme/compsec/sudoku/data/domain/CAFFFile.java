@@ -39,8 +39,6 @@ public class CAFFFile {
     @ElementCollection
     private List<String> metaData;
 
-    private Timestamp previewGenerationTime;
-
     private Timestamp creationTime;
 
     private Timestamp modificationTime;
