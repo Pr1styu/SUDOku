@@ -1,46 +1,52 @@
 package hu.bme.compsec.sudoku.common.config.security;
 
-import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
-@AllArgsConstructor
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
-
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http
-                .headers().frameOptions().sameOrigin() // For h2 GUI only - should remove this in PROD
-                .and()
-                //.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).and()
-                .csrf().disable()
-                .authorizeRequests()
-                .mvcMatchers("/swagger-ui/").hasRole(UserRole.ADMIN.name())
-                .mvcMatchers("/h2-console/**").hasRole(UserRole.ADMIN.name())
-                //.mvcMatchers(HttpMethod.GET, "/caff/", "/caff/{id}").permitAll()
-                //.mvcMatchers(HttpMethod.POST, "/caff/*").hasRole(UserRole.ADMIN.name())
-                .anyRequest()
-                .authenticated()
-                .and()
-                .httpBasic();
-                //.formLogin()
-                //.rememberMe();
-    }
-
+public class SecurityConfig {
 
     @Bean
-    public PasswordEncoder getPasswordEncoder() {
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .authorizeRequests()
+                .mvcMatchers("/swagger-ui/**").hasRole(UserRole.ADMIN.name())
+                .mvcMatchers("/h2-console/**").hasRole(UserRole.ADMIN.name())
+                .and()
+                .oauth2ResourceServer()
+                .jwt()
+                .jwtAuthenticationConverter(getJwtAuthenticationConverter());
+
+        return http.build();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    private static final String AUTHORITIES_CLAIM = "authorities";
+
+    private Converter<Jwt, AbstractAuthenticationToken> getJwtAuthenticationConverter() {
+        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        grantedAuthoritiesConverter.setAuthoritiesClaimName(AUTHORITIES_CLAIM);
+        grantedAuthoritiesConverter.setAuthorityPrefix("");
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
+        return jwtAuthenticationConverter;
     }
 
 }

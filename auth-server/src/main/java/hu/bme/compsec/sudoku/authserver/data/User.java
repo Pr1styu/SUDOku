@@ -3,7 +3,6 @@ package hu.bme.compsec.sudoku.authserver.data;
 import hu.bme.compsec.sudoku.authserver.common.UserRole;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.*;
@@ -13,7 +12,7 @@ import java.util.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class User implements UserDetails {
+public class User {
 
     @Id
 //    @GeneratedValue(generator = "UUID", strategy = GenerationType.IDENTITY)
@@ -23,7 +22,9 @@ public class User implements UserDetails {
 
     private String fullName;
 
-    private String userName;
+    @NonNull
+    @Column(nullable = false, unique = true)
+    private String username;
 
     @Column(nullable = false, unique = true)
     private String email;
@@ -32,48 +33,16 @@ public class User implements UserDetails {
     private String password;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    private List<UserRole> roles = new ArrayList<>();
+    private List<UserRole> roles = List.of(UserRole.USER);
 
+    @Builder.Default
     private boolean enabled = true;
 
-
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
+    public Collection<GrantedAuthority> getAuthorities() {
         var authorities = new HashSet<GrantedAuthority>();
         roles.forEach(r -> authorities.addAll(r.getGrantedAuthorities()));
 
-        return authorities;
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
-    }
-
-    @Override
-    public String getUsername() {
-        return null;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return enabled;
+        return Collections.unmodifiableCollection(authorities);
     }
 
 }
