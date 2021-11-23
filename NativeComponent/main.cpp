@@ -31,8 +31,8 @@ std::string CIFF::toString() {
         t += "\"" + tags.at(i) + "\", ";
     t += "\"" + tags.at(tags.size()-1) + "\"";
 
-    return "\n\t\t\"size\":" + std::to_string(size) + ",\n\t\t\"width\":" + std::to_string(width) + ",\n\t\t\"height\":"
-            + std::to_string(height) + ",\n\t\t\"caption\":\"" + caption + "\",\n\t\t\"tags\":[" + t + "]";
+    return "\n\t\t\t\"size\":" + std::to_string(size) + ",\n\t\t\t\"width\":" + std::to_string(width) + ",\n\t\t\t\"height\":"
+            + std::to_string(height) + ",\n\t\t\t\"caption\":\"" + caption + "\",\n\t\t\t\"tags\":[" + t + "]";
 }
 
 struct DateTime {
@@ -60,7 +60,7 @@ struct Animation {
 };
 
 std::string Animation::toString() {
-    return "\n\t\t\"id\":" + std::to_string(id) + ",\n\t\t\"duration\":" + std::to_string(duration)
+    return "\n\t\t\t\"id\":" + std::to_string(id) + ",\n\t\t\t\"duration\":" + std::to_string(duration) + ","
         + image.toString();
 }
 
@@ -75,8 +75,8 @@ struct CAFF {
 std::string CAFF::toString() {
     std::string ims;
     for (unsigned int i = 0; i < images.size()-1; i++)
-        ims += images.at(i).toString() + ",\n";
-    ims += images.at(images.size()-1).toString();
+        ims += "\n\t\t{" + images.at(i).toString() + "\n\t\t},";
+    ims += "\n\t\t{" + images.at(images.size()-1).toString() + "\n\t\t}";
 
     return "{\n\t\"creation\":" + creation.toString() + ",\n\t\"creator\":\"" + creator
         + "\",\n\t\"ciffs\":\n\t[" + ims + "\n\t]\n}";
