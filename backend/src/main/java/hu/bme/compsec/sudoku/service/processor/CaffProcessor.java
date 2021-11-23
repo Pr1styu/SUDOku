@@ -24,6 +24,7 @@ public final class CaffProcessor {
 
     private static final String workDirPath = "./workdir/";
     private static final String NATIVE_CAFF_PARSER_PATH_WIN = "./../NativeComponent/bin/CAFFParser.exe";
+    private static final String NATIVE_CAFF_PARSER_PATH_UNIX = "./../NativeComponent/bin/CAFFParser";
     private static final String GENERATED_PREVIEW_EXTENSION = ".jpeg";
     private static final String GENERATED_METADATA_EXTENSION = ".txt";
     private static final String PARSER_LOG_EXTENSION = ".parse";
@@ -39,7 +40,8 @@ public final class CaffProcessor {
 
     @Getter
     private byte[] preview;
-//    private String[] or JSONObject metaData;
+    @Getter
+    private String[] metaData;
 
     public void process(MultipartFile uploadedCaffFile, String clientFileName) throws CaffFileFormatExpression {
         /*
@@ -139,8 +141,7 @@ public final class CaffProcessor {
         if (SystemUtils.IS_OS_WINDOWS) {
             parserCommand.add(NATIVE_CAFF_PARSER_PATH_WIN);
         } else {
-            // TODO: Create unix binary and use this here
-//            parserCmd.add(NATIVE_CAFF_PARSER_PATH_UNIX);
+            parserCommand.add(NATIVE_CAFF_PARSER_PATH_UNIX);
         }
         parserCommand
                 .add("-i").add(savedCaffFilePath.toString())
@@ -163,5 +164,4 @@ public final class CaffProcessor {
     private void extractMetaData() {
         // TODO: Implement this
     }
-
 }
