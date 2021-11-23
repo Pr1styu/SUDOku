@@ -1,6 +1,9 @@
 package hu.bme.compsec.sudoku.service.processor;
 
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
 import hu.bme.compsec.sudoku.common.exception.CaffFileFormatExpression;
+import hu.bme.compsec.sudoku.data.helper.CiffList;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.SystemUtils;
@@ -12,10 +15,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.StringJoiner;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 
@@ -38,10 +38,13 @@ public final class CaffProcessor {
     private Path generatedPreviewPath;
     private Path generatedMetaDataPath;
 
+    private final Moshi moshi = new Moshi.Builder().build();
+    private final JsonAdapter<CiffList> jsonAdapter = moshi.adapter(CiffList.class);
+
     @Getter
     private byte[] preview;
     @Getter
-    private String[] metaData;
+    private List<String> metaData;
 
     public void process(MultipartFile uploadedCaffFile, String clientFileName) throws CaffFileFormatExpression {
         /*
@@ -162,6 +165,16 @@ public final class CaffProcessor {
     }
 
     private void extractMetaData() {
-        // TODO: Implement this
+        try {
+            String json = Files.readString(generatedMetaDataPath);
+            CiffList ciffList = jsonAdapter.fromJson(json);
+            HashSet<String> tags = new HashSet<>();
+            if (ciffList != null) {
+                ciffList.ciffs.forEach(ciff -> tags.addAll(ciff.tags));
+            }
+            metaData = new ArrayList<>(tags);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

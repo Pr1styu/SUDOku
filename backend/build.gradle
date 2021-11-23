@@ -42,7 +42,7 @@ dependencies {
 	implementation 'org.apache.commons:commons-collections4:4.4'
 	implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
 
-
+	implementation("com.squareup.moshi:moshi:1.12.0")
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'

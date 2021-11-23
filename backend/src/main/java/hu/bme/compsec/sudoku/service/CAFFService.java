@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,7 +50,7 @@ public class CAFFService {
             processor.process(uploadedCaffFile, clientFileName);
             //TODO: Load generated preview (jpeg file) and metadata (txt)
             caffFileEntity.setPreview(processor.getPreview());
-            caffFileEntity.setMetaData(null);
+            caffFileEntity.setMetaData(processor.getMetaData());
         } catch (CaffFileFormatExpression e) {
             return null;
         }
