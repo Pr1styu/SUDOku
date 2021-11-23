@@ -85,8 +85,16 @@ public class AuthorizationServerConfig {
 
 				.build();
 
+		RegisteredClient caffService = RegisteredClient.withId(UUID.randomUUID().toString())
+				.clientId("caff-service")
+				.clientSecret("eb2d6d80-417c-44d0-8e4a-3b105e154258")
+				.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+				.authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
+				.build();
+
 		JdbcRegisteredClientRepository registeredClientRepository = new JdbcRegisteredClientRepository(jdbcTemplate);
 		registeredClientRepository.save(registeredClient);
+		registeredClientRepository.save(caffService);
 
 		return registeredClientRepository;
 	}

@@ -1,6 +1,6 @@
 package hu.bme.compsec.sudoku.service;
 
-import hu.bme.compsec.sudoku.common.exception.CaffFileFormatExpression;
+import hu.bme.compsec.sudoku.common.exception.CaffFileFormatException;
 import hu.bme.compsec.sudoku.data.CAFFRepository;
 import hu.bme.compsec.sudoku.data.domain.CAFFFile;
 import hu.bme.compsec.sudoku.service.processor.CaffProcessor;
@@ -36,7 +36,7 @@ public class CAFFService {
         return caffRepository.findById(id);
     }
 
-    @PreAuthorize("hasAuthority('caff:write')")
+//    @PreAuthorize("hasAuthority('caff:write')")
     public CAFFFile saveCaffFile(MultipartFile uploadedCaffFile, String clientFileName) {
 
         // TODO: Process raw CAFF file with native component
@@ -50,7 +50,7 @@ public class CAFFService {
             //TODO: Load generated preview (jpeg file) and metadata (txt)
             caffFileEntity.setPreview(processor.getPreview());
             caffFileEntity.setMetaData(null);
-        } catch (CaffFileFormatExpression e) {
+        } catch (CaffFileFormatException e) {
             return null;
         }
 

@@ -1,5 +1,6 @@
 package hu.bme.compsec.sudoku.authserver.config;
 
+import hu.bme.compsec.sudoku.authserver.common.UserRole;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -20,7 +21,7 @@ public class SecurityConfig {
 				.and()
 				.csrf().disable()
 				.authorizeRequests()
-					.mvcMatchers("/h2-console/**").hasRole("ADMIN")
+					.mvcMatchers("/h2-console/**").hasAuthority(UserRole.ADMIN.name())
 					.mvcMatchers("/register").permitAll()
 				.and()
 				.authorizeRequests(authorizeRequests ->

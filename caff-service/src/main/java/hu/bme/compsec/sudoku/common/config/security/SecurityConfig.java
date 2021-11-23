@@ -7,12 +7,17 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -23,12 +28,13 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .mvcMatchers("/swagger-ui/**").hasRole(UserRole.ADMIN.name())
-                .mvcMatchers("/h2-console/**").hasRole(UserRole.ADMIN.name())
+                .mvcMatchers("/swagger-ui/**").permitAll()
+                .mvcMatchers("/h2-console/**").permitAll()
                 .and()
-                .oauth2ResourceServer()
-                .jwt()
-                .jwtAuthenticationConverter(getJwtAuthenticationConverter());
+                .httpBasic();
+//                .oauth2ResourceServer()
+//                .jwt()
+//                .jwtAuthenticationConverter(getJwtAuthenticationConverter());
 
         return http.build();
     }
@@ -47,6 +53,17 @@ public class SecurityConfig {
         grantedAuthoritiesConverter.setAuthorityPrefix("");
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
         return jwtAuthenticationConverter;
+    }
+
+    @Bean
+    UserDetailsService users() {
+        var user = User.builder()
+                .username("admin")
+                .password(passwordEncoder().encode("admin"))
+                .roles(UserRole.ADMIN.name())
+                .build();
+
+        return new InMemoryUserDetailsManager(user);
     }
 
 }
