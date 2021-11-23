@@ -4,7 +4,8 @@ import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
-import hu.bme.compsec.sudoku.authserver.jose.Jwks;
+import hu.bme.compsec.sudoku.authserver.config.jose.Jwks;
+import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -44,6 +45,7 @@ public class AuthorizationServerConfig {
 		return http.formLogin(Customizer.withDefaults()).build();
 	}
 
+	private static final String USERID_CLAIM = "user_id";
 	private static final String AUTHORITIES_CLAIM = "authorities";
 
 	@Bean
@@ -56,6 +58,8 @@ public class AuthorizationServerConfig {
 						.collect(Collectors.toSet());
 
 				context.getClaims().claim(AUTHORITIES_CLAIM, authorities);
+				var securityUser = (SecurityUser) principal.getPrincipal();
+				context.getClaims().claim(USERID_CLAIM, securityUser.getId());
 			}
 		};
 	}

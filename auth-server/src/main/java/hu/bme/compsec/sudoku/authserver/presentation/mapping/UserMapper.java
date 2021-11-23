@@ -1,5 +1,6 @@
 package hu.bme.compsec.sudoku.authserver.presentation.mapping;
 
+import hu.bme.compsec.sudoku.authserver.config.SecurityUser;
 import hu.bme.compsec.sudoku.authserver.data.User;
 import hu.bme.compsec.sudoku.authserver.presentation.dto.UserDTO;
 import org.mapstruct.Mapper;
@@ -15,8 +16,6 @@ public interface UserMapper {
     @Mapping(target = "enabled", ignore = true)
     User toEntity(UserDTO dto);
 
-    default org.springframework.security.core.userdetails.User toSecurityUser(User userEntity) {
-        return new org.springframework.security.core.userdetails.User(userEntity.getUsername(), userEntity.getPassword(), userEntity.getAuthorities());
-    }
+    SecurityUser toSecurityUser(User userEntity);
 
 }
