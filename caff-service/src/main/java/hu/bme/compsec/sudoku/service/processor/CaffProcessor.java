@@ -1,6 +1,9 @@
 package hu.bme.compsec.sudoku.service.processor;
 
-import hu.bme.compsec.sudoku.common.exception.CaffFileFormatException;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
+import hu.bme.compsec.sudoku.common.exception.CaffFileFormatExpression;
+import hu.bme.compsec.sudoku.data.helper.CiffList;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.SystemUtils;
@@ -12,10 +15,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.StringJoiner;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 
@@ -23,7 +23,8 @@ import java.util.concurrent.TimeUnit;
 public final class CaffProcessor {
 
     private static final String workDirPath = "./workdir/";
-    private static final String NATIVE_CAFF_PARSER_PATH_WIN = "./../native/bin/CAFFParser.exe";
+    private static final String NATIVE_CAFF_PARSER_PATH_WIN = "./../NativeComponent/bin/CAFFParser.exe";
+    private static final String NATIVE_CAFF_PARSER_PATH_UNIX = "./../NativeComponent/bin/CAFFParser";
     private static final String GENERATED_PREVIEW_EXTENSION = ".jpeg";
     private static final String GENERATED_METADATA_EXTENSION = ".txt";
     private static final String PARSER_LOG_EXTENSION = ".parse";
@@ -37,11 +38,15 @@ public final class CaffProcessor {
     private Path generatedPreviewPath;
     private Path generatedMetaDataPath;
 
+    private final Moshi moshi = new Moshi.Builder().build();
+    private final JsonAdapter<CiffList> jsonAdapter = moshi.adapter(CiffList.class);
+
     @Getter
     private byte[] preview;
-//    private String[] or JSONObject metaData;
+    @Getter
+    private List<String> metaData;
 
-    public void process(MultipartFile uploadedCaffFile, String clientFileName) throws CaffFileFormatException {
+    public void process(MultipartFile uploadedCaffFile, String clientFileName) throws CaffFileFormatExpression {
         /*
          * DONE 1. Save uploaded caff file (uploadedCaffFile) to the filesystem.
          * DONE 2. Call the native component with proper params
@@ -105,10 +110,10 @@ public final class CaffProcessor {
     }
 
     /* Command parameters:
-     * CAFFParser.exe -i <caff fájl helye> <-of> <jpeg kimeneti helye és neve> <-ot> <metaadatoknak a kimeneti helye és neve>
+     * CAFFParser -i <caff fájl helye> <-of> <jpeg kimeneti helye és neve> <-ot> <metaadatoknak a kimeneti helye és neve>
      * CAFFParser -of "hello.jpeg" -i "C:\Users\ABC\CLionProjects\SUDOku\NativeComponent\CAFFTest\3.caff" -ot "txtout.txt"
      * */
-    private void parseCaffFile() throws CaffFileFormatException {
+    private void parseCaffFile() throws CaffFileFormatExpression {
         String parserCommand = createParserCommand();
         ProcessBuilder processBuilder = new ProcessBuilder(parserCommand.split(" "));
         File parseLogFile = workDir.resolve(savedBaseName + PARSER_LOG_EXTENSION).toFile(); // TODO: Move logs another place
@@ -123,14 +128,14 @@ public final class CaffProcessor {
                 log.info("Caff file {} parsed successfully.", savedBaseName);
             } else {
                 log.error("Caff parser finished with error code: {}", parseResultCode);
-                throw new CaffFileFormatException("Could not parse caff file: {}, code: ", savedBaseName, parseResultCode);
+                throw new CaffFileFormatExpression("Could not parse caff file: {}, code: ", savedBaseName, parseResultCode);
             }
         } catch (IOException e) {
             log.error("Could not call native parser for caff file {} due to {}.", savedBaseName, e.getMessage());
-            throw new CaffFileFormatException("Could not parse caff file: {}", savedBaseName);
+            throw new CaffFileFormatExpression("Could not parse caff file: {}", savedBaseName);
         } catch (InterruptedException e) {
             log.error("Could process caff file {} on time.", savedBaseName);
-            throw new CaffFileFormatException("Too complex caff file to parse!");
+            throw new CaffFileFormatExpression("Too complex caff file to parse!");
         }
     }
 
@@ -139,8 +144,7 @@ public final class CaffProcessor {
         if (SystemUtils.IS_OS_WINDOWS) {
             parserCommand.add(NATIVE_CAFF_PARSER_PATH_WIN);
         } else {
-            // TODO: Create unix binary and use this here
-//            parserCmd.add(NATIVE_CAFF_PARSER_PATH_UNIX);
+            parserCommand.add(NATIVE_CAFF_PARSER_PATH_UNIX);
         }
         parserCommand
                 .add("-i").add(savedCaffFilePath.toString())
@@ -161,7 +165,16 @@ public final class CaffProcessor {
     }
 
     private void extractMetaData() {
-        // TODO: Implement this
+        try {
+            String json = Files.readString(generatedMetaDataPath);
+            CiffList ciffList = jsonAdapter.fromJson(json);
+            HashSet<String> tags = new HashSet<>();
+            if (ciffList != null) {
+                ciffList.ciffs.forEach(ciff -> tags.addAll(ciff.tags));
+            }
+            metaData = new ArrayList<>(tags);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
-
 }

@@ -1,6 +1,6 @@
 package hu.bme.compsec.sudoku.service;
 
-import hu.bme.compsec.sudoku.common.exception.CaffFileFormatException;
+import hu.bme.compsec.sudoku.common.exception.CaffFileFormatExpression;
 import hu.bme.compsec.sudoku.data.CAFFRepository;
 import hu.bme.compsec.sudoku.data.domain.CAFFFile;
 import hu.bme.compsec.sudoku.service.processor.CaffProcessor;
@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,9 +50,8 @@ public class CAFFService {
             processor.process(uploadedCaffFile, clientFileName);
             //TODO: Load generated preview (jpeg file) and metadata (txt)
             caffFileEntity.setPreview(processor.getPreview());
-            caffFileEntity.setMetaData(null);
-        } catch (CaffFileFormatException e) {
-            log.error("Error while trying to process CAFF file '{}': {}", clientFileName, e.getMessage());
+            caffFileEntity.setMetaData(processor.getMetaData());
+        } catch (CaffFileFormatExpression e) {
             return null;
         }
 
@@ -59,7 +59,6 @@ public class CAFFService {
             caffFileEntity.setRawBytes(uploadedCaffFile.getBytes());
         } catch (IOException e) {
             log.error("Error while getting raw bytes of uploaded CAFF file: {}", e.getMessage());
-            return null;
         }
 
         return caffRepository.save(caffFileEntity);

@@ -28,6 +28,7 @@ import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 @Slf4j
 @RestController
 @AllArgsConstructor
+@CrossOrigin(origins = "https://localhost:8081/", maxAge = 3600)
 @RequestMapping("/caff")
 public class CAFFController {
 
