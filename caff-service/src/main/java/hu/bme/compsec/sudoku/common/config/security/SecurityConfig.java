@@ -1,13 +1,18 @@
 package hu.bme.compsec.sudoku.common.config.security;
 
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,7 +22,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtGra
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
-import java.util.List;
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
@@ -25,16 +30,47 @@ import java.util.List;
 public class SecurityConfig {
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    @Profile("dev")
+    SecurityFilterChain securityFilterChainDev(HttpSecurity http) throws Exception {
+        http
+                .authorizeRequests(authorizeRequests -> authorizeRequests
+                        .mvcMatchers("/swagger-ui/**").hasRole(UserRole.ADMIN.name())
+                        .requestMatchers(PathRequest.toH2Console()).hasRole(UserRole.ADMIN.name())
+                        .anyRequest().authenticated()
+                )
+                .httpBasic(withDefaults())
+                .csrf().ignoringRequestMatchers(PathRequest.toH2Console())
+                .and().headers().frameOptions().sameOrigin(); // For h2 GUI only
+
+        return http.build();
+    }
+
+    @Bean
+    @Profile("dev")
+    UserDetailsService users() {
+        var user = User.builder()
+                .username("admin")
+                .password(passwordEncoder().encode("admin"))
+                .roles(UserRole.USER.name(), UserRole.ADMIN.name())
+                .build();
+
+        return new InMemoryUserDetailsManager(user);
+    }
+
+    @Bean
+    @Profile("prod")
+    SecurityFilterChain securityFilterChainJWT(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .mvcMatchers("/swagger-ui/**").permitAll()
-                .mvcMatchers("/h2-console/**").permitAll()
+                .antMatchers("/swagger-resources/**", "/swagger-ui/**", "/webjars/springfox-swagger-ui/**", "/v2/api-docs**", "/swagger**").permitAll()
+                .anyRequest().authenticated()
+//                .authorizeRequests(authorizeRequests -> authorizeRequests
+//                        .requestMatchers(PathRequest.toH2Console()).hasRole(UserRole.ADMIN.name())
+//                )
                 .and()
-                .httpBasic();
-//                .oauth2ResourceServer()
-//                .jwt()
-//                .jwtAuthenticationConverter(getJwtAuthenticationConverter());
+                .oauth2ResourceServer()
+                .jwt()
+                .jwtAuthenticationConverter(getJwtAuthenticationConverter());
 
         return http.build();
     }
@@ -55,15 +91,5 @@ public class SecurityConfig {
         return jwtAuthenticationConverter;
     }
 
-    @Bean
-    UserDetailsService users() {
-        var user = User.builder()
-                .username("admin")
-                .password(passwordEncoder().encode("admin"))
-                .roles(UserRole.ADMIN.name())
-                .build();
-
-        return new InMemoryUserDetailsManager(user);
-    }
 
 }

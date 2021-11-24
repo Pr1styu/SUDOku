@@ -1,5 +1,6 @@
 package hu.bme.compsec.sudoku.authserver.data;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import hu.bme.compsec.sudoku.authserver.common.UserRole;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -29,6 +30,7 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @JsonIgnore
     @Column(nullable = false)
     private String password;
 

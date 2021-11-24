@@ -1,11 +1,13 @@
 package hu.bme.compsec.sudoku.authserver.config;
 
+import com.fasterxml.jackson.databind.Module;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import hu.bme.compsec.sudoku.authserver.config.jackson.SecurityUserMixin;
 import hu.bme.compsec.sudoku.authserver.config.jose.Jwks;
-import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -21,16 +23,19 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
+import org.springframework.security.oauth2.core.OAuth2TokenType;
 import org.springframework.security.oauth2.core.oidc.OidcScopes;
-import org.springframework.security.oauth2.core.oidc.endpoint.OidcParameterNames;
 import org.springframework.security.oauth2.server.authorization.*;
 import org.springframework.security.oauth2.server.authorization.client.JdbcRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.config.ClientSettings;
 import org.springframework.security.oauth2.server.authorization.config.ProviderSettings;
+import org.springframework.security.oauth2.server.authorization.jackson2.OAuth2AuthorizationServerJackson2Module;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.jackson2.SecurityJackson2Modules;
 
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -51,13 +56,14 @@ public class AuthorizationServerConfig {
 	@Bean
 	OAuth2TokenCustomizer<JwtEncodingContext> jwtCustomizer() {
 		return context -> {
-			if (context.getTokenType().getValue().equals(OidcParameterNames.ID_TOKEN)) {
+			if (context.getTokenType().getValue().equals(OAuth2TokenType.ACCESS_TOKEN.getValue())) {
 				Authentication principal = context.getPrincipal();
 				Set<String> authorities = principal.getAuthorities().stream()
 						.map(GrantedAuthority::getAuthority)
 						.collect(Collectors.toSet());
 
 				context.getClaims().claim(AUTHORITIES_CLAIM, authorities);
+				// TODO: Get proper place for this.
 				var securityUser = (SecurityUser) principal.getPrincipal();
 				context.getClaims().claim(USERID_CLAIM, securityUser.getId());
 			}
@@ -74,6 +80,7 @@ public class AuthorizationServerConfig {
 				.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
 				.authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
 				.redirectUri("http://127.0.0.1:4200/authorized")
+				.redirectUri("http://127.0.0.1:8080/swagger-ui/oauth2-redirect.html")
 				.scope(OidcScopes.OPENID)
 				.scope("read")
 				.scope("write")
@@ -105,7 +112,20 @@ public class AuthorizationServerConfig {
 
 	@Bean
 	public OAuth2AuthorizationService authorizationService(JdbcTemplate jdbcTemplate, RegisteredClientRepository registeredClientRepository) {
-		return new JdbcOAuth2AuthorizationService(jdbcTemplate, registeredClientRepository);
+		JdbcOAuth2AuthorizationService service = new JdbcOAuth2AuthorizationService(jdbcTemplate, registeredClientRepository);
+		JdbcOAuth2AuthorizationService.OAuth2AuthorizationRowMapper rowMapper = new JdbcOAuth2AuthorizationService.OAuth2AuthorizationRowMapper(registeredClientRepository);
+
+		ObjectMapper objectMapper = new ObjectMapper();
+		ClassLoader classLoader = JdbcOAuth2AuthorizationService.class.getClassLoader();
+		List<Module> securityModules = SecurityJackson2Modules.getModules(classLoader);
+		objectMapper.registerModules(securityModules);
+		objectMapper.registerModule(new OAuth2AuthorizationServerJackson2Module());
+
+		objectMapper.addMixIn(SecurityUser.class, SecurityUserMixin.class);
+
+		rowMapper.setObjectMapper(objectMapper);
+		service.setAuthorizationRowMapper(rowMapper);
+		return service;
 	}
 
 	@Bean

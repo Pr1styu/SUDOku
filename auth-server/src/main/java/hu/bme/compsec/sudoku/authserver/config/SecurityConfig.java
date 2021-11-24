@@ -1,6 +1,7 @@
 package hu.bme.compsec.sudoku.authserver.config;
 
 import hu.bme.compsec.sudoku.authserver.common.UserRole;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -17,17 +18,14 @@ public class SecurityConfig {
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http
-				.headers().frameOptions().sameOrigin() // For h2 GUI only - should remove this in PROD
-				.and()
-				.csrf().disable()
-				.authorizeRequests()
-					.mvcMatchers("/h2-console/**").hasAuthority(UserRole.ADMIN.name())
-					.mvcMatchers("/register").permitAll()
-				.and()
-				.authorizeRequests(authorizeRequests ->
-						authorizeRequests.anyRequest().authenticated()
+				.authorizeRequests(authorizeRequests -> authorizeRequests
+						.requestMatchers(PathRequest.toH2Console()).hasRole(UserRole.ADMIN.name())
+						.mvcMatchers("/register").permitAll()
+						.anyRequest().authenticated()
 				)
-				.formLogin(withDefaults());
+				.formLogin(withDefaults())
+				.csrf().ignoringRequestMatchers(PathRequest.toH2Console())
+				.and().headers().frameOptions().sameOrigin(); // For h2 GUI only
 
 		return http.build();
 	}
