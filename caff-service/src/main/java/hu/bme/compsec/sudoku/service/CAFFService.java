@@ -36,7 +36,7 @@ public class CAFFService {
         return caffRepository.findById(id);
     }
 
-//    @PreAuthorize("hasAuthority('caff:write')")
+    @PreAuthorize("hasAuthority('caff:write')")
     public CAFFFile saveCaffFile(MultipartFile uploadedCaffFile, String clientFileName) {
 
         // TODO: Process raw CAFF file with native component
@@ -51,6 +51,7 @@ public class CAFFService {
             caffFileEntity.setPreview(processor.getPreview());
             caffFileEntity.setMetaData(null);
         } catch (CaffFileFormatException e) {
+            log.error("Error while trying to process CAFF file '{}': {}", clientFileName, e.getMessage());
             return null;
         }
 
@@ -58,6 +59,7 @@ public class CAFFService {
             caffFileEntity.setRawBytes(uploadedCaffFile.getBytes());
         } catch (IOException e) {
             log.error("Error while getting raw bytes of uploaded CAFF file: {}", e.getMessage());
+            return null;
         }
 
         return caffRepository.save(caffFileEntity);

@@ -46,39 +46,20 @@ public class CAFFFile {
     @OneToMany(mappedBy = "caffFile", cascade = CascadeType.ALL)
     private final List<Comment> comments = new ArrayList<>();
 
-    public Comment addComment(String commentText) {
-        var comment = new Comment();
+    public void addComment(Comment comment) {
         comment.setCaffFile(this);
-        comment.setText(commentText);
-
-        var auth = SecurityContextHolder.getContext().getAuthentication();
-        // TODO: Fetch userid with actual username
-        log.info(auth.getName());
-        comment.setUserId(1l);
-
         this.comments.add(comment);
-
-        return comment;
     }
 
     @PrePersist
     public void onCreate() {
         this.creationTime = this.modificationTime = new Timestamp(Instant.now().toEpochMilli());
-
-        // TODO: REMOVE THESE
-        {
-            this.metaData = List.of("test", "hodl", "kaposzta", "hello", "hohoho", "hullaho");
-            addComment("test comment, this is awesome!");
-        }
-
         log.info("Saving CAFF file: {}", this);
     }
 
     @PreUpdate
     public void onModify() {
         this.modificationTime = new Timestamp(Instant.now().toEpochMilli());
-        // TODO: How to make sure the preview generation was successful?
-
         log.info("Updating CAFF file: {}", this);
     }
 

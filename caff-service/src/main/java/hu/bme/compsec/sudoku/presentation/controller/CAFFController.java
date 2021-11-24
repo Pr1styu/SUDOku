@@ -58,12 +58,13 @@ public class CAFFController {
     public ResponseEntity<CAFFFileDetailDTO> uploadCaffFile(@RequestPart ("caffFile") MultipartFile uploadedCaffFile,
                                                             @RequestPart ("fileName") String clientFileName,
                                                             UriComponentsBuilder b) {
-
-        // TODO: Should we check the file format/integrity before persisting?
         var createdCaffFileEntity = caffService.saveCaffFile(uploadedCaffFile, FilenameUtils.getBaseName(StringUtils.cleanPath(clientFileName)));
-
-        UriComponents uriComponents = b.path("/{id}").buildAndExpand(createdCaffFileEntity.getId());
-        return ResponseEntity.created(uriComponents.toUri()).body(caffMapper.toDetailDTO(createdCaffFileEntity));
+        if (createdCaffFileEntity != null) {
+            UriComponents uriComponents = b.path("/{id}").buildAndExpand(createdCaffFileEntity.getId());
+            return ResponseEntity.created(uriComponents.toUri()).body(caffMapper.toDetailDTO(createdCaffFileEntity));
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @GetMapping("/download/{id}")
@@ -119,7 +120,7 @@ public class CAFFController {
     @PostMapping("/{id}/comment")
     public ResponseEntity addCommentForCaffFile(@PathVariable Long id, @RequestBody CommentDTO commentDTO) {
 
-        log.info("Adding comment {} for caff file with id {}.", commentDTO.getText(), id);
+        log.info("Adding comment '{}' for caff file with id {}.", commentDTO.getText(), id);
 
         var commentAdded = commentService.addCommentToCaffFile(id, commentDTO);
         if (commentAdded) {

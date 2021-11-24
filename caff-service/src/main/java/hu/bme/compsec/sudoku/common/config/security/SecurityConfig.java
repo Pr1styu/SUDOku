@@ -61,13 +61,12 @@ public class SecurityConfig {
     @Profile("prod")
     SecurityFilterChain securityFilterChainJWT(HttpSecurity http) throws Exception {
         http
-                .authorizeRequests()
-                .antMatchers("/swagger-resources/**", "/swagger-ui/**", "/webjars/springfox-swagger-ui/**", "/v2/api-docs**", "/swagger**").permitAll()
-                .anyRequest().authenticated()
-//                .authorizeRequests(authorizeRequests -> authorizeRequests
-//                        .requestMatchers(PathRequest.toH2Console()).hasRole(UserRole.ADMIN.name())
-//                )
-                .and()
+                .authorizeRequests(authorizeRequests -> authorizeRequests
+                        .requestMatchers(PathRequest.toH2Console()).permitAll() // TODO: Turn this off once the db model finalized
+                        .mvcMatchers("/swagger-resources/**", "/swagger-ui/**", "/webjars/springfox-swagger-ui/**", "/v2/api-docs**", "/swagger**")
+                        .permitAll()
+                        .anyRequest().authenticated()
+                )
                 .oauth2ResourceServer()
                 .jwt()
                 .jwtAuthenticationConverter(getJwtAuthenticationConverter());

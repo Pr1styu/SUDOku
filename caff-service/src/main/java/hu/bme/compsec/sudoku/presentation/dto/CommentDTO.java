@@ -7,6 +7,6 @@ public class CommentDTO {
 
     private String text;
 
-    private String fullName;
+    private String username;
 
 }
