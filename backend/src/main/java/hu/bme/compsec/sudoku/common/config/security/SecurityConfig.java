@@ -24,6 +24,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 //.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).and()
                 .csrf().disable()
+                .cors()
+                .and()
                 .authorizeRequests()
                 .mvcMatchers("/swagger-ui/").hasRole(UserRole.ADMIN.name())
                 .mvcMatchers("/h2-console/**").hasRole(UserRole.ADMIN.name())
