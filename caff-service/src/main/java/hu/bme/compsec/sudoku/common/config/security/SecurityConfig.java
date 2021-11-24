@@ -5,14 +5,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.convert.converter.Converter;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,6 +30,7 @@ public class SecurityConfig {
     @Profile("dev")
     SecurityFilterChain securityFilterChainDev(HttpSecurity http) throws Exception {
         http
+                .cors(withDefaults())
                 .authorizeRequests(authorizeRequests -> authorizeRequests
                         .mvcMatchers("/swagger-ui/**").hasRole(UserRole.ADMIN.name())
                         .requestMatchers(PathRequest.toH2Console()).hasRole(UserRole.ADMIN.name())
