@@ -2,7 +2,7 @@ package hu.bme.compsec.sudoku.service.processor;
 
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
-import hu.bme.compsec.sudoku.common.exception.CaffFileFormatExpression;
+import hu.bme.compsec.sudoku.common.exception.CaffFileFormatException;
 import hu.bme.compsec.sudoku.data.helper.CiffList;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -46,7 +46,7 @@ public final class CaffProcessor {
     @Getter
     private List<String> metaData;
 
-    public void process(MultipartFile uploadedCaffFile, String clientFileName) throws CaffFileFormatExpression {
+    public void process(MultipartFile uploadedCaffFile, String clientFileName) throws CaffFileFormatException {
         /*
          * DONE 1. Save uploaded caff file (uploadedCaffFile) to the filesystem.
          * DONE 2. Call the native component with proper params
@@ -113,7 +113,7 @@ public final class CaffProcessor {
      * CAFFParser -i <caff fájl helye> <-of> <jpeg kimeneti helye és neve> <-ot> <metaadatoknak a kimeneti helye és neve>
      * CAFFParser -of "hello.jpeg" -i "C:\Users\ABC\CLionProjects\SUDOku\NativeComponent\CAFFTest\3.caff" -ot "txtout.txt"
      * */
-    private void parseCaffFile() throws CaffFileFormatExpression {
+    private void parseCaffFile() throws CaffFileFormatException {
         String parserCommand = createParserCommand();
         ProcessBuilder processBuilder = new ProcessBuilder(parserCommand.split(" "));
         File parseLogFile = workDir.resolve(savedBaseName + PARSER_LOG_EXTENSION).toFile(); // TODO: Move logs another place
@@ -128,14 +128,14 @@ public final class CaffProcessor {
                 log.info("Caff file {} parsed successfully.", savedBaseName);
             } else {
                 log.error("Caff parser finished with error code: {}", parseResultCode);
-                throw new CaffFileFormatExpression("Could not parse caff file: {}, code: ", savedBaseName, parseResultCode);
+                throw new CaffFileFormatException("Could not parse caff file: {}, code: ", savedBaseName, parseResultCode);
             }
         } catch (IOException e) {
             log.error("Could not call native parser for caff file {} due to {}.", savedBaseName, e.getMessage());
-            throw new CaffFileFormatExpression("Could not parse caff file: {}", savedBaseName);
+            throw new CaffFileFormatException("Could not parse caff file: {}", savedBaseName);
         } catch (InterruptedException e) {
             log.error("Could process caff file {} on time.", savedBaseName);
-            throw new CaffFileFormatExpression("Too complex caff file to parse!");
+            throw new CaffFileFormatException("Too complex caff file to parse!");
         }
     }
 
@@ -174,7 +174,7 @@ public final class CaffProcessor {
             }
             metaData = new ArrayList<>(tags);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Cannot extract meta data caff file {} due to: {}", savedBaseName, e.getMessage());
         }
     }
 }
