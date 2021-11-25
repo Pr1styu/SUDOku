@@ -2,10 +2,11 @@
 const BACKEND_PROTOCOL = 'http';
 const BACKEND_HOST = 'localhost';
 const BACKEND_PORT = '8080';
-const BACKEND_BASE_PATH = 'caff/';
-const BACKEND_BASE_URL =
-  BACKEND_PROTOCOL + '://' + BACKEND_HOST + ':' + BACKEND_PORT + '/' + BACKEND_BASE_PATH;
-
+const BACKEND_BASE_PATH = 'caff';
+const USE_PROXY = true;
+const BACKEND_BASE_URL = USE_PROXY
+  ? BACKEND_BASE_PATH
+  : BACKEND_PROTOCOL + '://' + BACKEND_HOST + ':' + BACKEND_PORT + '/' + BACKEND_BASE_PATH;
 // Backend service URLs
 
 // Authentication
@@ -18,7 +19,7 @@ const UPDATE_USER_DATA = BACKEND_BASE_URL + 'updateUserdata';
 
 // Caff files
 const GET_ALL_CAFF_FILES = BACKEND_BASE_URL;
-const DOWNLOAD_CAFF_FILE = BACKEND_BASE_URL + 'download/';
+const DOWNLOAD_CAFF_FILE = BACKEND_BASE_URL + '/download/';
 
 const config = {
   defaults: {
