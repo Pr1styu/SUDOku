@@ -4,6 +4,7 @@ import { Dispatch } from 'redux';
 import AuthService from '../../services/AuthService';
 import CaffService from '../../services/CaffService';
 import ICaff from '../../interfaces/caff';
+import IComment from '../../interfaces/comment';
 import IEditUserData from '../../interfaces/userDataEdit';
 import UserService from '../../services/UserService';
 
@@ -217,6 +218,19 @@ export const downloadCaffFile = (id: number) => {
       dispatch({
         type: ActionType.DOWNLOAD_CAFF_FILE,
         payload: response.data,
+      });
+
+      return Promise.resolve();
+    });
+  };
+};
+
+export const addComment = (comment: IComment, id: number) => {
+  return (dispatch: Dispatch<CaffAction>): Promise<void> => {
+    return CaffService.addComment('BASIC', comment, id).then(() => {
+      dispatch({
+        type: ActionType.ADD_COMMENT,
+        payload: { comment, id },
       });
 
       return Promise.resolve();

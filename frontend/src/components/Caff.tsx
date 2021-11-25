@@ -1,6 +1,7 @@
 import { Box, Button, Grid, Typography } from '@mui/material';
 import { State } from '../state';
 import { useSelector } from 'react-redux';
+import AddComment from './AddComment';
 import Comment from './Comment';
 import ICaff from '../interfaces/caff';
 import IComponent from '../interfaces/component';
@@ -10,6 +11,7 @@ const Caff: React.FC<IComponent & ICaff> = (caff: ICaff) => {
   const [objectUrl, setObjectUrl] = useState('#');
 
   const caffStore = useSelector((state: State) => state.CAFF);
+  const user = useSelector((state: State) => state.AUTH.user);
 
   const download = (fileUrl: string, fileName: string) => {
     const a = document.createElement('a');
@@ -55,6 +57,9 @@ const Caff: React.FC<IComponent & ICaff> = (caff: ICaff) => {
                 mb: 2,
               }}
             />
+          </Grid>
+          <Grid item xs={12} sx={{ textAlign: 'center' }}>
+            <AddComment name="Add comment" id={caff.id} userName={user?.username ?? 'Anonymous'} />
           </Grid>
           <Grid item xs={12} sx={{ textAlign: 'center' }}>
             {caff.comments?.map((comment, index) => (

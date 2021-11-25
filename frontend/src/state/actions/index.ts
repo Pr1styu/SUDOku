@@ -1,5 +1,6 @@
 import { ActionType } from '../action-types';
 import ICaff from '../../interfaces/caff';
+import IComment from '../../interfaces/comment';
 import IEditUserData from '../../interfaces/userDataEdit';
 import IUserData from '../../interfaces/userData';
 
@@ -96,4 +97,13 @@ interface IDownloadCaffFileAction {
   payload: any;
 }
 
-export type CaffAction = IGetAllCaffFilesAction | IGetCaffFileAction | IDownloadCaffFileAction;
+interface IAddCommentAction {
+  type: ActionType.ADD_COMMENT;
+  payload: { id: number; comment: IComment };
+}
+
+export type CaffAction =
+  | IGetAllCaffFilesAction
+  | IGetCaffFileAction
+  | IDownloadCaffFileAction
+  | IAddCommentAction;

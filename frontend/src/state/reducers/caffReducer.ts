@@ -34,6 +34,15 @@ const reducer = (state: caffState = initialState, action: CaffAction): caffState
         downloadFile: new Blob([action.payload.file]),
         downloadDone: [...state.downloadDone, action.payload.id],
       };
+    case ActionType.ADD_COMMENT:
+      return {
+        ...state,
+        caff_files: state.caff_files.map((caff) =>
+          caff.id === action.payload.id
+            ? { ...caff, comments: [...caff.comments, action.payload.comment] }
+            : caff
+        ),
+      };
     default:
       return state;
   }

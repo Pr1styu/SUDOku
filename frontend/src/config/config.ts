@@ -20,6 +20,7 @@ const UPDATE_USER_DATA = BACKEND_BASE_URL + 'updateUserdata';
 // Caff files
 const GET_ALL_CAFF_FILES = BACKEND_BASE_URL;
 const DOWNLOAD_CAFF_FILE = BACKEND_BASE_URL + '/download/';
+const UPLOAD_CAFF_FILE = BACKEND_BASE_URL + '/upload';
 
 const config = {
   defaults: {
@@ -37,6 +38,7 @@ const config = {
     caff: {
       getAllCaffFiles: GET_ALL_CAFF_FILES,
       downloadCaffFile: DOWNLOAD_CAFF_FILE,
+      uploadCaffFile: UPLOAD_CAFF_FILE,
     },
   },
 };
