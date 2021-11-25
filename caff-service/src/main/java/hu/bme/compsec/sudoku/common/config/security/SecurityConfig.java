@@ -49,7 +49,7 @@ public class SecurityConfig {
         var user = User.builder()
                 .username("admin")
                 .password(passwordEncoder().encode("admin"))
-                .roles(UserRole.USER.name(), UserRole.ADMIN.name())
+                .authorities(UserRole.ADMIN.getGrantedAuthorities())
                 .build();
 
         return new InMemoryUserDetailsManager(user);
