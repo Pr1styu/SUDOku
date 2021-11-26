@@ -46,6 +46,9 @@ const Profile: React.FC<IComponent & RouteComponentProps<any>> = () => {
     setLastLoginDate(newValue);
   };
 
+  const basicAuthUserStr = localStorage.getItem('user');
+  const basicAuthUserName = basicAuthUserStr ? JSON.parse(basicAuthUserStr).username : 'Unknown';
+
   return (
     <LocalizationProvider dateAdapter={DateAdapter}>
       <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
@@ -64,7 +67,7 @@ const Profile: React.FC<IComponent & RouteComponentProps<any>> = () => {
                 <Grid item xs={6}>
                   <FormControl fullWidth disabled>
                     <TextField
-                      value={user.username}
+                      value={user.username ?? basicAuthUserName}
                       variant="standard"
                       disabled={!editing}
                       onChange={(e) => {

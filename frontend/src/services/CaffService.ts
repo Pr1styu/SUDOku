@@ -2,85 +2,44 @@
 import { AuthType } from './AuthType';
 import IComment from '../interfaces/comment';
 import axios, { AxiosResponse } from 'axios';
+import basicAuthHeader from './BasicAuthHeader';
 import config from '../config/config';
 
 //const urlConfig = { headers: { 'Content-Type': 'application/json', ...authHeader() } };
 
 const getAllCaffFiles = (authType: AuthType): Promise<AxiosResponse<any>> => {
   if (authType === 'BASIC') {
-    const userString = localStorage.getItem('user');
-    const user = userString ? JSON.parse(userString) : null;
-
-    const auth = {
-      username: user.username,
-      password: user.password,
-    };
-
-    return axios.get(config.urls.caff.getAllCaffFiles, { auth });
+    return axios.get(config.urls.caff.getAllCaffFiles, { auth: basicAuthHeader() });
 
     //TODO: JWT AUTH
   } else {
-    const userString = localStorage.getItem('user');
-    const user = userString ? JSON.parse(userString) : null;
-
-    const auth = {
-      username: user.username,
-      password: user.password,
-    };
-
-    return axios.get(config.urls.caff.getAllCaffFiles, { auth });
+    return axios.get(config.urls.caff.getAllCaffFiles, { auth: basicAuthHeader() });
   }
 };
 
 const getCaffFile = (authType: AuthType, id: number): Promise<AxiosResponse<any>> => {
   if (authType === 'BASIC') {
-    const userString = localStorage.getItem('user');
-    const user = userString ? JSON.parse(userString) : null;
-
-    const auth = {
-      username: user.username,
-      password: user.password,
-    };
-
-    return axios.get(config.urls.caff.getAllCaffFiles + '/' + id, { auth });
+    return axios.get(config.urls.caff.getAllCaffFiles + '/' + id, { auth: basicAuthHeader() });
 
     //TODO: JWT AUTH
   } else {
-    const userString = localStorage.getItem('user');
-    const user = userString ? JSON.parse(userString) : null;
-
-    const auth = {
-      username: user.username,
-      password: user.password,
-    };
-
-    return axios.get(config.urls.caff.getAllCaffFiles + '/' + id, { auth });
+    return axios.get(config.urls.caff.getAllCaffFiles + '/' + id, { auth: basicAuthHeader() });
   }
 };
 
 const downloadCaffFile = (authType: AuthType, id: number): Promise<AxiosResponse<any>> => {
   if (authType === 'BASIC') {
-    const userString = localStorage.getItem('user');
-    const user = userString ? JSON.parse(userString) : null;
-
-    const auth = {
-      username: user.username,
-      password: user.password,
-    };
-
-    return axios.get(config.urls.caff.downloadCaffFile + id, { auth, responseType: 'blob' });
+    return axios.get(config.urls.caff.downloadCaffFile + id, {
+      auth: basicAuthHeader(),
+      responseType: 'blob',
+    });
 
     //TODO: JWT AUTH
   } else {
-    const userString = localStorage.getItem('user');
-    const user = userString ? JSON.parse(userString) : null;
-
-    const auth = {
-      username: user.username,
-      password: user.password,
-    };
-
-    return axios.get(config.urls.caff.downloadCaffFile + id, { auth, responseType: 'blob' });
+    return axios.get(config.urls.caff.downloadCaffFile + id, {
+      auth: basicAuthHeader(),
+      responseType: 'blob',
+    });
   }
 };
 
@@ -90,37 +49,21 @@ const addComment = (
   id: number
 ): Promise<AxiosResponse<any>> => {
   if (authType === 'BASIC') {
-    const userString = localStorage.getItem('user');
-    const user = userString ? JSON.parse(userString) : null;
-
-    const auth = {
-      username: user.username,
-      password: user.password,
-    };
-
     return axios.post(
       config.urls.caff.getAllCaffFiles + '/' + id + '/comment',
       { text: comment.text, username: comment.userName },
       {
-        auth,
+        auth: basicAuthHeader(),
       }
     );
 
     //TODO: JWT AUTH
   } else {
-    const userString = localStorage.getItem('user');
-    const user = userString ? JSON.parse(userString) : null;
-
-    const auth = {
-      username: user.username,
-      password: user.password,
-    };
-
     return axios.post(
       config.urls.caff.getAllCaffFiles + '/' + id + '/comment',
       { text: comment.text, username: comment.userName },
       {
-        auth,
+        auth: basicAuthHeader(),
       }
     );
   }
@@ -132,68 +75,36 @@ const uploadCaffFile = (
   file: File
 ): Promise<AxiosResponse<any>> => {
   if (authType === 'BASIC') {
-    const userString = localStorage.getItem('user');
-    const user = userString ? JSON.parse(userString) : null;
-
-    const auth = {
-      username: user.username,
-      password: user.password,
-    };
-
     const formData = new FormData();
     formData.append('fileName', fileName);
     formData.append('caffFile', file);
 
     return axios.post(config.urls.caff.uploadCaffFile, formData, {
-      auth,
+      auth: basicAuthHeader(),
     });
 
     //TODO: JWT AUTH
   } else {
-    const userString = localStorage.getItem('user');
-    const user = userString ? JSON.parse(userString) : null;
-
-    const auth = {
-      username: user.username,
-      password: user.password,
-    };
-
     const formData = new FormData();
     formData.append('fileName', fileName);
     formData.append('caffFile', file);
 
     return axios.post(config.urls.caff.uploadCaffFile, formData, {
-      auth,
+      auth: basicAuthHeader(),
     });
   }
 };
 
 const deleteCaffFile = (authType: AuthType, id: number): Promise<AxiosResponse<any>> => {
   if (authType === 'BASIC') {
-    const userString = localStorage.getItem('user');
-    const user = userString ? JSON.parse(userString) : null;
-
-    const auth = {
-      username: user.username,
-      password: user.password,
-    };
-
     return axios.delete(config.urls.caff.getAllCaffFiles + '/' + id, {
-      auth,
+      auth: basicAuthHeader(),
     });
 
     //TODO: JWT AUTH
   } else {
-    const userString = localStorage.getItem('user');
-    const user = userString ? JSON.parse(userString) : null;
-
-    const auth = {
-      username: user.username,
-      password: user.password,
-    };
-
     return axios.delete(config.urls.caff.getAllCaffFiles + '/' + id, {
-      auth,
+      auth: basicAuthHeader(),
     });
   }
 };
