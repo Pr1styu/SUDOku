@@ -1,6 +1,7 @@
 import { Box, Button, Grid, Typography } from '@mui/material';
-import { State } from '../state';
-import { useSelector } from 'react-redux';
+import { State, actionCreators } from '../state';
+import { bindActionCreators } from 'redux';
+import { useDispatch, useSelector } from 'react-redux';
 import AddComment from './AddComment';
 import Comment from './Comment';
 import ICaff from '../interfaces/caff';
@@ -12,6 +13,9 @@ const Caff: React.FC<IComponent & ICaff> = (caff: ICaff) => {
 
   const caffStore = useSelector((state: State) => state.CAFF);
   const user = useSelector((state: State) => state.AUTH.user);
+
+  const dispatch = useDispatch();
+  const { deleteCaffFile } = bindActionCreators(actionCreators, dispatch);
 
   const download = (fileUrl: string, fileName: string) => {
     const a = document.createElement('a');
@@ -73,7 +77,14 @@ const Caff: React.FC<IComponent & ICaff> = (caff: ICaff) => {
           </Grid>
         </Grid>
         <Grid item xs={12} sx={{ mt: 3, textAlign: 'right' }}>
-          <Button variant="contained" sx={{ mr: '1em' }} color="error">
+          <Button
+            variant="contained"
+            sx={{ mr: '1em' }}
+            color="error"
+            onClick={() => {
+              deleteCaffFile(caff.id);
+            }}
+          >
             Delete CAFF
           </Button>
           <Button

@@ -102,8 +102,25 @@ interface IAddCommentAction {
   payload: { id: number; comment: IComment };
 }
 
+interface IUploadCaffFile {
+  type: ActionType.UPLOAD_CAFF_FILE;
+  payload: ICaff;
+}
+
+interface IDeleteCaffFile {
+  type: ActionType.DELETE_CAFF_FILE;
+  payload: number;
+}
+
+interface IResetUploadDone {
+  type: ActionType.RESET_UPLOAD_DONE;
+}
+
 export type CaffAction =
   | IGetAllCaffFilesAction
   | IGetCaffFileAction
   | IDownloadCaffFileAction
-  | IAddCommentAction;
+  | IAddCommentAction
+  | IUploadCaffFile
+  | IDeleteCaffFile
+  | IResetUploadDone;

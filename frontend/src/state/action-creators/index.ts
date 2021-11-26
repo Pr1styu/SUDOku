@@ -237,3 +237,39 @@ export const addComment = (comment: IComment, id: number) => {
     });
   };
 };
+
+export const uploadCaffFile = (fileName: string, file: File) => {
+  return (dispatch: Dispatch<CaffAction>): Promise<void> => {
+    return CaffService.uploadCaffFile('BASIC', fileName, file).then((response) => {
+      dispatch({
+        type: ActionType.UPLOAD_CAFF_FILE,
+        payload: response.data,
+      });
+
+      return Promise.resolve();
+    });
+  };
+};
+
+export const deleteCaffFile = (id: number) => {
+  return (dispatch: Dispatch<CaffAction>): Promise<void> => {
+    return CaffService.deleteCaffFile('BASIC', id).then(() => {
+      dispatch({
+        type: ActionType.DELETE_CAFF_FILE,
+        payload: id,
+      });
+
+      return Promise.resolve();
+    });
+  };
+};
+
+export const resetUploadDone = () => {
+  return (dispatch: Dispatch<CaffAction>): Promise<void> => {
+    dispatch({
+      type: ActionType.RESET_UPLOAD_DONE,
+    });
+
+    return Promise.resolve();
+  };
+};

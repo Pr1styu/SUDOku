@@ -1,3 +1,4 @@
+import AddCaff from '../pages/AddCaff';
 import AdminBoard from '../pages/test/AdminBoard';
 import BrowseCaff from '../pages/BrowseCaff';
 import HomePage from '../pages/Home';
@@ -76,6 +77,12 @@ const routes: IRoute[] = [
     path: '/caff',
     name: 'BrowseCaffPage',
     component: BrowseCaff,
+    exact: true,
+  },
+  {
+    path: '/addcaff',
+    name: 'AddCaffPage',
+    component: AddCaff,
     exact: true,
   },
   {

@@ -126,9 +126,83 @@ const addComment = (
   }
 };
 
+const uploadCaffFile = (
+  authType: AuthType,
+  fileName: string,
+  file: File
+): Promise<AxiosResponse<any>> => {
+  if (authType === 'BASIC') {
+    const userString = localStorage.getItem('user');
+    const user = userString ? JSON.parse(userString) : null;
+
+    const auth = {
+      username: user.username,
+      password: user.password,
+    };
+
+    const formData = new FormData();
+    formData.append('fileName', fileName);
+    formData.append('caffFile', file);
+
+    return axios.post(config.urls.caff.uploadCaffFile, formData, {
+      auth,
+    });
+
+    //TODO: JWT AUTH
+  } else {
+    const userString = localStorage.getItem('user');
+    const user = userString ? JSON.parse(userString) : null;
+
+    const auth = {
+      username: user.username,
+      password: user.password,
+    };
+
+    const formData = new FormData();
+    formData.append('fileName', fileName);
+    formData.append('caffFile', file);
+
+    return axios.post(config.urls.caff.uploadCaffFile, formData, {
+      auth,
+    });
+  }
+};
+
+const deleteCaffFile = (authType: AuthType, id: number): Promise<AxiosResponse<any>> => {
+  if (authType === 'BASIC') {
+    const userString = localStorage.getItem('user');
+    const user = userString ? JSON.parse(userString) : null;
+
+    const auth = {
+      username: user.username,
+      password: user.password,
+    };
+
+    return axios.delete(config.urls.caff.getAllCaffFiles + '/' + id, {
+      auth,
+    });
+
+    //TODO: JWT AUTH
+  } else {
+    const userString = localStorage.getItem('user');
+    const user = userString ? JSON.parse(userString) : null;
+
+    const auth = {
+      username: user.username,
+      password: user.password,
+    };
+
+    return axios.delete(config.urls.caff.getAllCaffFiles + '/' + id, {
+      auth,
+    });
+  }
+};
+
 export default {
   getAllCaffFiles,
   getCaffFile,
   downloadCaffFile,
   addComment,
+  uploadCaffFile,
+  deleteCaffFile,
 };

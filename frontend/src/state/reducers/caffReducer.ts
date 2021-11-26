@@ -5,6 +5,7 @@ import ICaff from '../../interfaces/caff';
 const initialState = {
   preloadDone: false,
   downloadDone: [],
+  uploadDone: false,
   caff_files: [],
   downloadFile: null,
 };
@@ -12,6 +13,7 @@ const initialState = {
 type caffState = {
   preloadDone: boolean;
   downloadDone: number[];
+  uploadDone: boolean;
   caff_files: ICaff[];
   downloadFile: Blob | null;
 };
@@ -42,6 +44,24 @@ const reducer = (state: caffState = initialState, action: CaffAction): caffState
             ? { ...caff, comments: [...caff.comments, action.payload.comment] }
             : caff
         ),
+      };
+    case ActionType.UPLOAD_CAFF_FILE:
+      return {
+        ...state,
+        uploadDone: true,
+        caff_files: [...state.caff_files, action.payload],
+      };
+    case ActionType.DELETE_CAFF_FILE:
+      return {
+        ...state,
+        caff_files: state.caff_files.filter((caff) => {
+          return caff.id !== action.payload;
+        }),
+      };
+    case ActionType.RESET_UPLOAD_DONE:
+      return {
+        ...state,
+        uploadDone: false,
       };
     default:
       return state;
