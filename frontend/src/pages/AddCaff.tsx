@@ -93,6 +93,9 @@ const AddCaff: React.FC<IComponent & RouteComponentProps<any>> = () => {
                           const percent = Math.round((e.loaded / e.total) * 100);
                           setProgress(percent);
                         };
+                        reader.onloadend = () => {
+                          setProgress(100);
+                        };
                       }}
                     />
                   </Button>
