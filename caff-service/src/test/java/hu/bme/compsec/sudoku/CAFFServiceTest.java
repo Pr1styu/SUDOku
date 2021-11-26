@@ -11,9 +11,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.test.context.annotation.SecurityTestExecutionListeners;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
@@ -36,14 +34,6 @@ public class CAFFServiceTest {
 
     @MockBean
     public CAFFRepository caffRepository;
-
-    @TestConfiguration
-    class CAFFServiceTestConfiguration {
-        @Bean
-        public CAFFService caffService() {
-            return new CAFFService(caffRepository);
-        }
-    }
 
     @Before
     public void setup() {
