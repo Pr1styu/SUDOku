@@ -38,6 +38,7 @@ public class CAFFServiceTest {
     @Before
     public void setup() {
         caffRepository = Mockito.mock(CAFFRepository.class);
+        caffService = new CAFFService(caffRepository);
 
         CaffFileHelper helper = new CaffFileHelper();
         String[] fileNames = new String[] {"1.caff", "2.caff"};
@@ -70,8 +71,6 @@ public class CAFFServiceTest {
 
     @Test
     public void testFindAll() {
-        caffService = new CAFFService(caffRepository);
-
         List<CAFFFile> caffFiles = caffService.getAllCaffFile();
 
         assertThat(caffFiles.size()).isEqualTo(2);
@@ -79,8 +78,6 @@ public class CAFFServiceTest {
 
     @Test
     public void testFindById() {
-        caffService = new CAFFService(caffRepository);
-
         Optional<CAFFFile> caff = caffService.getCaffFileById(1L);
         assertThat(caff.isPresent()).isTrue();
         assertThat(caff.get().getFileName()).isEqualTo("1.caff");
@@ -88,8 +85,6 @@ public class CAFFServiceTest {
 
     @Test
     public void testMetaData() {
-        caffService = new CAFFService(caffRepository);
-
         Optional<CAFFFile> caff = caffService.getCaffFileById(1L);
         assertThat(caff.isPresent()).isTrue();
 
