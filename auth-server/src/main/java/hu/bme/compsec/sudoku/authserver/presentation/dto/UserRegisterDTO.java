@@ -7,8 +7,8 @@ import lombok.ToString;
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class UserDTO extends UserProfileDTO {
+public class UserRegisterDTO extends UserDTO {
 
-    private String password;
+//    private UserType userType;
 
 }
