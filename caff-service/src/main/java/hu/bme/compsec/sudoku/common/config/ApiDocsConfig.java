@@ -28,7 +28,6 @@ public class ApiDocsConfig {
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
-                .host("127.0.0.1:8080")
 //                .securitySchemes(Collections.singletonList(securityScheme()))
 //                .securityContexts(Collections.singletonList(securityContext()))
                 .select()
