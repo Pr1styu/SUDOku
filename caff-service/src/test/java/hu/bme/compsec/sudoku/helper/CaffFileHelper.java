@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CaffFileHelper {
     public CAFFFile loadCaffFile(String fileName) throws IOException, CaffFileFormatException {
@@ -31,5 +33,13 @@ public class CaffFileHelper {
         String contentType = "application/octet-stream";
         byte[] content = Files.readAllBytes(path);
         return new MockMultipartFile(fileName, fileName, contentType, content);
+    }
+
+    public List<CAFFFile> loadAllCaffFiles(String[] fileNames) throws CaffFileFormatException, IOException {
+        ArrayList<CAFFFile> result = new ArrayList<>();
+        for (String fileName : fileNames) {
+            result.add(loadCaffFile(fileName));
+        }
+        return result;
     }
 }
