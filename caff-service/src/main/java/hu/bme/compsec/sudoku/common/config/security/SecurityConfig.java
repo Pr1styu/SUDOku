@@ -37,8 +37,8 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .httpBasic(withDefaults())
-                .csrf().ignoringRequestMatchers(PathRequest.toH2Console())
-                .and().headers().frameOptions().sameOrigin(); // For h2 GUI only
+                .csrf().disable()
+                .headers().frameOptions().sameOrigin(); // For h2 GUI only
 
         return http.build();
     }

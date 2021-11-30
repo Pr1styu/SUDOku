@@ -8,7 +8,10 @@ import hu.bme.compsec.sudoku.service.CAFFService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -16,6 +19,7 @@ import org.springframework.security.test.context.annotation.SecurityTestExecutio
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.*;
@@ -36,7 +40,7 @@ public class CAFFServiceTest {
     public CAFFRepository caffRepository;
 
     @Before
-    public void setup() {
+    public void setup() throws CaffFileFormatException, IOException {
         caffRepository = Mockito.mock(CAFFRepository.class);
         caffService = new CAFFService(caffRepository);
 
@@ -45,7 +49,6 @@ public class CAFFServiceTest {
 
         Arrays.asList(fileNames).forEach(file -> {
             int id = Integer.parseInt(Character.toString(file.charAt(0)));
-
             try {
                 Mockito.when(caffRepository.findById((long) id)).thenReturn(Optional.ofNullable(helper.loadCaffFile(fileNames[id - 1])));
             } catch (IOException e) {
@@ -67,12 +70,17 @@ public class CAFFServiceTest {
         });
 
         Mockito.when(caffRepository.findAll()).thenReturn(caffFiles);
+
+        CAFFFile newFile = helper.loadCaffFile("3.caff");
+        ArrayList<CAFFFile> biggerList = new ArrayList<>(caffFiles);
+        biggerList.add(newFile);
+
+        //Mockito.when(caffRepository.save(newFile)).then(invocation -> Mockito.when(caffRepository.findAll()).thenReturn(biggerList));
     }
 
     @Test
     public void testFindAll() {
         List<CAFFFile> caffFiles = caffService.getAllCaffFile();
-
         assertThat(caffFiles.size()).isEqualTo(2);
     }
 
@@ -90,5 +98,27 @@ public class CAFFServiceTest {
 
         List<String> metaData = Arrays.asList("sunset", "landscape", "mountains");
         assertThat(new HashSet<>(caff.get().getMetaData())).isEqualTo(new HashSet<>(metaData));
+    }
+
+    @Test
+    public void testSaveCaffFile() throws IOException {
+        CaffFileHelper helper = new CaffFileHelper();
+        MultipartFile file = helper.loadMultipartFile("3.caff");
+        caffService.saveCaffFile(file, "3. caff");
+
+        List<CAFFFile> caffFiles = caffService.getAllCaffFile();
+        assertThat(caffFiles.size()).isEqualTo(3);
+    }
+
+    @Test
+    public void testDeleteCaffFile() {
+        caffService.deleteCaffFile(2L);
+        List<CAFFFile> caffFiles = caffService.getAllCaffFile();
+        assertThat(caffFiles.size()).isEqualTo(1);
+    }
+
+    @Test
+    public void testSearchByMetaData() {
+        List<CAFFFile> found = caffService.searchCaffFilesByMetaData("");
     }
 }
