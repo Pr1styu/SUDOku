@@ -3,6 +3,7 @@ import { Link, NavLink } from 'react-router-dom';
 import { State } from '../state';
 import { styled } from '@mui/material/styles';
 import { useSelector } from 'react-redux';
+import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import Box from '@mui/material/Box';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import CreateIcon from '@mui/icons-material/Create';
@@ -130,6 +131,12 @@ const Menu: React.FC<IComponent> = () => {
       path: '/caff',
       name: 'Browse CAFF files',
       icon: <ImageSearchIcon />,
+      show: isLoggedIn,
+    },
+    {
+      path: '/addcaff',
+      name: 'Add new CAFF file',
+      icon: <AddPhotoAlternateIcon />,
       show: isLoggedIn,
     },
   ];
