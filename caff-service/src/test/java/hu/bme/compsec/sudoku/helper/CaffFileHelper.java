@@ -13,11 +13,7 @@ import java.nio.file.Paths;
 
 public class CaffFileHelper {
     public CAFFFile loadCaffFile(String fileName) throws IOException, CaffFileFormatException {
-        Path path = Paths.get("src/test/resources/caff_files/" + fileName);
-        String contentType = "application/octet-stream";
-        byte[] content = Files.readAllBytes(path);
-        MultipartFile result = new MockMultipartFile(fileName,
-                fileName, contentType, content);
+        MultipartFile result = loadMultipartFile(fileName);
 
         var processor = new CaffProcessor();
 
@@ -28,5 +24,12 @@ public class CaffFileHelper {
         caff.setMetaData(processor.getMetaData());
 
         return caff;
+    }
+
+    public MultipartFile loadMultipartFile(String fileName) throws IOException {
+        Path path = Paths.get("src/test/resources/caff_files/" + fileName);
+        String contentType = "application/octet-stream";
+        byte[] content = Files.readAllBytes(path);
+        return new MockMultipartFile(fileName, fileName, contentType, content);
     }
 }
