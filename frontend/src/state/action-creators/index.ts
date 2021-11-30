@@ -4,6 +4,7 @@ import { Dispatch } from 'redux';
 import AuthService from '../../services/AuthService';
 import CaffService from '../../services/CaffService';
 import ICaff from '../../interfaces/caff';
+import IComment from '../../interfaces/comment';
 import IEditUserData from '../../interfaces/userDataEdit';
 import UserService from '../../services/UserService';
 
@@ -221,5 +222,54 @@ export const downloadCaffFile = (id: number) => {
 
       return Promise.resolve();
     });
+  };
+};
+
+export const addComment = (comment: IComment, id: number) => {
+  return (dispatch: Dispatch<CaffAction>): Promise<void> => {
+    return CaffService.addComment('BASIC', comment, id).then(() => {
+      dispatch({
+        type: ActionType.ADD_COMMENT,
+        payload: { comment, id },
+      });
+
+      return Promise.resolve();
+    });
+  };
+};
+
+export const uploadCaffFile = (fileName: string, file: File) => {
+  return (dispatch: Dispatch<CaffAction>): Promise<void> => {
+    return CaffService.uploadCaffFile('BASIC', fileName, file).then((response) => {
+      dispatch({
+        type: ActionType.UPLOAD_CAFF_FILE,
+        payload: response.data,
+      });
+
+      return Promise.resolve();
+    });
+  };
+};
+
+export const deleteCaffFile = (id: number) => {
+  return (dispatch: Dispatch<CaffAction>): Promise<void> => {
+    return CaffService.deleteCaffFile('BASIC', id).then(() => {
+      dispatch({
+        type: ActionType.DELETE_CAFF_FILE,
+        payload: id,
+      });
+
+      return Promise.resolve();
+    });
+  };
+};
+
+export const resetUploadDone = () => {
+  return (dispatch: Dispatch<CaffAction>): Promise<void> => {
+    dispatch({
+      type: ActionType.RESET_UPLOAD_DONE,
+    });
+
+    return Promise.resolve();
   };
 };

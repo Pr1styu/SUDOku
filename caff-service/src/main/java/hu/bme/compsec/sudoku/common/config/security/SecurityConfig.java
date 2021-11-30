@@ -30,7 +30,7 @@ public class SecurityConfig {
     @Profile("dev")
     SecurityFilterChain securityFilterChainDev(HttpSecurity http) throws Exception {
         http
-                .cors(withDefaults())
+                .cors().and()
                 .authorizeRequests(authorizeRequests -> authorizeRequests
                         .mvcMatchers("/swagger-ui/**").hasRole(UserRole.ADMIN.name())
                         .requestMatchers(PathRequest.toH2Console()).hasRole(UserRole.ADMIN.name())

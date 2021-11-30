@@ -1,10 +1,10 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Box, Toolbar } from '@mui/material';
-import { Route, RouteComponentProps, Switch, withRouter } from 'react-router-dom';
-import { actionCreators } from './state';
+import { Redirect, Route, RouteComponentProps, Switch, withRouter } from 'react-router-dom';
+import { State, actionCreators } from './state';
 import { bindActionCreators } from 'redux';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Menu from './components/Menu';
 import React, { useEffect } from 'react';
 import logging from './config/logging';
@@ -13,6 +13,8 @@ import routes from './config/routes';
 const App: React.FC<RouteComponentProps> = (props) => {
   const dispatch = useDispatch();
   const { getUserData, getAllCaffFiles } = bindActionCreators(actionCreators, dispatch);
+
+  const isLoggedIn = useSelector((state: State) => state.AUTH.isLoggedIn);
 
   useEffect(() => {
     logging.info('Loading Application...');
@@ -48,7 +50,10 @@ const App: React.FC<RouteComponentProps> = (props) => {
                 path={route.path}
                 exact={route.exact}
                 render={(props: RouteComponentProps<any>) => (
-                  <route.component name={route.name} {...props} {...route.props} />
+                  <div>
+                    <route.component name={route.name} {...props} {...route.props} />
+                    {!isLoggedIn && route.name !== 'Register' && <Redirect to="/login" />}
+                  </div>
                 )}
               />
             );

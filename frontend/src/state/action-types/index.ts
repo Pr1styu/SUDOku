@@ -20,4 +20,8 @@ export enum ActionType {
   GET_ALL_CAFF_FILES = 'get_all_caff_files',
   GET_CAFF_FILE = 'get_caff_file',
   DOWNLOAD_CAFF_FILE = 'download_caff_file',
+  ADD_COMMENT = 'add_comment',
+  UPLOAD_CAFF_FILE = 'upload_caff_file',
+  RESET_UPLOAD_DONE = 'reset_upload_done',
+  DELETE_CAFF_FILE = 'delete_caff_file',
 }
