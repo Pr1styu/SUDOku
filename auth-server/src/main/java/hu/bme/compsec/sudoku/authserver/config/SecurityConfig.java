@@ -21,6 +21,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static hu.bme.compsec.sudoku.authserver.config.SecurityUtils.AUTHORITIES_CLAIM;
+import static hu.bme.compsec.sudoku.authserver.config.SecurityUtils.USERID_CLAIM;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 
@@ -35,7 +37,7 @@ public class SecurityConfig {
 						.mvcMatchers("/register").permitAll()
 						.anyRequest().authenticated()
 				)
-				.formLogin(withDefaults())
+				.httpBasic(withDefaults())
 				.csrf().ignoringRequestMatchers(PathRequest.toH2Console())
 				.and().headers().frameOptions().sameOrigin(); // For h2 GUI only
 
@@ -47,8 +49,6 @@ public class SecurityConfig {
 		return OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource);
 	}
 
-	private static final String USERID_CLAIM = "user_id";
-	private static final String AUTHORITIES_CLAIM = "authorities";
 
 	@Bean
 	OAuth2TokenCustomizer<JwtEncodingContext> jwtCustomizer() {

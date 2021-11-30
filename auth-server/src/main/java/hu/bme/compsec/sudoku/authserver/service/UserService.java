@@ -9,6 +9,7 @@ import hu.bme.compsec.sudoku.authserver.presentation.dto.UserDTO;
 import hu.bme.compsec.sudoku.authserver.presentation.mapping.UserMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -23,6 +24,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static hu.bme.compsec.sudoku.authserver.config.SecurityUtils.checkPermissionForUserId;
+import static hu.bme.compsec.sudoku.authserver.config.SecurityUtils.getUserIdFromJwt;
+
 @Slf4j
 @Service
 @AllArgsConstructor
@@ -35,65 +39,43 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
-        log.info("Checking user with username {}.", userName);
+        log.trace("Checking user with username {}.", userName);
         var userEntity = userRepository.findByUsername(userName)
                 .orElseThrow(() -> {
-                    log.info("There is no user with username {}.", userName);
+                    log.trace("There is no user with username {}.", userName);
                     return new UsernameNotFoundException("There is no user with username: " + userName);
                 });
         return userMapper.toSecurityUser(userEntity);
     }
 
-    public boolean createUser(UserDTO dto) {
-        // TODO: Checks
+
+    public boolean createUser(UserDTO dto) throws UsernameAlreadyInUseException {
+        checkUsernameExistence(dto);
+
         try {
-            var savedUser = userRepository.save(userMapper.toEntity(dto));
-            log.debug("Successfully saved user: {}", savedUser);
+            userRepository.save(userMapper.toEntity(dto));
             return true;
         } catch (Exception e) {
-            log.error("Error while registering client with username {} due to: {}", dto.getUsername(), e.getMessage());
-        }
-        return false;
-    }
-
-    private Long getAuthenticatedUserId() {
-        var auth = SecurityContextHolder.getContext().getAuthentication();
-        try {
-            var jwt = (Jwt) auth.getPrincipal();
-            return jwt.getClaim("user_id"); // TODO: Extract user_id string to commons
-        } catch (Exception e) {
-            log.error("Cannot parse JWT due to: {}", e.getMessage());
-            throw new InvalidBearerTokenException("Could NOT get user id from JWT.");
+            log.error("Error while registering client with username {}: {}", dto.getUsername(), e.getMessage());
+            return false;
         }
     }
 
-    // TODO: Use SecurityUtils instead of these
     public Optional<User> getAuthenticatedUser() {
-        var auth = SecurityContextHolder.getContext().getAuthentication();
-        try {
-            var jwt = (Jwt) auth.getPrincipal();
-            var jwtUserId = (Long) jwt.getClaim("user_id");
-            return userRepository.findById(jwtUserId);
-        } catch (Exception e) {
-            log.error("Cannot parse JWT due to: {}", e.getMessage());
-            return Optional.empty();
-        }
+        return userRepository.findById(getUserIdFromJwt());
     }
 
     public boolean updateUser(UserDTO dto) throws UsernameAlreadyInUseException, UserNotFoundException {
-
-        final Long authenticatedUserId = getAuthenticatedUserId();
+        final Long authenticatedUserId = getUserIdFromJwt();
         var userEntity = userRepository.findById(authenticatedUserId)
                 .map(user -> {
-                    checkPermissionForUserId(user.getId());
+                     checkPermissionForUserId(user.getId());
                     return user;
                 })
-                .orElseThrow(() -> new UserNotFoundException("There is no user with authenticatedUserId in the db: {}", authenticatedUserId));
+                .orElseThrow(() -> new UserNotFoundException("There is no user with id {} in the db.", authenticatedUserId));
 
         if (!userEntity.getUsername().equals(dto.getUsername())) {
-            if (userRepository.findByUsername(dto.getUsername()).isPresent()) {
-                throw new UsernameAlreadyInUseException("Username {} is already in use.", dto.getUsername());
-            }
+            checkUsernameExistence(dto);
         }
 
         try {
@@ -103,24 +85,25 @@ public class UserService implements UserDetailsService {
             return true;
         } catch (Exception e) {
             log.error("Error while update client data: {}", e.getMessage());
-        }
-
         return false;
+        }
     }
 
-    private void checkPermissionForUserId(Long userId) {
-        var auth = SecurityContextHolder.getContext().getAuthentication();
-        try {
-            var jwt = (Jwt) auth.getPrincipal();
-            var jwtUserId = (Long) jwt.getClaim("user_id");
+    public void forgotPassword() {
+        if (userRepository.findById(getUserIdFromJwt()).isPresent()) {
+            // TODO: Send mail with random and ...
+        }
+    }
 
-            if (!Objects.equals(userId, jwtUserId)) {
-                throw new InvalidBearerTokenException(
-                        String.format("User with id {} not have the right permission for editing user with id {}.", jwtUserId, userId)
-                );
-            }
-        } catch (Exception e) {
-            log.error("Cannot parse JWT due to: {}", e.getMessage());
+    public void deleteUser() {
+        if (userRepository.findById(getUserIdFromJwt()).isPresent()) {
+            userRepository.deleteById(getUserIdFromJwt());
+        }
+    }
+
+    private void checkUsernameExistence(UserDTO dto) throws UsernameAlreadyInUseException {
+        if (userRepository.findByUsername(dto.getUsername()).isPresent()) {
+            throw new UsernameAlreadyInUseException("Username {} is already in use!", dto.getUsername());
         }
     }
 
@@ -143,8 +126,8 @@ public class UserService implements UserDetailsService {
                 .roles(List.of(UserRole.USER, UserRole.ADMIN))
                 .build();
 
-        userRepository.save(user);
         log.info("Saving default user {}.", user);
+        userRepository.save(user);
         log.info("Saving default user {}.", admin);
         userRepository.save(admin);
     }

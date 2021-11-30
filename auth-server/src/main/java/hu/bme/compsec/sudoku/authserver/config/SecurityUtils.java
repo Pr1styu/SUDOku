@@ -5,46 +5,37 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
 
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Slf4j
 public class SecurityUtils {
 
-    public static boolean checkUserId(String userId) {
+    public static final String USERID_CLAIM = "user_id";
+    public static final String AUTHORITIES_CLAIM = "authorities";
+
+
+    public static Long getUserIdFromJwt() {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
         try {
-            var auth = SecurityContextHolder.getContext().getAuthentication();
             var jwt = (Jwt) auth.getPrincipal();
-            var jwtUserId = jwt.getClaim("user_id");
-            // TODO: Clean these once we use UUIDs
-            log.info(String.valueOf(jwt));
-            log.info("Check: {}", String.valueOf(jwtUserId).equals(userId));
-            return String.valueOf(jwtUserId).equals(userId);
+
+            return jwt.getClaim(USERID_CLAIM);
         } catch (Exception e) {
-            return false;
+            log.error("Cannot parse JWT from authentication principle: {}", auth.getPrincipal());
+            throw new AccessDeniedException("Cannot parse JWT.");
         }
     }
 
-//    public static void checkOwnerEntitlement(Optiona) {
-//        log.info("Checking owner for resource {}.", );
-//        var entitled = .map(value -> checkUserId(String.valueOf(value.getId())))
-//                .orElse(true); // TODO: Consider this breach
-//
-//        if (!entitled) {
-//            if (!isAuthenticatedUserContentCreator()) {
-//                throw new AccessDeniedException(String.format("User not have the right permission for resource %s.", ));
-//            }
-//        }
-//    }
-
-    public static Long getUserIdFromJwt() {
-        try {
-            var auth = SecurityContextHolder.getContext().getAuthentication();
-            var jwt = (Jwt) auth.getPrincipal();
-
-            return jwt.getClaim("user_id");
-        } catch (Exception e) {
-            throw new AccessDeniedException("Cannot parse JWT.");
+    public static void checkPermissionForUserId(Long userId) {
+        var jwtUserId = getUserIdFromJwt();
+        // TODO: Fix these once we use UUIDs
+        if (!Objects.equals(userId, jwtUserId)) {
+            throw new AccessDeniedException(
+                    String.format("User with id {} does NOT have permission for edit user data with id {}.", jwtUserId, userId)
+            );
         }
     }
 
