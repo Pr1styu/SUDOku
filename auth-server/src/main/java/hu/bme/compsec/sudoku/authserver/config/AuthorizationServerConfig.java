@@ -62,6 +62,7 @@ public class AuthorizationServerConfig {
 				.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
 				.authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
 				.redirectUri("http://127.0.0.1:4200/authorized")
+				.redirectUri("https://127.0.0.1:4200/authorized")
 				.redirectUri("http://127.0.0.1:8080/swagger-ui/oauth2-redirect.html")
 				.scope(OidcScopes.OPENID)
 				.scope("read")
