@@ -11,4 +11,6 @@ public interface CAFFRepository extends JpaRepository<CAFFFile, Long> {
 
     List<CAFFFile> findAllByMetaDataIgnoreCase(String meta);
 
+    CAFFFile findByFileName(String fileName);
+
 }
