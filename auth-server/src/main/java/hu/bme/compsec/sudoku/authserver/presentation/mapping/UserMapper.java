@@ -15,6 +15,7 @@ public interface UserMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "roles", ignore = true)
     @Mapping(target = "enabled", ignore = true)
+    @Mapping(target = "password", qualifiedBy = EncodedMapping.class)
     User toEntity(UserDTO dto);
 
     SecurityUser toSecurityUser(User userEntity);
