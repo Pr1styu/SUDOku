@@ -23,8 +23,8 @@ import java.util.concurrent.TimeUnit;
 public final class CaffProcessor {
 
     private static final String workDirPath = "./workdir/";
-    private static final String NATIVE_CAFF_PARSER_PATH_WIN = "./../native/bin/CAFFParser.exe";
-    private static final String NATIVE_CAFF_PARSER_PATH_UNIX = "./../native/bin/CAFFParser";
+    private static final String NATIVE_CAFF_PARSER_PATH_WIN = "./native/bin/CAFFParser.exe";
+    private static final String NATIVE_CAFF_PARSER_PATH_UNIX = "./native/bin/CAFFParser";
     private static final String GENERATED_PREVIEW_EXTENSION = ".jpeg";
     private static final String GENERATED_METADATA_EXTENSION = ".txt";
     private static final String PARSER_LOG_EXTENSION = ".parse";

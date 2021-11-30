@@ -1,16 +1,14 @@
 package hu.bme.compsec.sudoku.authserver.presentation.dto;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Data
-public class UserDTO {
-
-    private String username;
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
+public class UserDTO extends UserProfileDTO {
 
     private String password;
-
-    private String email;
-
-    private String fullName;
 
 }

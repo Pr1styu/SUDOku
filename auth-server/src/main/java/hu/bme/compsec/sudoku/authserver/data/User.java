@@ -34,6 +34,7 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Builder.Default
     @ElementCollection(fetch = FetchType.EAGER)
     private List<UserRole> roles = List.of(UserRole.USER);
 
@@ -46,5 +47,7 @@ public class User {
 
         return Collections.unmodifiableCollection(authorities);
     }
+
+    private String profilePicture;
 
 }

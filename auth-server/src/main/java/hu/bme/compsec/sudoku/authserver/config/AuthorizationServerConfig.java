@@ -21,6 +21,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.OAuth2TokenType;
@@ -48,26 +50,6 @@ public class AuthorizationServerConfig {
 	public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
 		OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
 		return http.formLogin(Customizer.withDefaults()).build();
-	}
-
-	private static final String USERID_CLAIM = "user_id";
-	private static final String AUTHORITIES_CLAIM = "authorities";
-
-	@Bean
-	OAuth2TokenCustomizer<JwtEncodingContext> jwtCustomizer() {
-		return context -> {
-			if (context.getTokenType().getValue().equals(OAuth2TokenType.ACCESS_TOKEN.getValue())) {
-				Authentication principal = context.getPrincipal();
-				Set<String> authorities = principal.getAuthorities().stream()
-						.map(GrantedAuthority::getAuthority)
-						.collect(Collectors.toSet());
-
-				context.getClaims().claim(AUTHORITIES_CLAIM, authorities);
-				// TODO: Get proper place for this.
-				var securityUser = (SecurityUser) principal.getPrincipal();
-				context.getClaims().claim(USERID_CLAIM, securityUser.getId());
-			}
-		};
 	}
 
 	@Bean
@@ -145,6 +127,11 @@ public class AuthorizationServerConfig {
 		return ProviderSettings.builder()
 				.issuer("http://localhost:9000")
 				.build();
+	}
+
+	@Bean
+	PasswordEncoder getPasswordEncoder() {
+		return PasswordEncoderFactories.createDelegatingPasswordEncoder();
 	}
 
 	@Bean
