@@ -1,5 +1,6 @@
 package hu.bme.compsec.sudoku.presentation.controller;
 
+import hu.bme.compsec.sudoku.common.exception.CaffFileNotFoundException;
 import hu.bme.compsec.sudoku.presentation.dto.CAFFFileDetailDTO;
 import hu.bme.compsec.sudoku.presentation.dto.CAFFFilePreviewDTO;
 import hu.bme.compsec.sudoku.presentation.dto.CommentDTO;
@@ -28,7 +29,7 @@ import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 @Slf4j
 @RestController
 @AllArgsConstructor
-@CrossOrigin(origins = "https://localhost:8081/", maxAge = 3600)
+@CrossOrigin(origins = "https://localhost:4200/", maxAge = 3600)
 @RequestMapping("/caff")
 public class CAFFController {
 
@@ -87,12 +88,10 @@ public class CAFFController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity deleteCaffFile(@PathVariable Long id) {
-
-        // TODO: Check permission for requested file
-
-        if (caffService.deleteCaffFile(id)) {
+        try {
+            caffService.deleteCaffFile(id);
             return ResponseEntity.ok().build();
-        } else {
+        } catch (CaffFileNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
     }

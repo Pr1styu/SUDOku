@@ -7,7 +7,7 @@ import hu.bme.compsec.sudoku.authserver.presentation.dto.UserProfileDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = PasswordEncoderMapper.class)
 public interface UserMapper {
 
     UserDTO toDTO(User entity);
@@ -15,6 +15,7 @@ public interface UserMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "roles", ignore = true)
     @Mapping(target = "enabled", ignore = true)
+    @Mapping(target = "password", qualifiedBy = EncodedMapping.class)
     User toEntity(UserDTO dto);
 
     SecurityUser toSecurityUser(User userEntity);

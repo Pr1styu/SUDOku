@@ -9,6 +9,6 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public class UserRegisterDTO extends UserDTO {
 
-//    private UserType userType;
+    private UserType userType;
 
 }
