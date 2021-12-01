@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @AutoConfigureMockMvc
 @SpringBootTest
-@WithMockUser(username="admin", password = "admin", roles = {"caff:read", "caff:write", "caff:delete"})
+@WithMockUser(username="admin", password = "admin", authorities = {"caff:read", "caff:write", "caff:delete"})
 public class FileUploadTests {
 
 	@Autowired
@@ -74,7 +74,7 @@ public class FileUploadTests {
 								.contentType("multipart/form-data")
 								.accept("multipart/form-data")
 				)
-				.andExpect(status().isFound())
+				.andExpect(status().isCreated())
 				.andExpect(header().string("Location", "/"));
 
 				//.then(this.storageService).should().store(multipartFile);
