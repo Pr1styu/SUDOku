@@ -68,7 +68,11 @@ public class CommentRepositoryTest {
 
     @Test
     public void testFindByText() {
-        Comment found = commentRepository.findById(commentId).get();
+        Comment found = null;
+        if(commentRepository.findById(commentId).isPresent()) {
+            found = commentRepository.findById(commentId).get();
+        }
+        assert found != null;
         assertThat(found.getText()).isEqualTo("Test comment1");
     }
 
@@ -80,19 +84,25 @@ public class CommentRepositoryTest {
 
     @Test
     public void testRemove() {
-        Comment test = commentRepository.findById(commentId).get();
+        Comment test = null;
+        if(commentRepository.findById(commentId).isPresent()){
+             test = commentRepository.findById(commentId).get();
+        }
+        assert test != null;
         commentRepository.delete(test);
         assertThat(commentRepository.findAll().size()).isEqualTo(2);
     }
 
     @Test
     public void testInsert() {
-        commentRepository.saveAndFlush(Comment.builder()
-                .caffFile(caffRepository.findById(caffId).get())
-                .text("Test comment4")
-                .userId(1L)
-                .username("admin")
-                .build());
+        if(caffRepository.findById(caffId).isPresent()) {
+            commentRepository.saveAndFlush(Comment.builder()
+                    .caffFile(caffRepository.findById(caffId).get())
+                    .text("Test comment4")
+                    .userId(1L)
+                    .username("admin")
+                    .build());
+        }
         assertThat(commentRepository.findAll().size()).isEqualTo(4);
     }
 

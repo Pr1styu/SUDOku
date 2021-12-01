@@ -1,7 +1,6 @@
 package hu.bme.compsec.sudoku.authserver.config.jackson;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -22,7 +21,7 @@ public class SecurityUserDeserializer extends JsonDeserializer<SecurityUser> {
 
 
     @Override
-    public SecurityUser deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+    public SecurityUser deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
 
         ObjectMapper mapper = (ObjectMapper) jp.getCodec();
         JsonNode jsonNode = mapper.readTree(jp);
@@ -34,14 +33,9 @@ public class SecurityUserDeserializer extends JsonDeserializer<SecurityUser> {
         JsonNode passwordNode = readJsonNode(jsonNode, "password");
         String password = passwordNode.asText("");
         boolean enabled = readJsonNode(jsonNode, "enabled").asBoolean();
-//        boolean accountNonExpired = readJsonNode(jsonNode, "accountNonExpired").asBoolean();
-//        boolean credentialsNonExpired = readJsonNode(jsonNode, "credentialsNonExpired").asBoolean();
-//        boolean accountNonLocked = readJsonNode(jsonNode, "accountNonLocked").asBoolean();
 
 
-        SecurityUser securityUser = new SecurityUser(id, username, password, authorities, enabled);
-
-        return securityUser;
+        return new SecurityUser(id, username, password, authorities, enabled);
 
     }
 

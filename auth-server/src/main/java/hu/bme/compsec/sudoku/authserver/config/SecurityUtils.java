@@ -13,6 +13,10 @@ import java.util.stream.Collectors;
 @Slf4j
 public class SecurityUtils {
 
+    private SecurityUtils(){
+
+    }
+
     public static final String USERID_CLAIM = "user_id";
     public static final String AUTHORITIES_CLAIM = "authorities";
 
@@ -24,7 +28,7 @@ public class SecurityUtils {
 
             return jwt.getClaim(USERID_CLAIM);
         } catch (Exception e) {
-            log.error("Cannot parse JWT from authentication principle: {}", auth.getPrincipal());
+            log.error("Cannot parse JWT from authentication principle");
             throw new AccessDeniedException("Cannot parse JWT.");
         }
     }
@@ -34,7 +38,7 @@ public class SecurityUtils {
         // TODO: Fix these once we use UUIDs
         if (!Objects.equals(userId, jwtUserId)) {
             throw new AccessDeniedException(
-                    String.format("User with id {} does NOT have permission for edit user data with id {}.", jwtUserId, userId)
+                    String.format("User with id %d does NOT have permission for edit user data with id %d.", jwtUserId, userId)
             );
         }
     }
