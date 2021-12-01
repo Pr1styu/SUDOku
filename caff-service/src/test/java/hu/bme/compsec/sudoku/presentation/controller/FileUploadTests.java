@@ -27,8 +27,7 @@ import java.util.stream.Collectors;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -163,8 +162,11 @@ public class FileUploadTests {
     }
 
     @Test
-    public void shouldDeleteFile() {
-
+    public void shouldDeleteFile() throws Exception {
+        //TODO: double check this, I can't believe this is enough
+        mockMvc.perform(delete("/caff/1")
+                        .with(user("admin").password("admin")))
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -182,12 +184,14 @@ public class FileUploadTests {
 
     }
 
-	/*@SuppressWarnings("unchecked")
 	@Test
 	public void should404WhenMissingFile() throws Exception {
-		given(this.caffServiceMock.loadAsResource("test.txt"))
-				.willThrow(StorageFileNotFoundException.class);
+        this.mockMvc.perform(get("/caff/1")
+                        .with(user("admin").password("admin")))
+                .andExpect(status().isNotFound());
 
-		this.mockMvc.perform(get("/files/test.txt")).andExpect(status().isNotFound());
-	}*/
+        this.mockMvc.perform(get("/caff/download/1")
+                        .with(user("admin").password("admin")))
+                .andExpect(status().isNotFound());
+	}
 }
