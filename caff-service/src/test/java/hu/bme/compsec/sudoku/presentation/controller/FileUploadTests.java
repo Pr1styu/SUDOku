@@ -1,19 +1,22 @@
 package hu.bme.compsec.sudoku.presentation.controller;
 
-import java.util.List;
-import java.util.Optional;
-
 import hu.bme.compsec.sudoku.data.domain.CAFFFile;
+import hu.bme.compsec.sudoku.helper.CaffFileHelper;
 import hu.bme.compsec.sudoku.service.CAFFService;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
@@ -24,6 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @AutoConfigureMockMvc
 @SpringBootTest
+@WithMockUser(username="admin", password = "admin", roles = {"caff:read", "caff:write", "caff:delete"})
 public class FileUploadTests {
 
 	@Autowired
@@ -32,9 +36,11 @@ public class FileUploadTests {
 	@MockBean
 	private CAFFService caffServiceMock;
 
+	CaffFileHelper helper = new CaffFileHelper();
+
 	@Test
 	public void shouldListAllFiles() throws Exception {
-		final long mockId = 1l;
+		final long mockId = 1L;
 		var mockCaffFile = CAFFFile.builder().fileName("test.caff")
 				.id(mockId)
 				.metaData(List.of("test", "meta", "passed"))
@@ -58,26 +64,29 @@ public class FileUploadTests {
 		verifyNoMoreInteractions(caffServiceMock);
 	}
 
-	/*@Test
+	@Test
 	public void shouldSaveUploadedFile() throws Exception {
-		MockMultipartFile multipartFile = new MockMultipartFile("file", "test.txt",
-				"text/plain", "Spring Framework".getBytes());
-		this.mockMvc.perform(multipart("/caff/uploadCaff")
-						.file(multipartFile)
-						.with(user("admin").password("admin")))
+		MockMultipartFile multipartFile = helper.loadMultipartFile("1.caff");
+		this.mockMvc.perform(multipart("/caff/upload")
+								.file(multipartFile)
+								//.requestAttr("file", multipartFile)
+								.requestAttr("fileName", "1.caff")
+								.contentType("multipart/form-data")
+								.accept("multipart/form-data")
+				)
 				.andExpect(status().isFound())
 				.andExpect(header().string("Location", "/"));
 
-		//then(this.storageService).should().store(multipartFile);
+				//.then(this.storageService).should().store(multipartFile);
 	}
 
-	@SuppressWarnings("unchecked")
+	/*@SuppressWarnings("unchecked")
 	@Test
 	public void should404WhenMissingFile() throws Exception {
-		given(this.caffService.loadAsResource("test.txt"))
+		given(this.caffServiceMock.loadAsResource("test.txt"))
 				.willThrow(StorageFileNotFoundException.class);
 
-		this.mvc.perform(get("/files/test.txt")).andExpect(status().isNotFound());
+		this.mockMvc.perform(get("/files/test.txt")).andExpect(status().isNotFound());
 	}*/
 
 }

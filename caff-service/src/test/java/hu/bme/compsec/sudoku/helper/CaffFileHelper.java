@@ -28,9 +28,10 @@ public class CaffFileHelper {
         return caff;
     }
 
-    public MultipartFile loadMultipartFile(String fileName) throws IOException {
+    public MockMultipartFile loadMultipartFile(String fileName) throws IOException {
         Path path = Paths.get("src/test/resources/caff_files/" + fileName);
-        String contentType = "application/octet-stream";
+        //String contentType = "application/octet-stream";
+        String contentType = "multipart/form-data";
         byte[] content = Files.readAllBytes(path);
         return new MockMultipartFile(fileName, fileName, contentType, content);
     }
