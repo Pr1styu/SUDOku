@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -25,14 +26,14 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
 @AutoConfigureMockMvc
@@ -124,12 +125,13 @@ public class CAFFControllerTest {
                                 .contentType("multipart/form-data")
                                 .accept("multipart/form-data")
                 )
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(header().doesNotExist(HttpHeaders.LOCATION));
     }
 
     @Test
     public void shouldUploadSuccessfully() throws Exception {
-        final long mockId = 1L;
+        final long mockId = new Random().nextInt(100);
         CAFFFile f = helper.loadCaffFile("1.caff");
         MockMultipartFile multipartFile = helper.loadMultipartFileWithNullFields("1.caff");
         var mockCaffFile = CAFFFile.builder().fileName(f.getFileName())
@@ -145,7 +147,8 @@ public class CAFFControllerTest {
         this.mockMvc.perform(multipart("/caff/upload")
                                 .file("caffFile", multipartFile.getBytes())
                                 .file(new MockMultipartFile("fileName", "1.caff".getBytes())))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andExpect(header().string(HttpHeaders.LOCATION, "http://localhost/caff/" + mockId));
     }
 
     @Test
