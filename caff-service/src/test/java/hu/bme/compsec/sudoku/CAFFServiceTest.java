@@ -2,6 +2,7 @@ package hu.bme.compsec.sudoku;
 
 import hu.bme.compsec.sudoku.common.exception.CaffFileFormatException;
 import hu.bme.compsec.sudoku.common.exception.CaffFileNotFoundException;
+import hu.bme.compsec.sudoku.config.TestSecurityConfig;
 import hu.bme.compsec.sudoku.data.CAFFRepository;
 import hu.bme.compsec.sudoku.data.domain.CAFFFile;
 import hu.bme.compsec.sudoku.helper.CaffFileHelper;
@@ -27,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SecurityTestExecutionListeners
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(classes = TestSecurityConfig.class)
 @ContextConfiguration(classes = {CAFFService.class, CAFFRepository.class})
 @TestPropertySource(locations = "classpath:application-test.properties")
 public class CAFFServiceTest {

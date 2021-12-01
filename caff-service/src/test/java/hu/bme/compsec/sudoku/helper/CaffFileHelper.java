@@ -14,26 +14,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CaffFileHelper {
-    public CAFFFile loadCaffFile(String fileName) throws IOException, CaffFileFormatException {
-        MultipartFile result = loadMultipartFile(fileName);
+    public CAFFFile loadCaffFile(String resourceFileName) throws IOException, CaffFileFormatException {
+        MultipartFile result = loadMultipartFile(resourceFileName);
 
         var processor = new CaffProcessor();
 
         CAFFFile caff = new CAFFFile();
-        caff.setFileName(fileName);
-        processor.process(result, fileName);
+        caff.setFileName(resourceFileName);
+        processor.process(result, resourceFileName);
         caff.setPreview(processor.getPreview());
         caff.setMetaData(processor.getMetaData());
 
         return caff;
     }
 
-    public MockMultipartFile loadMultipartFile(String fileName) throws IOException {
-        Path path = Paths.get("src/test/resources/caff_files/" + fileName);
+    public MockMultipartFile loadMultipartFile(String resourceFileName) throws IOException {
+        Path path = Paths.get("src/test/resources/caff_files/" + resourceFileName);
         //String contentType = "application/octet-stream";
         String contentType = "multipart/form-data";
         byte[] content = Files.readAllBytes(path);
-        return new MockMultipartFile(fileName, fileName, contentType, content);
+        return new MockMultipartFile("caffFile", resourceFileName, contentType, content);
     }
 
     public List<CAFFFile> loadAllCaffFiles(String[] fileNames) throws CaffFileFormatException, IOException {
