@@ -1,16 +1,19 @@
 package hu.bme.compsec.sudoku.presentation.controller;
 
 import com.nimbusds.jose.shaded.json.JSONArray;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
+import hu.bme.compsec.sudoku.config.TestSecurityConfig;
 import hu.bme.compsec.sudoku.data.domain.CAFFFile;
 import hu.bme.compsec.sudoku.helper.CaffFileHelper;
+import hu.bme.compsec.sudoku.presentation.dto.CAFFFileDetailDTO;
+import hu.bme.compsec.sudoku.presentation.dto.CommentDTO;
 import hu.bme.compsec.sudoku.presentation.mapping.CAFFMapper;
 import hu.bme.compsec.sudoku.service.CAFFService;
 import hu.bme.compsec.sudoku.service.CommentService;
-import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -18,7 +21,6 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -31,7 +33,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-@WebMvcTest(CAFFController.class)
+@AutoConfigureMockMvc
+@SpringBootTest(classes = TestSecurityConfig.class)
 @WithMockUser(username = "admin", password = "admin", authorities = {"caff:read", "caff:write", "caff:delete"})
 public class FileUploadTests {
 
@@ -47,7 +50,9 @@ public class FileUploadTests {
     @MockBean
     private CommentService commentServiceMock;
 
-    CaffFileHelper helper = new CaffFileHelper();
+    private CaffFileHelper helper = new CaffFileHelper();
+    private final Moshi moshi = new Moshi.Builder().build();
+    private final JsonAdapter<CAFFFileDetailDTO> jsonAdapter = moshi.adapter(CAFFFileDetailDTO.class);
 
     @Test
     public void shouldListAllFiles() throws Exception {
@@ -72,24 +77,36 @@ public class FileUploadTests {
     @Test
     public void shouldReturnCaffById() throws Exception {
         final long mockId = 1L;
-        var mockCaffFile = CAFFFile.builder().fileName("test.caff")
+        CAFFFile f = helper.loadCaffFile("1.caff");
+        var mockCaffFile = CAFFFile.builder().fileName(f.getFileName())
                 .id(mockId)
-                .metaData(List.of("test", "meta", "passed"))
-                .preview("Base64EncodedStringPreview".getBytes())
-                .rawBytes("rawBytesOfCassFile".getBytes())
+                .metaData(f.getMetaData())
+                .preview(f.getPreview())
+                .rawBytes(f.getRawBytes())
                 .build();
+
+        /*CAFFFileDetailDTO det = CAFFFileDetailDTO.builder()
+                .metaData(f.getMetaData())
+                .comments(f.getComments().stream().map(
+                        c -> CommentDTO.builder()
+                                .username(c.getUsername())
+                                .text(c.getText())
+                                .build()
+                ).collect(Collectors.toList()))
+                .build();*/
 
         given(caffServiceMock.getCaffFileById(mockId))
                 .willReturn(Optional.of(mockCaffFile));
 
-        JSONObject caffFilePreviewDto_JSON =
-                new JSONObject().put("id", mockId).put("fileName", "test.caff");
+        CAFFFileDetailDTO detail = caffMapperMock.toDetailDTO(mockCaffFile);
+        String jsonString = jsonAdapter.toJson(detail);
+        System.out.println(detail);
 
         mockMvc.perform(get("/caff/" + mockId)
                         .with(user("admin").password("admin")))
+                .andExpect(content().json(jsonString))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().json(caffFilePreviewDto_JSON.toString()));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
 
         verify(caffServiceMock, times(1)).getCaffFileById(mockId);
         verifyNoMoreInteractions(caffServiceMock);
