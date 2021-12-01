@@ -24,14 +24,14 @@ public class SecurityUtils {
 
             return jwt.getClaim(USERID_CLAIM);
         } catch (Exception e) {
-            log.error("Cannot parse JWT from authentication principle: {}", auth);
+            log.error("Cannot parse JWT from authentication principle!");
             throw new AccessDeniedException("Cannot parse JWT.");
         }
     }
 
     /**
      * Check the actual user permission and if not match, the admin role also pass the request.
-     * @param userId
+     * @param userId The id of the given user
      */
     public static void checkPermissionForCaffFile(Long userId) {
         var jwtUserId = getUserIdFromJwt();
@@ -39,7 +39,7 @@ public class SecurityUtils {
         if (!Objects.equals(userId, jwtUserId)) {
             if (!isAuthenticatedUserAdmin())
             throw new AccessDeniedException(
-                    String.format("User with id {} does NOT have permission for edit CAFF file with id {}.", jwtUserId, userId)
+                    String.format("User with id %d does NOT have permission for edit CAFF file with id %d.", jwtUserId, userId)
             );
         }
     }

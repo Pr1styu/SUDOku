@@ -6,7 +6,6 @@ import hu.bme.compsec.sudoku.config.TestSecurityConfig;
 import hu.bme.compsec.sudoku.data.CAFFRepository;
 import hu.bme.compsec.sudoku.data.domain.CAFFFile;
 import hu.bme.compsec.sudoku.helper.CaffFileHelper;
-import hu.bme.compsec.sudoku.service.CAFFService;
 import hu.bme.compsec.sudoku.service.processor.CaffProcessor;
 import org.junit.Before;
 import org.junit.Test;
@@ -59,9 +58,7 @@ public class CAFFServiceTest {
             int id = Integer.parseInt(Character.toString(file.charAt(0)));
             try {
                 Mockito.when(caffRepository.findById((long) id)).thenReturn(Optional.ofNullable(helper.loadCaffFile(fileNames[id - 1])));
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (CaffFileFormatException e) {
+            } catch (IOException | CaffFileFormatException e) {
                 e.printStackTrace();
             }
         });
@@ -70,9 +67,7 @@ public class CAFFServiceTest {
         Arrays.asList(fileNames).forEach(file -> {
             try {
                 caffFiles.add(helper.loadCaffFile(file));
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (CaffFileFormatException e) {
+            } catch (IOException | CaffFileFormatException e) {
                 e.printStackTrace();
             }
         });
@@ -107,7 +102,7 @@ public class CAFFServiceTest {
         assertThat(new HashSet<>(caff.get().getMetaData())).isEqualTo(new HashSet<>(metaData));
     }
 
- /*   @Test
+    /*@Test
     public void testCRUD() throws IOException, CaffFileNotFoundException {
         List<CAFFFile> caffFiles = caffService.getAllCaffFile();
         assertThat(caffFiles.size()).isEqualTo(2);
@@ -123,9 +118,9 @@ public class CAFFServiceTest {
         caffService.deleteCaffFile(1L);
         caffFiles = caffService.getAllCaffFile();
         assertThat(caffFiles.size()).isEqualTo(1);
-    } */
+    }
 
- /*   @Test
+    @Test
     public void testSearchByMetaData() throws IOException {
         for (int i = 1; i <= 3; i++) {
             CaffFileHelper helper = new CaffFileHelper();

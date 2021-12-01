@@ -7,11 +7,11 @@ public enum ParseResult {
 
 
 
-    private ParseResult(int code) {
+    ParseResult(int code) {
         this.code = code;
     }
 
-    private int code;
+    private final int code;
 
     public int getCode() {
         return code;
