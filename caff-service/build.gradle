@@ -4,7 +4,7 @@ plugins {
 	id 'java'
 }
 
-group = 'hu.bme.compsec'
+group = 'hu.bme.compsec.caff'
 version = '0.0.1'
 sourceCompatibility = '11'
 
@@ -16,6 +16,10 @@ configurations {
 
 repositories {
 	mavenCentral()
+}
+
+task prepareKotlinBuildScriptModel {
+
 }
 
 dependencies {
@@ -49,6 +53,6 @@ dependencies {
 	testImplementation 'org.junit.vintage:junit-vintage-engine'
 }
 
-test {
-	useJUnitPlatform()
-}
+//test {
+//	useJUnitPlatform()
+//}

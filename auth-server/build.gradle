@@ -4,7 +4,7 @@ plugins {
     id 'java'
 }
 
-group = 'hu.bme.compsec.sudoku'
+group = 'hu.bme.compsec.auth'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
@@ -16,6 +16,10 @@ configurations {
 
 repositories {
     mavenCentral()
+}
+
+task prepareKotlinBuildScriptModel {
+
 }
 
 dependencies {
@@ -38,6 +42,6 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
 }
 
-test {
+/*test {
     useJUnitPlatform()
-}
+}*/

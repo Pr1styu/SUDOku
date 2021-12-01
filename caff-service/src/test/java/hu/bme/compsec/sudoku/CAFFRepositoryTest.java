@@ -18,7 +18,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringRunner.class)
+/*@RunWith(SpringRunner.class)
 @DataJpaTest
 @Transactional
 public class CAFFRepositoryTest {
@@ -72,4 +72,4 @@ public class CAFFRepositoryTest {
         List<CAFFFile> result = caffRepository.findAllByMetaDataIgnoreCase("sunset");
         assertThat(result.size()).isEqualTo(3);
     }
-}
+}*/
