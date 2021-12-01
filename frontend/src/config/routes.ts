@@ -1,5 +1,6 @@
 import AddCaff from '../pages/AddCaff';
 import AdminBoard from '../pages/test/AdminBoard';
+import Authorized from '../pages/Authorized';
 import BrowseCaff from '../pages/BrowseCaff';
 import HomePage from '../pages/Home';
 import IRoute from '../interfaces/route';
@@ -74,7 +75,7 @@ const routes: IRoute[] = [
     exact: true,
   },
   {
-    path: '/caff',
+    path: '/browse',
     name: 'BrowseCaffPage',
     component: BrowseCaff,
     exact: true,
@@ -84,6 +85,12 @@ const routes: IRoute[] = [
     name: 'AddCaffPage',
     component: AddCaff,
     exact: true,
+  },
+  {
+    path: '/authorized',
+    name: 'Authorized',
+    component: Authorized,
+    exact: false,
   },
   {
     path: '',

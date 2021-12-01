@@ -109,6 +109,31 @@ const deleteCaffFile = (authType: AuthType, id: number): Promise<AxiosResponse<a
   }
 };
 
+const oauth = () => {
+  return axios
+    .get(
+      'oauth2/authorize?response_type=code&client_id=frontend&scope=openid&redirect_uri=http://127.0.0.1:4200/authorized',
+      {
+        withCredentials: true,
+        auth: basicAuthHeader(),
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        },
+      }
+    )
+    .then(function (response) {
+      //handle success
+      console.log('1s');
+      console.log(response);
+    })
+    .catch(function (response) {
+      //handle error
+      console.log('1r');
+      console.log(response);
+    });
+};
+
 export default {
   getAllCaffFiles,
   getCaffFile,
@@ -116,4 +141,5 @@ export default {
   addComment,
   uploadCaffFile,
   deleteCaffFile,
+  oauth,
 };
