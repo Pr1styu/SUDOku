@@ -3,8 +3,10 @@ package hu.bme.compsec.sudoku.presentation.controller;
 import com.nimbusds.jose.shaded.json.JSONArray;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
+import hu.bme.compsec.sudoku.common.exception.CaffFileFormatException;
 import hu.bme.compsec.sudoku.config.TestSecurityConfig;
 import hu.bme.compsec.sudoku.data.domain.CAFFFile;
+import hu.bme.compsec.sudoku.data.domain.Comment;
 import hu.bme.compsec.sudoku.helper.CaffFileHelper;
 import hu.bme.compsec.sudoku.presentation.dto.CAFFFileDetailDTO;
 import hu.bme.compsec.sudoku.presentation.mapping.CAFFMapper;
@@ -21,6 +23,8 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -183,8 +187,31 @@ public class CAFFControllerTest {
     }
 
     @Test
-    public void shouldReturnCommentsForCaffFile() {
+    public void shouldReturnCommentsForCaffFile() throws Exception {
+        ArrayList<Comment> comments = new ArrayList<>();
+        for (int i = 1; i <= 3; i++) {
+            comments.add(Comment.builder()
+                    .caffFile(helper.loadCaffFile("1.caff"))
+                    .text("Test comment" + i)
+                    .userId(1L)
+                    .username("admin")
+                    .build()
+            );
+        }
 
+        given(caffServiceMock.getAllCaffFile())
+                .willReturn(helper.loadAllCaffFiles());
+        given(commentServiceMock.getAllCommentForCaffFile(1L))
+                .willReturn(comments);
+
+        mockMvc.perform(get("/caff/1/comment")
+                .with(user("admin").password("admin")))
+                .andExpect(content().json(JSONArray.toJSONString(
+                        comments.parallelStream()
+                                .map(caffMapper::toCommentDTO)
+                                .collect(Collectors.toList())
+                )))
+                .andExpect(status().isOk());
     }
 
     @Test
