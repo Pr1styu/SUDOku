@@ -53,7 +53,7 @@ public class CaffFileHelper {
         return result;
     }
 
-    private String[] getAllFileNames() {
+    public String[] getAllFileNames() {
         return new String[]{"1.caff", "2.caff", "3.caff"};
     }
 }
