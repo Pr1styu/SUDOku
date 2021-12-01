@@ -2,21 +2,10 @@ package hu.bme.compsec.sudoku.common.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import springfox.documentation.builders.AuthorizationCodeGrantBuilder;
-import springfox.documentation.builders.OAuthBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.service.AuthorizationScope;
-import springfox.documentation.service.GrantType;
-import springfox.documentation.service.SecurityReference;
-import springfox.documentation.service.SecurityScheme;
 import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger.web.SecurityConfiguration;
-import springfox.documentation.swagger.web.SecurityConfigurationBuilder;
-
-import java.util.Collections;
 
 @Configuration
 public class ApiDocsConfig {
