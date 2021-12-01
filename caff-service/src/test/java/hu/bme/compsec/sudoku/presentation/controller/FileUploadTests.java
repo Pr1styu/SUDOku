@@ -3,6 +3,7 @@ package hu.bme.compsec.sudoku.presentation.controller;
 import com.nimbusds.jose.shaded.json.JSONArray;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
+import hu.bme.compsec.sudoku.common.exception.CaffFileFormatException;
 import hu.bme.compsec.sudoku.config.TestSecurityConfig;
 import hu.bme.compsec.sudoku.data.domain.CAFFFile;
 import hu.bme.compsec.sudoku.helper.CaffFileHelper;
@@ -10,17 +11,21 @@ import hu.bme.compsec.sudoku.presentation.dto.CAFFFileDetailDTO;
 import hu.bme.compsec.sudoku.presentation.mapping.CAFFMapper;
 import hu.bme.compsec.sudoku.service.CAFFService;
 import hu.bme.compsec.sudoku.service.CommentService;
+import org.apache.commons.io.FilenameUtils;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.util.StringUtils;
 
+import java.io.IOException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -113,6 +118,77 @@ public class FileUploadTests {
                                 .accept("multipart/form-data")
                 )
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void shouldUploadSuccessfully() throws Exception {
+        final long mockId = 1L;
+        CAFFFile f = helper.loadCaffFile("1.caff");
+        MockMultipartFile multipartFile = helper.loadMultipartFileWithNullFields("1.caff");
+        var mockCaffFile = CAFFFile.builder().fileName(f.getFileName())
+                .id(mockId)
+                .metaData(f.getMetaData())
+                .preview(f.getPreview())
+                .rawBytes(f.getRawBytes())
+                .build();
+
+        String name = FilenameUtils.getBaseName(StringUtils.cleanPath("1.caff"));
+        given(caffServiceMock.saveCaffFile(multipartFile, name))
+                .willReturn(mockCaffFile);
+
+        this.mockMvc.perform(multipart("/caff/upload")
+                                .file("caffFile", multipartFile.getBytes())
+                                .file(new MockMultipartFile("fileName", "1.caff".getBytes()))
+                                .contentType("multipart/form-data")
+                                .accept("multipart/form-data")
+                )
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    public void shouldDownloadCaff() throws Exception {
+        final long mockId = 1L;
+        CAFFFile f = helper.loadCaffFile("1.caff");
+        var mockCaffFile = CAFFFile.builder().fileName(f.getFileName())
+                .id(mockId)
+                .metaData(f.getMetaData())
+                .preview(f.getPreview())
+                .rawBytes(f.getRawBytes())
+                .build();
+
+        given(caffServiceMock.getCaffFileById(mockId))
+                .willReturn(Optional.of(mockCaffFile));
+
+        mockMvc.perform(get("/caff/download/" + mockId)
+                        .with(user("admin").password("admin"))
+                        .accept("application/octet-stream")
+                        .contentType("application/octet-stream"))
+                .andExpect(content().bytes(f.getRawBytes()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_OCTET_STREAM));
+
+        verify(caffServiceMock, times(1)).getCaffFileById(mockId);
+        verifyNoMoreInteractions(caffServiceMock);
+    }
+
+    @Test
+    public void shouldDeleteFile() {
+
+    }
+
+    @Test
+    public void shouldReturnCaffByMetadata() {
+
+    }
+
+    @Test
+    public void shouldReturnCommentsForCaffFile() {
+
+    }
+
+    @Test
+    public void shouldAddCommentSuccessfully() {
+
     }
 
 	/*@SuppressWarnings("unchecked")

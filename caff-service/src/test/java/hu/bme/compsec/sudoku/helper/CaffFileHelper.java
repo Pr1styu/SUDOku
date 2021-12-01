@@ -24,6 +24,7 @@ public class CaffFileHelper {
         processor.process(result, resourceFileName);
         caff.setPreview(processor.getPreview());
         caff.setMetaData(processor.getMetaData());
+        caff.setRawBytes(result.getBytes());
 
         return caff;
     }
@@ -34,6 +35,14 @@ public class CaffFileHelper {
         String contentType = "multipart/form-data";
         byte[] content = Files.readAllBytes(path);
         return new MockMultipartFile("caffFile", resourceFileName, contentType, content);
+    }
+
+    public MockMultipartFile loadMultipartFileWithNullFields(String resourceFileName) throws IOException {
+        Path path = Paths.get("src/test/resources/caff_files/" + resourceFileName);
+        //String contentType = "application/octet-stream";
+        String contentType = "multipart/form-data";
+        byte[] content = Files.readAllBytes(path);
+        return new MockMultipartFile("caffFile", "", null, content);
     }
 
     public List<CAFFFile> loadAllCaffFiles(String[] fileNames) throws CaffFileFormatException, IOException {
