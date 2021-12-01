@@ -35,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @SpringBootTest(classes = TestSecurityConfig.class)
 @WithMockUser(username = "admin", password = "admin", authorities = {"caff:read", "caff:write", "caff:delete"})
-public class FileUploadTests {
+public class CAFFControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -54,17 +54,15 @@ public class FileUploadTests {
 
     @Test
     public void shouldListAllFiles() throws Exception {
-        String[] fileNames = new String[]{"1.caff", "2.caff", "3.caff"};
-
         given(caffServiceMock.getAllCaffFile())
-                .willReturn(helper.loadAllCaffFiles(fileNames));
+                .willReturn(helper.loadAllCaffFiles());
 
         mockMvc.perform(get("/caff")
                         .with(user("admin").password("admin")))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(
-                        JSONArray.toJSONString(helper.loadAllCaffFiles(fileNames)
+                        JSONArray.toJSONString(helper.loadAllCaffFiles()
                                 .parallelStream()
                                 .map(caffMapper::toPreviewDTO)
                                 .collect(Collectors.toList()))
@@ -170,8 +168,18 @@ public class FileUploadTests {
     }
 
     @Test
-    public void shouldReturnCaffByMetadata() {
+    public void shouldReturnCaffByMetadata() throws Exception {
+        given(caffServiceMock.searchCaffFilesByMetaData("sunset"))
+                .willReturn(helper.loadAllCaffFiles());
 
+        mockMvc.perform(get("/caff/search/sunset")
+                .with(user("admin").password("admin")))
+                .andExpect(content().json(JSONArray.toJSONString(
+                        helper.loadAllCaffFiles()
+                                .parallelStream()
+                                .map(caffMapper::toPreviewDTO)
+                                .collect(Collectors.toList()))))
+                .andExpect(status().isOk());
     }
 
     @Test

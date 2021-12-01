@@ -45,11 +45,15 @@ public class CaffFileHelper {
         return new MockMultipartFile("caffFile", "", null, content);
     }
 
-    public List<CAFFFile> loadAllCaffFiles(String[] fileNames) throws CaffFileFormatException, IOException {
+    public List<CAFFFile> loadAllCaffFiles() throws CaffFileFormatException, IOException {
         ArrayList<CAFFFile> result = new ArrayList<>();
-        for (String fileName : fileNames) {
+        for (String fileName : getAllFileNames()) {
             result.add(loadCaffFile(fileName));
         }
         return result;
+    }
+
+    private String[] getAllFileNames() {
+        return new String[]{"1.caff", "2.caff", "3.caff"};
     }
 }
