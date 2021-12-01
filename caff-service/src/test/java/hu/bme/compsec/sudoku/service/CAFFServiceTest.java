@@ -1,4 +1,4 @@
-package hu.bme.compsec.sudoku;
+package hu.bme.compsec.sudoku.service;
 
 import hu.bme.compsec.sudoku.common.exception.CaffFileFormatException;
 import hu.bme.compsec.sudoku.common.exception.CaffFileNotFoundException;
