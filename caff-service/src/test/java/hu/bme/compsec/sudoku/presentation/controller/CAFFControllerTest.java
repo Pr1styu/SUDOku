@@ -39,7 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @SpringBootTest(classes = TestSecurityConfig.class)
 @WithMockUser(username = "admin", password = "admin", authorities = {"caff:read", "caff:write", "caff:delete"})
-public class CAFFControllerTest {
+class CAFFControllerTest {
 
     @Autowired
     private MockMvc mockMvc;

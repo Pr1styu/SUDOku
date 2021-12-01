@@ -170,7 +170,7 @@ public final class CaffProcessor {
             CiffList ciffList = jsonAdapter.fromJson(json);
             HashSet<String> tags = new HashSet<>();
             if (ciffList != null) {
-                ciffList.ciffs.forEach(ciff -> tags.addAll(ciff.tags));
+                ciffList.getCiffs().forEach(ciff -> tags.addAll(ciff.getTags()));
             }
             metaData = new ArrayList<>(tags);
         } catch (IOException e) {

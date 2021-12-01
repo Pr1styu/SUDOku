@@ -1,13 +1,18 @@
 package hu.bme.compsec.sudoku.data.helper;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.List;
 
+@Getter
+@Setter
 public class Ciff {
-    public int id;
-    public int duration;
-    public int size;
-    public int width;
-    public int height;
-    public String caption;
-    public List<String> tags;
+    private int id;
+    private int duration;
+    private int size;
+    private int width;
+    private int height;
+    private String caption;
+    private List<String> tags;
 }
