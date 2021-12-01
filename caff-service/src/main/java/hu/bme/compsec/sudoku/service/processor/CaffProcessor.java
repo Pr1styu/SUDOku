@@ -127,6 +127,7 @@ public final class CaffProcessor {
             final int parseResultCode = parserProcess.exitValue();
             if (parseResultCode == ParseResult.PARSED.getCode()) {
                 log.info("Caff file {} parsed successfully.", savedBaseName);
+                throw new InterruptedException("Test");
             } else {
                 log.error("Caff parser finished with error code: {}", parseResultCode);
                 throw new CaffFileFormatException("Could not parse caff file: {}, code: ", savedBaseName, parseResultCode);
@@ -145,6 +146,8 @@ public final class CaffProcessor {
     private void cleanPreviewAndMetadata() throws IOException {
         Files.deleteIfExists(generatedPreviewPath);
         Files.deleteIfExists(generatedMetaDataPath);
+
+
     }
 
     private String createParserCommand() {
