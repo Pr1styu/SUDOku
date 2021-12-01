@@ -24,7 +24,12 @@ public interface CAFFMapper {
     }
 
     default Integer setCaffFileSize(byte[] rawBytes) {
-        return rawBytes.length;
+        if(rawBytes != null) {
+            return rawBytes.length;
+        }
+        else{
+            return null;
+        }
     }
 
     CommentDTO toCommentDTO(Comment comment);

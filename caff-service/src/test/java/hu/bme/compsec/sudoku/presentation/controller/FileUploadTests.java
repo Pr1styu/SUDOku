@@ -16,6 +16,7 @@ import hu.bme.compsec.sudoku.presentation.mapping.CAFFMapper;
 import hu.bme.compsec.sudoku.service.CAFFService;
 import hu.bme.compsec.sudoku.service.CommentService;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -48,8 +49,8 @@ public class FileUploadTests {
     @MockBean
     private CAFFService caffServiceMock;
 
-    @MockBean
-    private CAFFMapper caffMapperMock;
+
+    private CAFFMapper caffMapper = Mappers.getMapper(CAFFMapper.class);
 
     @MockBean
     private CommentService commentServiceMock;
@@ -72,7 +73,7 @@ public class FileUploadTests {
                 .andExpect(content().json(
                         JSONArray.toJSONString(helper.loadAllCaffFiles(fileNames)
                                 .parallelStream()
-                                .map(caffMapperMock::toPreviewDTO)
+                                .map(caffMapper::toPreviewDTO)
                                 .collect(Collectors.toList()))
                         )
                 );
@@ -102,7 +103,7 @@ public class FileUploadTests {
         given(caffServiceMock.getCaffFileById(mockId))
                 .willReturn(Optional.of(mockCaffFile));
 
-        CAFFFileDetailDTO detail = caffMapperMock.toDetailDTO(mockCaffFile);
+        CAFFFileDetailDTO detail = caffMapper.toDetailDTO(mockCaffFile);
         String jsonString = jsonAdapter.toJson(detail);
         System.out.println(detail);
 
