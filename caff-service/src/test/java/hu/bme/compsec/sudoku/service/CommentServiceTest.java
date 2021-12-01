@@ -42,7 +42,7 @@ public class CommentServiceTest {
     @MockBean
     public CAFFRepository caffRepository;
 
-    CaffFileHelper helper = new CaffFileHelper();
+    final CaffFileHelper helper = new CaffFileHelper();
 
     @Before
     public void setup() throws CaffFileFormatException, IOException {

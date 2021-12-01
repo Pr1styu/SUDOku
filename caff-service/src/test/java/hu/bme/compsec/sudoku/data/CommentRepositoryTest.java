@@ -28,7 +28,7 @@ public class CommentRepositoryTest {
     @Autowired
     private CAFFRepository caffRepository;
 
-    CaffFileHelper helper = new CaffFileHelper();
+    final CaffFileHelper helper = new CaffFileHelper();
     Long caffId = 0L;
     Long commentId = 0L;
 

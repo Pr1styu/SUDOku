@@ -37,9 +37,7 @@ public class SecurityUtils {
         var jwtUserId = getUserIdFromJwt();
         // TODO: Fix these once we use UUIDs
         if (!Objects.equals(userId, jwtUserId)) {
-            throw new AccessDeniedException(
-                    String.format("User with id %d does NOT have permission for edit user data with id %d.", jwtUserId, userId)
-            );
+            throw new AccessDeniedException(String.format("User with id %d does NOT have permission for edit user data with id %d.", jwtUserId, userId));
         }
     }
 

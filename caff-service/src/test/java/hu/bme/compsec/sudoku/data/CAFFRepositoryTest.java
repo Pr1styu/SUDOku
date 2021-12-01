@@ -29,7 +29,7 @@ public class CAFFRepositoryTest {
     @Autowired
     private CAFFRepository caffRepository;
 
-    CaffFileHelper helper = new CaffFileHelper();
+    final CaffFileHelper helper = new CaffFileHelper();
 
     @Before
     public void initRepository() throws CaffFileFormatException, IOException {

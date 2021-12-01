@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public final class CaffProcessor {
 
-    private static final String workDirPath = "./workdir/";
+    private static final String WORK_DIR_PATH = "./workdir/";
     private static final String NATIVE_CAFF_PARSER_PATH_WIN = "./../native/bin/CAFFParser.exe";
     private static final String NATIVE_CAFF_PARSER_PATH_UNIX = "./../native/bin/CAFFParser";
     private static final String GENERATED_PREVIEW_EXTENSION = ".jpeg";
@@ -67,7 +67,7 @@ public final class CaffProcessor {
     @PostConstruct
     private void createWorkDir() {
         try {
-            Files.createDirectories(Paths.get(workDirPath));
+            Files.createDirectories(Paths.get(WORK_DIR_PATH));
         } catch (Exception e) {
             throw new RuntimeException("Could not create working directory for caff files!");
         }
@@ -91,7 +91,7 @@ public final class CaffProcessor {
     private void saveCaffFileToFileSystem(MultipartFile uploadedCaffFile, String clientFileName) {
         log.info("Trying to save caff file {} to the filesystem with name {}.", clientFileName, savedBaseName);
         try {
-            workDir = Paths.get(workDirPath);
+            workDir = Paths.get(WORK_DIR_PATH);
             if (!Files.exists(workDir)) {
                 createWorkDir();
             }
