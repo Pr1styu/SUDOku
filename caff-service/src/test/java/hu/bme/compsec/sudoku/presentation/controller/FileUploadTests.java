@@ -102,7 +102,7 @@ public class FileUploadTests {
     }
 
     @Test
-    public void shouldIgnoreUploadedFile_OR_BETTER_NAME() throws Exception {
+    public void shouldReturnBadRequestForUpload() throws Exception {
         MockMultipartFile multipartFile = helper.loadMultipartFile("1.caff");
         this.mockMvc.perform(multipart("/caff/upload")
                                 .file("caffFile", multipartFile.getBytes())
