@@ -1,6 +1,7 @@
 package hu.bme.compsec.sudoku.data;
 
 import hu.bme.compsec.sudoku.common.exception.CaffFileFormatException;
+import hu.bme.compsec.sudoku.data.CAFFRepository;
 import hu.bme.compsec.sudoku.data.domain.CAFFFile;
 import hu.bme.compsec.sudoku.helper.CaffFileHelper;
 import org.junit.Before;
@@ -42,32 +43,32 @@ public class CAFFRepositoryTest {
     }
 
     @Test
-    void testFindByName() {
+    public void testFindByName() {
         CAFFFile found = caffRepository.findByFileName("1.caff");
         assertThat(found.getFileName()).isEqualTo("1.caff");
     }
 
     @Test
-    void testFindAll() {
+    public void testFindAll() {
         List<CAFFFile> caffFiles = caffRepository.findAll();
         assertThat(caffFiles.size()).isEqualTo(3);
     }
 
     @Test
-    void testRemove() {
+    public void testRemove() {
         CAFFFile test = caffRepository.findByFileName("1.caff");
         caffRepository.delete(test);
         assertThat(caffRepository.findAll().size()).isEqualTo(2);
     }
 
     @Test
-    void testInsert() throws CaffFileFormatException, IOException {
+    public void testInsert() throws CaffFileFormatException, IOException {
         caffRepository.save(helper.loadCaffFile("3.caff"));
         assertThat(caffRepository.findAll().size()).isEqualTo(4);
     }
 
     @Test
-    void testFindByMetadata() {
+    public void testFindByMetadata() {
         List<CAFFFile> result = caffRepository.findAllByMetaDataIgnoreCase("sunset");
         assertThat(result.size()).isEqualTo(3);
     }

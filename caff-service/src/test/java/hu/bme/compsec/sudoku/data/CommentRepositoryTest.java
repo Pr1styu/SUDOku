@@ -67,7 +67,7 @@ public class CommentRepositoryTest {
     }
 
     @Test
-    void testFindByText() {
+    public void testFindByText() {
         Comment found = null;
         if(commentRepository.findById(commentId).isPresent()) {
             found = commentRepository.findById(commentId).get();
@@ -77,13 +77,13 @@ public class CommentRepositoryTest {
     }
 
     @Test
-    void testFindAll() {
+    public void testFindAll() {
         List<Comment> caffFiles = commentRepository.findAll();
         assertThat(caffFiles.size()).isEqualTo(3);
     }
 
     @Test
-    void testRemove() {
+    public void testRemove() {
         Comment test = null;
         if(commentRepository.findById(commentId).isPresent()){
              test = commentRepository.findById(commentId).get();
@@ -94,7 +94,7 @@ public class CommentRepositoryTest {
     }
 
     @Test
-    void testInsert() {
+    public void testInsert() {
         if(caffRepository.findById(caffId).isPresent()) {
             commentRepository.saveAndFlush(Comment.builder()
                     .caffFile(caffRepository.findById(caffId).get())
@@ -107,7 +107,7 @@ public class CommentRepositoryTest {
     }
 
     @Test
-    void testFindAllByCaffFileId() {
+    public void testFindAllByCaffFileId() {
         List<Comment> comments = commentRepository.findAllByCaffFileId(caffId);
         assertThat(comments.size()).isEqualTo(2);
     }

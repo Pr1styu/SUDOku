@@ -86,16 +86,16 @@ public class CAFFServiceTest {
     }
 
     @Test
-    void testFindById() {
+    public void testFindById() {
         Optional<CAFFFile> caff = caffService.getCaffFileById(1L);
-        assertThat(caff.isPresent()).isTrue();
+        assertThat(caff).isPresent();
         assertThat(caff.get().getFileName()).isEqualTo("1.caff");
     }
 
     @Test
-    void testMetaData() {
+    public void testMetaData() {
         Optional<CAFFFile> caff = caffService.getCaffFileById(1L);
-        assertThat(caff.isPresent()).isTrue();
+        assertThat(caff).isPresent();
 
         List<String> metaData = Arrays.asList("sunset", "landscape", "mountains");
         assertThat(new HashSet<>(caff.get().getMetaData())).isEqualTo(new HashSet<>(metaData));

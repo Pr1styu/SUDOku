@@ -71,7 +71,7 @@ public class CommentServiceTest {
     }
 
     @Test
-    void testGetALlCommentsForCaffFile() {
+    public void testGetALlCommentsForCaffFile() {
         List<Comment> comments = commentService.getAllCommentForCaffFile(1L);
         assertThat(comments.size()).isEqualTo(3);
     }
@@ -84,7 +84,7 @@ public class CommentServiceTest {
     }*/
 
     @Test
-    void testTryAddCommentToNonExistingCaffFile() {
+    public void testTryAddCommentToNonExistingCaffFile() {
         boolean result = commentService.addCommentToCaffFile(4L, new CommentDTO("Test comment4", "admin"));
         assertThat(result).isFalse();
     }
