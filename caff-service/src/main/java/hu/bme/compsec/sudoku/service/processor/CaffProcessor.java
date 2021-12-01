@@ -47,7 +47,7 @@ public final class CaffProcessor {
     @Getter
     private List<String> metaData;
 
-    public void process(MultipartFile uploadedCaffFile, String clientFileName) throws CaffFileFormatException, CAFFProcessorRuntimeException, IOException, InterruptedException {
+    public void process(MultipartFile uploadedCaffFile, String clientFileName) throws CaffFileFormatException, CAFFProcessorRuntimeException {
         /*
          * DONE 1. Save uploaded caff file (uploadedCaffFile) to the filesystem.
          * DONE 2. Call the native component with proper params
@@ -114,7 +114,7 @@ public final class CaffProcessor {
      * CAFFParser -i <caff fájl helye> <-of> <jpeg kimeneti helye és neve> <-ot> <metaadatoknak a kimeneti helye és neve>
      * CAFFParser -of "hello.jpeg" -i "C:\Users\ABC\CLionProjects\SUDOku\NativeComponent\CAFFTest\3.caff" -ot "txtout.txt"
      * */
-    private void parseCaffFile() throws CaffFileFormatException, InterruptedException, IOException {
+    private void parseCaffFile() throws CaffFileFormatException {
         String parserCommand = createParserCommand();
         ProcessBuilder processBuilder = new ProcessBuilder(parserCommand.split(" "));
         File parseLogFile = workDir.resolve(savedBaseName + PARSER_LOG_EXTENSION).toFile(); // TODO: Move logs another place
@@ -127,7 +127,6 @@ public final class CaffProcessor {
             final int parseResultCode = parserProcess.exitValue();
             if (parseResultCode == ParseResult.PARSED.getCode()) {
                 log.info("Caff file {} parsed successfully.", savedBaseName);
-                throw new InterruptedException("Test");
             } else {
                 log.error("Caff parser finished with error code: {}", parseResultCode);
                 throw new CaffFileFormatException("Could not parse caff file: {}, code: ", savedBaseName, parseResultCode);
@@ -136,18 +135,9 @@ public final class CaffProcessor {
             log.error("Could not call native parser for caff file {} due to {}.", savedBaseName, e.getMessage());
             throw new CaffFileFormatException("Could not parse caff file: {}", savedBaseName);
         } catch (InterruptedException e) {
-            log.error("Could not process caff file {} on time.", savedBaseName);
-            cleanWorkDir();
-            cleanPreviewAndMetadata();
-            throw new InterruptedException("Process was interrupted because of timeout");
+            log.error("Could process caff file {} on time.", savedBaseName);
+            throw new CaffFileFormatException("Too complex caff file to parse!");
         }
-    }
-
-    private void cleanPreviewAndMetadata() throws IOException {
-        Files.deleteIfExists(generatedPreviewPath);
-        Files.deleteIfExists(generatedMetaDataPath);
-
-
     }
 
     private String createParserCommand() {

@@ -46,7 +46,7 @@ public class CommentServiceTest {
     final CaffFileHelper helper = new CaffFileHelper();
 
     @Before
-    public void setup() throws CaffFileFormatException, IOException, CAFFProcessorRuntimeException, InterruptedException {
+    public void setup() throws CaffFileFormatException, IOException, CAFFProcessorRuntimeException {
         commentRepository = Mockito.mock(CommentRepository.class);
         caffRepository = Mockito.mock(CAFFRepository.class);
         commentService = new CommentService(caffRepository, commentRepository);

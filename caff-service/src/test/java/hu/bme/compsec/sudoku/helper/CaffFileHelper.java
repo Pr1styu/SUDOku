@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CaffFileHelper {
-    public CAFFFile loadCaffFile(String resourceFileName) throws IOException, CaffFileFormatException, CAFFProcessorRuntimeException, InterruptedException {
+    public CAFFFile loadCaffFile(String resourceFileName) throws IOException, CaffFileFormatException, CAFFProcessorRuntimeException {
         MultipartFile result = loadMultipartFile(resourceFileName);
 
         var processor = new CaffProcessor();
@@ -46,7 +46,7 @@ public class CaffFileHelper {
         return new MockMultipartFile("caffFile", "", null, content);
     }
 
-    public List<CAFFFile> loadAllCaffFiles() throws CaffFileFormatException, IOException, CAFFProcessorRuntimeException, InterruptedException {
+    public List<CAFFFile> loadAllCaffFiles() throws CaffFileFormatException, IOException, CAFFProcessorRuntimeException {
         ArrayList<CAFFFile> result = new ArrayList<>();
         for (String fileName : getAllFileNames()) {
             result.add(loadCaffFile(fileName));
