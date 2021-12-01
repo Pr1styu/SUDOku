@@ -3,12 +3,12 @@ package hu.bme.compsec.sudoku.presentation.controller;
 import com.nimbusds.jose.shaded.json.JSONArray;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
-import hu.bme.compsec.sudoku.common.exception.CaffFileFormatException;
 import hu.bme.compsec.sudoku.config.TestSecurityConfig;
 import hu.bme.compsec.sudoku.data.domain.CAFFFile;
 import hu.bme.compsec.sudoku.data.domain.Comment;
 import hu.bme.compsec.sudoku.helper.CaffFileHelper;
 import hu.bme.compsec.sudoku.presentation.dto.CAFFFileDetailDTO;
+import hu.bme.compsec.sudoku.presentation.dto.CommentDTO;
 import hu.bme.compsec.sudoku.presentation.mapping.CAFFMapper;
 import hu.bme.compsec.sudoku.service.CAFFService;
 import hu.bme.compsec.sudoku.service.CommentService;
@@ -23,7 +23,6 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -47,14 +46,15 @@ public class CAFFControllerTest {
     @MockBean
     private CAFFService caffServiceMock;
 
-    private CAFFMapper caffMapper = Mappers.getMapper(CAFFMapper.class);
+    private final CAFFMapper caffMapper = Mappers.getMapper(CAFFMapper.class);
 
     @MockBean
     private CommentService commentServiceMock;
 
-    private CaffFileHelper helper = new CaffFileHelper();
+    private final CaffFileHelper helper = new CaffFileHelper();
     private final Moshi moshi = new Moshi.Builder().build();
-    private final JsonAdapter<CAFFFileDetailDTO> jsonAdapter = moshi.adapter(CAFFFileDetailDTO.class);
+    private final JsonAdapter<CAFFFileDetailDTO> caffJsonAdapter = moshi.adapter(CAFFFileDetailDTO.class);
+    private final JsonAdapter<CommentDTO> commentJsonAdapter = moshi.adapter(CommentDTO.class);
 
     @Test
     public void shouldListAllFiles() throws Exception {
@@ -89,7 +89,7 @@ public class CAFFControllerTest {
                 .willReturn(Optional.of(mockCaffFile));
 
         CAFFFileDetailDTO detail = caffMapper.toDetailDTO(mockCaffFile);
-        String jsonString = jsonAdapter.toJson(detail);
+        String jsonString = caffJsonAdapter.toJson(detail);
         System.out.println(detail);
 
         mockMvc.perform(get("/caff/" + mockId)
@@ -100,6 +100,17 @@ public class CAFFControllerTest {
 
         verify(caffServiceMock, times(1)).getCaffFileById(mockId);
         verifyNoMoreInteractions(caffServiceMock);
+    }
+
+    @Test
+    public void should404WhenMissingFile() throws Exception {
+        this.mockMvc.perform(get("/caff/1")
+                        .with(user("admin").password("admin")))
+                .andExpect(status().isNotFound());
+
+        this.mockMvc.perform(get("/caff/download/1")
+                        .with(user("admin").password("admin")))
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -215,18 +226,25 @@ public class CAFFControllerTest {
     }
 
     @Test
-    public void shouldAddCommentSuccessfully() {
+    public void shouldAddCommentSuccessfully() throws Exception {
+        CommentDTO commentDTO = new CommentDTO("Test comment1", "admin");
+        given(commentServiceMock.addCommentToCaffFile(1L, commentDTO))
+                .willReturn(true);
 
+        mockMvc.perform(post("/caff/1/comment")
+                        .with(user("admin").password("admin"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(commentJsonAdapter.toJson(commentDTO)))
+                .andExpect(status().isAccepted());
     }
 
-	@Test
-	public void should404WhenMissingFile() throws Exception {
-        this.mockMvc.perform(get("/caff/1")
-                        .with(user("admin").password("admin")))
+    @Test
+    public void shouldReturnNotFoundWhenAddingComment() throws Exception {
+        CommentDTO commentDTO = new CommentDTO("Test comment1", "admin");
+        mockMvc.perform(post("/caff/2/comment")
+                        .with(user("admin").password("admin"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(commentJsonAdapter.toJson(commentDTO)))
                 .andExpect(status().isNotFound());
-
-        this.mockMvc.perform(get("/caff/download/1")
-                        .with(user("admin").password("admin")))
-                .andExpect(status().isNotFound());
-	}
+    }
 }
