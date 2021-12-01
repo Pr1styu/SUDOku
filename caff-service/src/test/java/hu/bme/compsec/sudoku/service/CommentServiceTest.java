@@ -6,6 +6,7 @@ import hu.bme.compsec.sudoku.data.CAFFRepository;
 import hu.bme.compsec.sudoku.data.CommentRepository;
 import hu.bme.compsec.sudoku.data.domain.Comment;
 import hu.bme.compsec.sudoku.helper.CaffFileHelper;
+import hu.bme.compsec.sudoku.presentation.dto.CommentDTO;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,7 +21,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,6 +53,7 @@ public class CommentServiceTest {
         for (String file : helper.getAllFileNames()) {
             int id = Integer.parseInt(Character.toString(file.charAt(0)));
             Mockito.when(caffRepository.findById((long) id)).thenReturn(Optional.ofNullable(helper.loadAllCaffFiles().get(id - 1)));
+            Mockito.when(caffRepository.existsById((long) id)).thenReturn(true);
         }
         Mockito.when(caffRepository.findAll()).thenReturn(helper.loadAllCaffFiles());
 
@@ -66,7 +67,6 @@ public class CommentServiceTest {
                     .build()
             );
         }
-
         Mockito.when(commentRepository.findAllByCaffFileId(1L)).thenReturn(comments);
     }
 
@@ -74,5 +74,18 @@ public class CommentServiceTest {
     public void testGetALlCommentsForCaffFile() {
         List<Comment> comments = commentService.getAllCommentForCaffFile(1L);
         assertThat(comments.size()).isEqualTo(3);
+    }
+
+    @Test
+    public void testAddCommentToCaffFile() {
+        boolean result = commentService.addCommentToCaffFile(1L, new CommentDTO("Test comment4", "admin"));
+        //TODO: getAuthenticatedUserName() throws NullPointerException
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    public void testTryAddCommentToNonExistingCaffFile() {
+        boolean result = commentService.addCommentToCaffFile(4L, new CommentDTO("Test comment4", "admin"));
+        assertThat(result).isFalse();
     }
 }
