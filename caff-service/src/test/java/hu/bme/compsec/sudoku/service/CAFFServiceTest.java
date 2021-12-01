@@ -40,7 +40,7 @@ public class CAFFServiceTest {
 
     @Before
     @Test
-    public void setup() throws CaffFileFormatException, IOException, CAFFProcessorRuntimeException {
+    public void setup() throws CaffFileFormatException, IOException, CAFFProcessorRuntimeException, InterruptedException {
         CaffFileHelper helper = new CaffFileHelper();
 
         MultipartFile multipart = helper.loadMultipartFile("1.caff");
@@ -58,7 +58,7 @@ public class CAFFServiceTest {
             int id = Integer.parseInt(Character.toString(file.charAt(0)));
             try {
                 Mockito.when(caffRepository.findById((long) id)).thenReturn(Optional.ofNullable(helper.loadCaffFile(fileNames[id - 1])));
-            } catch (IOException | CaffFileFormatException | CAFFProcessorRuntimeException e) {
+            } catch (IOException | CaffFileFormatException | CAFFProcessorRuntimeException | InterruptedException e) {
                 e.printStackTrace();
             }
         });
@@ -67,7 +67,7 @@ public class CAFFServiceTest {
         Arrays.asList(fileNames).forEach(file -> {
             try {
                 caffFiles.add(helper.loadCaffFile(file));
-            } catch (IOException | CaffFileFormatException | CAFFProcessorRuntimeException e) {
+            } catch (IOException | CaffFileFormatException | CAFFProcessorRuntimeException | InterruptedException e) {
                 e.printStackTrace();
             }
         });

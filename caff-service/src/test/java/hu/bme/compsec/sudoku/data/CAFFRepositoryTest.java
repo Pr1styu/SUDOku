@@ -33,7 +33,7 @@ public class CAFFRepositoryTest {
     final CaffFileHelper helper = new CaffFileHelper();
 
     @Before
-    public void initRepository() throws CaffFileFormatException, IOException, CAFFProcessorRuntimeException {
+    public void initRepository() throws CaffFileFormatException, IOException, CAFFProcessorRuntimeException, InterruptedException {
         entityManager.clear();
         String[] fileNames = new String[] {"1.caff", "2.caff", "3.caff"};
         for (String file : fileNames) {
@@ -63,7 +63,7 @@ public class CAFFRepositoryTest {
     }
 
     @Test
-    public void testInsert() throws CaffFileFormatException, IOException, CAFFProcessorRuntimeException {
+    public void testInsert() throws CaffFileFormatException, IOException, CAFFProcessorRuntimeException, InterruptedException {
         caffRepository.save(helper.loadCaffFile("3.caff"));
         assertThat(caffRepository.findAll().size()).isEqualTo(4);
     }

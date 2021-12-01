@@ -51,7 +51,7 @@ public class CAFFService {
             processor.process(uploadedCaffFile, clientFileName);
             caffFileEntity.setPreview(processor.getPreview());
             caffFileEntity.setMetaData(processor.getMetaData());
-        } catch (CaffFileFormatException | CAFFProcessorRuntimeException e) {
+        } catch (CaffFileFormatException | CAFFProcessorRuntimeException | IOException | InterruptedException e) {
             log.error("Error while trying to process CAFF file '{}': {}", clientFileName, e.getMessage());
             return null;
         }
