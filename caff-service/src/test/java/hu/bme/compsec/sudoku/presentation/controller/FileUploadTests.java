@@ -4,13 +4,8 @@ import com.nimbusds.jose.shaded.json.JSONArray;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import hu.bme.compsec.sudoku.config.TestSecurityConfig;
-import com.squareup.moshi.JsonAdapter;
-import com.squareup.moshi.Moshi;
-import hu.bme.compsec.sudoku.config.TestSecurityConfig;
 import hu.bme.compsec.sudoku.data.domain.CAFFFile;
 import hu.bme.compsec.sudoku.helper.CaffFileHelper;
-import hu.bme.compsec.sudoku.presentation.dto.CAFFFileDetailDTO;
-import hu.bme.compsec.sudoku.presentation.dto.CommentDTO;
 import hu.bme.compsec.sudoku.presentation.dto.CAFFFileDetailDTO;
 import hu.bme.compsec.sudoku.presentation.mapping.CAFFMapper;
 import hu.bme.compsec.sudoku.service.CAFFService;
@@ -48,7 +43,6 @@ public class FileUploadTests {
 
     @MockBean
     private CAFFService caffServiceMock;
-
 
     private CAFFMapper caffMapper = Mappers.getMapper(CAFFMapper.class);
 
@@ -90,16 +84,6 @@ public class FileUploadTests {
                 .rawBytes(f.getRawBytes())
                 .build();
 
-        /*CAFFFileDetailDTO det = CAFFFileDetailDTO.builder()
-                .metaData(f.getMetaData())
-                .comments(f.getComments().stream().map(
-                        c -> CommentDTO.builder()
-                                .username(c.getUsername())
-                                .text(c.getText())
-                                .build()
-                ).collect(Collectors.toList()))
-                .build();*/
-
         given(caffServiceMock.getCaffFileById(mockId))
                 .willReturn(Optional.of(mockCaffFile));
 
@@ -129,14 +113,7 @@ public class FileUploadTests {
                                 .accept("multipart/form-data")
                 )
                 .andExpect(status().isBadRequest());
-//				.andExpect(header().string("Location", "/"));
-
-        //.then(this.storageService).should().store(multipartFile);
     }
-
-    // TODO: Implement this with caffServiceMock return a valid entity and check for 201 etc
-    //public void shouldSaveUploadedFile() throws Exception {
-
 
 	/*@SuppressWarnings("unchecked")
 	@Test
@@ -146,5 +123,4 @@ public class FileUploadTests {
 
 		this.mockMvc.perform(get("/files/test.txt")).andExpect(status().isNotFound());
 	}*/
-
 }
