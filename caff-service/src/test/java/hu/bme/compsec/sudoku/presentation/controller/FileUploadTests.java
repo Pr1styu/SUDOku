@@ -1,7 +1,6 @@
 package hu.bme.compsec.sudoku.presentation.controller;
 
-import hu.bme.compsec.sudoku.common.config.security.UserRole;
-import hu.bme.compsec.sudoku.config.TestSecurityConfig;
+import com.nimbusds.jose.shaded.json.JSONArray;
 import hu.bme.compsec.sudoku.data.domain.CAFFFile;
 import hu.bme.compsec.sudoku.helper.CaffFileHelper;
 import hu.bme.compsec.sudoku.service.CAFFService;
@@ -13,26 +12,23 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.mock.web.MockPart;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 @AutoConfigureMockMvc
-@SpringBootTest(classes = TestSecurityConfig.class)
-@ActiveProfiles("dev")
+@SpringBootTest
 @WithMockUser(username="admin", password = "admin", authorities = {"caff:read", "caff:write", "caff:delete"})
 public class FileUploadTests {
 
@@ -46,6 +42,20 @@ public class FileUploadTests {
 
 	@Test
 	public void shouldListAllFiles() throws Exception {
+		String[] fileNames = new String[] {"1.caff", "3.caff"};
+
+		given(caffServiceMock.getAllCaffFile())
+				.willReturn(helper.loadAllCaffFiles(fileNames));
+
+		mockMvc.perform(get("/caff")
+						.with(user("admin").password("admin")))
+				.andExpect(status().isOk())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+				.andExpect(content().json(JSONArray.toJSONString(helper.loadAllCaffFiles(fileNames))));
+	}
+
+	@Test
+	public void shouldReturnCaffById() throws Exception {
 		final long mockId = 1L;
 		var mockCaffFile = CAFFFile.builder().fileName("test.caff")
 				.id(mockId)

@@ -53,6 +53,6 @@ dependencies {
 	testImplementation 'org.junit.vintage:junit-vintage-engine'
 }
 
-//test {
-//	useJUnitPlatform()
-//}
+test {
+	useJUnitPlatform()
+}
