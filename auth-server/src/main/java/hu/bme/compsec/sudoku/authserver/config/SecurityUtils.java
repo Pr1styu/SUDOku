@@ -13,9 +13,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class SecurityUtils {
 
-    private SecurityUtils(){
-
-    }
+    private SecurityUtils(){}
 
     public static final String USERID_CLAIM = "user_id";
     public static final String AUTHORITIES_CLAIM = "authorities";

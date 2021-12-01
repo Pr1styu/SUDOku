@@ -1,5 +1,6 @@
 package hu.bme.compsec.sudoku.service;
 
+import hu.bme.compsec.sudoku.common.exception.CAFFProcessorRuntimeException;
 import hu.bme.compsec.sudoku.common.exception.CaffFileFormatException;
 import hu.bme.compsec.sudoku.config.TestSecurityConfig;
 import hu.bme.compsec.sudoku.data.CAFFRepository;
@@ -45,7 +46,7 @@ public class CommentServiceTest {
     final CaffFileHelper helper = new CaffFileHelper();
 
     @Before
-    public void setup() throws CaffFileFormatException, IOException {
+    public void setup() throws CaffFileFormatException, IOException, CAFFProcessorRuntimeException {
         commentRepository = Mockito.mock(CommentRepository.class);
         caffRepository = Mockito.mock(CAFFRepository.class);
         commentService = new CommentService(caffRepository, commentRepository);

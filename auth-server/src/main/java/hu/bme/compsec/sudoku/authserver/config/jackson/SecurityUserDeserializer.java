@@ -45,8 +45,7 @@ public class SecurityUserDeserializer extends JsonDeserializer<SecurityUser> {
 
     private Set<GrantedAuthority> getUserAuthorities(final ObjectMapper mapper, final JsonNode authoritiesNode) throws IOException {
         Set<GrantedAuthority> userAuthorities = new HashSet<>();
-        if (authoritiesNode != null) {
-            if (authoritiesNode.isArray()) {
+        if (authoritiesNode != null && authoritiesNode.isArray()) {
                 for (final JsonNode objNode : authoritiesNode) {
                     if (objNode.isArray()) {
                         ArrayNode arrayNode = (ArrayNode) objNode;
@@ -57,7 +56,6 @@ public class SecurityUserDeserializer extends JsonDeserializer<SecurityUser> {
                         }
                     }
                 }
-            }
         }
         return userAuthorities;
     }

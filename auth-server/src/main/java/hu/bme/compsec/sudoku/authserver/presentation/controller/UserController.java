@@ -24,7 +24,7 @@ public class UserController {
     private final UserMapper userMapper;
 
     @PostMapping("/register")
-    public ResponseEntity register(@RequestBody UserDTO dto) {
+    public ResponseEntity<String> register(@RequestBody UserDTO dto) {
         log.trace("Registering new user with username {}.", dto.getUsername());
 
         try {
@@ -51,7 +51,7 @@ public class UserController {
 
     @PutMapping("/update")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity updateUserData(@RequestBody UserDTO dto) {
+    public ResponseEntity<String> updateUserData(@RequestBody UserDTO dto) {
         log.trace("User with id {} about to modify user data to.", getUserIdFromJwt());
 
         try {
@@ -67,19 +67,19 @@ public class UserController {
     }
 
     @PostMapping("/forgotPassword")
-    public ResponseEntity forgotPassword() {
+    public ResponseEntity<String> forgotPassword() {
         userService.forgotPassword();
         return ResponseEntity.accepted().build();
     }
-
+    //TODO Delete this or actually make a ranewpassword service
     @PostMapping("/renewPassword")
-    public ResponseEntity renewPassword() {
+    public ResponseEntity<String> renewPassword() {
         userService.forgotPassword();
         return ResponseEntity.accepted().build();
     }
 
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity deleteUserAccount() {
+    public ResponseEntity<String> deleteUserAccount() {
         userService.deleteUser();
         return ResponseEntity.accepted().build();
     }

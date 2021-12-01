@@ -2,6 +2,7 @@ package hu.bme.compsec.sudoku.service.processor;
 
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
+import hu.bme.compsec.sudoku.common.exception.CAFFProcessorRuntimeException;
 import hu.bme.compsec.sudoku.common.exception.CaffFileFormatException;
 import hu.bme.compsec.sudoku.data.helper.CiffList;
 import lombok.Getter;
@@ -46,7 +47,7 @@ public final class CaffProcessor {
     @Getter
     private List<String> metaData;
 
-    public void process(MultipartFile uploadedCaffFile, String clientFileName) throws CaffFileFormatException {
+    public void process(MultipartFile uploadedCaffFile, String clientFileName) throws CaffFileFormatException, CAFFProcessorRuntimeException {
         /*
          * DONE 1. Save uploaded caff file (uploadedCaffFile) to the filesystem.
          * DONE 2. Call the native component with proper params
@@ -65,11 +66,11 @@ public final class CaffProcessor {
     }
 
     @PostConstruct
-    private void createWorkDir() {
+    private void createWorkDir() throws CAFFProcessorRuntimeException {
         try {
             Files.createDirectories(Paths.get(WORK_DIR_PATH));
         } catch (Exception e) {
-            throw new RuntimeException("Could not create working directory for caff files!");
+            throw new CAFFProcessorRuntimeException("Could not create working directory for caff files!");
         }
     }
 
@@ -88,7 +89,7 @@ public final class CaffProcessor {
         }
     }
 
-    private void saveCaffFileToFileSystem(MultipartFile uploadedCaffFile, String clientFileName) {
+    private void saveCaffFileToFileSystem(MultipartFile uploadedCaffFile, String clientFileName) throws CAFFProcessorRuntimeException {
         log.info("Trying to save caff file {} to the filesystem with name {}.", clientFileName, savedBaseName);
         try {
             workDir = Paths.get(WORK_DIR_PATH);
@@ -105,7 +106,7 @@ public final class CaffProcessor {
             log.info("Uploaded caff file {} successfully saved with name {}.", clientFileName, savedCaffFileName);
         } catch (Exception e) {
             log.info("Uploaded caff file {} could not be saved to filesystem.", clientFileName);
-            throw new RuntimeException("Uploaded caff file could not be saved to filesystem due to: " + e.getMessage());
+            throw new CAFFProcessorRuntimeException("Uploaded caff file could not be saved to filesystem due to: " + e.getMessage());
         }
     }
 

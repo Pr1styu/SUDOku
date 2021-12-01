@@ -16,6 +16,8 @@ public class SecurityUtils {
     public static final String USERID_CLAIM = "user_id";
     public static final String AUTHORITIES_CLAIM = "authorities";
 
+    private SecurityUtils(){}
+
 
     public static Long getUserIdFromJwt() {
         var auth = SecurityContextHolder.getContext().getAuthentication();
@@ -36,8 +38,7 @@ public class SecurityUtils {
     public static void checkPermissionForCaffFile(Long userId) {
         var jwtUserId = getUserIdFromJwt();
         // TODO: Fix these once we use UUIDs
-        if (!Objects.equals(userId, jwtUserId)) {
-            if (!isAuthenticatedUserAdmin())
+        if (!Objects.equals(userId, jwtUserId) && !isAuthenticatedUserAdmin()) {
             throw new AccessDeniedException(
                     String.format("User with id %d does NOT have permission for edit CAFF file with id %d.", jwtUserId, userId)
             );

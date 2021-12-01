@@ -10,8 +10,6 @@ public enum UserPermission {
     CAFF_READ("caff:read"),
     CAFF_WRITE("caff:write"),
     CAFF_DELETE("caff:delete");
-//    DB_WRITE("db:write"),
-//    DB_DELETE("db:delete");
 
 
     private final String permissionText;

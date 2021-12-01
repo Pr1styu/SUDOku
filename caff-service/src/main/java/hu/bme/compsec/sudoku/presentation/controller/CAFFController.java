@@ -87,7 +87,7 @@ public class CAFFController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteCaffFile(@PathVariable Long id) {
+    public ResponseEntity<String> deleteCaffFile(@PathVariable Long id) {
         try {
             caffService.deleteCaffFile(id);
             return ResponseEntity.ok().build();
@@ -118,7 +118,7 @@ public class CAFFController {
     }
 
     @PostMapping("/{id}/comment")
-    public ResponseEntity addCommentForCaffFile(@PathVariable Long id, @RequestBody CommentDTO commentDTO) {
+    public ResponseEntity<String> addCommentForCaffFile(@PathVariable Long id, @RequestBody CommentDTO commentDTO) {
 
         log.info("Adding comment '{}' for caff file with id {}.", commentDTO.getText(), id);
 

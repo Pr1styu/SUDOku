@@ -1,5 +1,6 @@
 package hu.bme.compsec.sudoku.helper;
 
+import hu.bme.compsec.sudoku.common.exception.CAFFProcessorRuntimeException;
 import hu.bme.compsec.sudoku.common.exception.CaffFileFormatException;
 import hu.bme.compsec.sudoku.data.domain.CAFFFile;
 import hu.bme.compsec.sudoku.service.processor.CaffProcessor;
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CaffFileHelper {
-    public CAFFFile loadCaffFile(String resourceFileName) throws IOException, CaffFileFormatException {
+    public CAFFFile loadCaffFile(String resourceFileName) throws IOException, CaffFileFormatException, CAFFProcessorRuntimeException {
         MultipartFile result = loadMultipartFile(resourceFileName);
 
         var processor = new CaffProcessor();
@@ -45,7 +46,7 @@ public class CaffFileHelper {
         return new MockMultipartFile("caffFile", "", null, content);
     }
 
-    public List<CAFFFile> loadAllCaffFiles() throws CaffFileFormatException, IOException {
+    public List<CAFFFile> loadAllCaffFiles() throws CaffFileFormatException, IOException, CAFFProcessorRuntimeException {
         ArrayList<CAFFFile> result = new ArrayList<>();
         for (String fileName : getAllFileNames()) {
             result.add(loadCaffFile(fileName));

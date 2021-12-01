@@ -1,5 +1,6 @@
 package hu.bme.compsec.sudoku.service;
 
+import hu.bme.compsec.sudoku.common.exception.CAFFProcessorRuntimeException;
 import hu.bme.compsec.sudoku.common.exception.CaffFileFormatException;
 import hu.bme.compsec.sudoku.config.TestSecurityConfig;
 import hu.bme.compsec.sudoku.data.CAFFRepository;
@@ -39,7 +40,7 @@ public class CAFFServiceTest {
 
     @Before
     @Test
-    public void setup() throws CaffFileFormatException, IOException {
+    public void setup() throws CaffFileFormatException, IOException, CAFFProcessorRuntimeException {
         CaffFileHelper helper = new CaffFileHelper();
 
         MultipartFile multipart = helper.loadMultipartFile("1.caff");
@@ -57,7 +58,7 @@ public class CAFFServiceTest {
             int id = Integer.parseInt(Character.toString(file.charAt(0)));
             try {
                 Mockito.when(caffRepository.findById((long) id)).thenReturn(Optional.ofNullable(helper.loadCaffFile(fileNames[id - 1])));
-            } catch (IOException | CaffFileFormatException e) {
+            } catch (IOException | CaffFileFormatException | CAFFProcessorRuntimeException e) {
                 e.printStackTrace();
             }
         });
@@ -66,7 +67,7 @@ public class CAFFServiceTest {
         Arrays.asList(fileNames).forEach(file -> {
             try {
                 caffFiles.add(helper.loadCaffFile(file));
-            } catch (IOException | CaffFileFormatException e) {
+            } catch (IOException | CaffFileFormatException | CAFFProcessorRuntimeException e) {
                 e.printStackTrace();
             }
         });

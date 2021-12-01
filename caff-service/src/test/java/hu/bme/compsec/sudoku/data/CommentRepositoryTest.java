@@ -1,5 +1,6 @@
 package hu.bme.compsec.sudoku.data;
 
+import hu.bme.compsec.sudoku.common.exception.CAFFProcessorRuntimeException;
 import hu.bme.compsec.sudoku.common.exception.CaffFileFormatException;
 import hu.bme.compsec.sudoku.data.domain.CAFFFile;
 import hu.bme.compsec.sudoku.data.domain.Comment;
@@ -33,7 +34,7 @@ public class CommentRepositoryTest {
     Long commentId = 0L;
 
     @Before
-    public void initRepository() throws CaffFileFormatException, IOException {
+    public void initRepository() throws CaffFileFormatException, IOException, CAFFProcessorRuntimeException {
         CAFFFile saved = caffRepository.saveAndFlush(helper.loadCaffFile("1.caff"));
         CAFFFile other = caffRepository.saveAndFlush(helper.loadCaffFile("2.caff"));
         caffId = saved.getId();

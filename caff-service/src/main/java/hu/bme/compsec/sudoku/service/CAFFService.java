@@ -1,5 +1,6 @@
 package hu.bme.compsec.sudoku.service;
 
+import hu.bme.compsec.sudoku.common.exception.CAFFProcessorRuntimeException;
 import hu.bme.compsec.sudoku.common.exception.CaffFileFormatException;
 import hu.bme.compsec.sudoku.common.exception.CaffFileNotFoundException;
 import hu.bme.compsec.sudoku.data.CAFFRepository;
@@ -50,7 +51,7 @@ public class CAFFService {
             processor.process(uploadedCaffFile, clientFileName);
             caffFileEntity.setPreview(processor.getPreview());
             caffFileEntity.setMetaData(processor.getMetaData());
-        } catch (CaffFileFormatException e) {
+        } catch (CaffFileFormatException | CAFFProcessorRuntimeException e) {
             log.error("Error while trying to process CAFF file '{}': {}", clientFileName, e.getMessage());
             return null;
         }
