@@ -3,7 +3,6 @@ package hu.bme.compsec.sudoku.presentation.controller;
 import com.nimbusds.jose.shaded.json.JSONArray;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
-import hu.bme.compsec.sudoku.common.exception.CaffFileFormatException;
 import hu.bme.compsec.sudoku.config.TestSecurityConfig;
 import hu.bme.compsec.sudoku.data.domain.CAFFFile;
 import hu.bme.compsec.sudoku.helper.CaffFileHelper;
@@ -11,21 +10,17 @@ import hu.bme.compsec.sudoku.presentation.dto.CAFFFileDetailDTO;
 import hu.bme.compsec.sudoku.presentation.mapping.CAFFMapper;
 import hu.bme.compsec.sudoku.service.CAFFService;
 import hu.bme.compsec.sudoku.service.CommentService;
-import org.apache.commons.io.FilenameUtils;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.util.StringUtils;
 
-import java.io.IOException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -132,8 +127,7 @@ public class FileUploadTests {
                 .rawBytes(f.getRawBytes())
                 .build();
 
-        String name = FilenameUtils.getBaseName(StringUtils.cleanPath("1.caff"));
-        given(caffServiceMock.saveCaffFile(multipartFile, name))
+        given(caffServiceMock.saveCaffFile(isNotNull(), isNotNull()))
                 .willReturn(mockCaffFile);
 
         this.mockMvc.perform(multipart("/caff/upload")
