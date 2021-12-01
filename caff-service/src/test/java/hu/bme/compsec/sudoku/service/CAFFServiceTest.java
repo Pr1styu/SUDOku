@@ -1,7 +1,6 @@
 package hu.bme.compsec.sudoku.service;
 
 import hu.bme.compsec.sudoku.common.exception.CaffFileFormatException;
-import hu.bme.compsec.sudoku.common.exception.CaffFileNotFoundException;
 import hu.bme.compsec.sudoku.config.TestSecurityConfig;
 import hu.bme.compsec.sudoku.data.CAFFRepository;
 import hu.bme.compsec.sudoku.data.domain.CAFFFile;
@@ -87,14 +86,14 @@ public class CAFFServiceTest {
     }
 
     @Test
-    public void testFindById() {
+    void testFindById() {
         Optional<CAFFFile> caff = caffService.getCaffFileById(1L);
         assertThat(caff.isPresent()).isTrue();
         assertThat(caff.get().getFileName()).isEqualTo("1.caff");
     }
 
     @Test
-    public void testMetaData() {
+    void testMetaData() {
         Optional<CAFFFile> caff = caffService.getCaffFileById(1L);
         assertThat(caff.isPresent()).isTrue();
 
@@ -103,7 +102,7 @@ public class CAFFServiceTest {
     }
 
     /*@Test
-    public void testCRUD() throws IOException, CaffFileNotFoundException {
+    void testCRUD() throws IOException, CaffFileNotFoundException {
         List<CAFFFile> caffFiles = caffService.getAllCaffFile();
         assertThat(caffFiles.size()).isEqualTo(2);
 
@@ -121,7 +120,7 @@ public class CAFFServiceTest {
     }
 
     @Test
-    public void testSearchByMetaData() throws IOException {
+    void testSearchByMetaData() throws IOException {
         for (int i = 1; i <= 3; i++) {
             CaffFileHelper helper = new CaffFileHelper();
             String fileName = i + ".caff";

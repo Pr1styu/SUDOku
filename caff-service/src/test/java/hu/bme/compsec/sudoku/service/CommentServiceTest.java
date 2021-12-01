@@ -71,20 +71,20 @@ public class CommentServiceTest {
     }
 
     @Test
-    public void testGetALlCommentsForCaffFile() {
+    void testGetALlCommentsForCaffFile() {
         List<Comment> comments = commentService.getAllCommentForCaffFile(1L);
         assertThat(comments.size()).isEqualTo(3);
     }
 
     /*@Test
-    public void testAddCommentToCaffFile() {
+    void testAddCommentToCaffFile() {
         boolean result = commentService.addCommentToCaffFile(1L, new CommentDTO("Test comment4", "admin"));
         //TODO: getAuthenticatedUserName() throws NullPointerException
         assertThat(result).isTrue();
     }*/
 
     @Test
-    public void testTryAddCommentToNonExistingCaffFile() {
+    void testTryAddCommentToNonExistingCaffFile() {
         boolean result = commentService.addCommentToCaffFile(4L, new CommentDTO("Test comment4", "admin"));
         assertThat(result).isFalse();
     }
