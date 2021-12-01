@@ -9,7 +9,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +30,7 @@ public class CommentRepositoryTest {
 
     CaffFileHelper helper = new CaffFileHelper();
     Long caffId = 0L;
+    Long commentId = 0L;
 
     @Before
     public void initRepository() throws CaffFileFormatException, IOException {
@@ -38,14 +38,14 @@ public class CommentRepositoryTest {
         CAFFFile other = caffRepository.saveAndFlush(helper.loadCaffFile("2.caff"));
         caffId = saved.getId();
 
-        commentRepository.saveAndFlush(
+        commentId = commentRepository.saveAndFlush(
                 Comment.builder()
                         .caffFile(saved)
                         .text("Test comment1")
                         .userId(1L)
                         .username("admin")
                         .build()
-        );
+        ).getId();
 
         commentRepository.saveAndFlush(
                 Comment.builder()
@@ -64,6 +64,36 @@ public class CommentRepositoryTest {
                         .username("admin")
                         .build()
         );
+    }
+
+    @Test
+    public void testFindByText() {
+        Comment found = commentRepository.findById(commentId).get();
+        assertThat(found.getText()).isEqualTo("Test comment1");
+    }
+
+    @Test
+    public void testFindAll() {
+        List<Comment> caffFiles = commentRepository.findAll();
+        assertThat(caffFiles.size()).isEqualTo(3);
+    }
+
+    @Test
+    public void testRemove() {
+        Comment test = commentRepository.findById(commentId).get();
+        commentRepository.delete(test);
+        assertThat(commentRepository.findAll().size()).isEqualTo(2);
+    }
+
+    @Test
+    public void testInsert() {
+        commentRepository.saveAndFlush(Comment.builder()
+                .caffFile(caffRepository.findById(caffId).get())
+                .text("Test comment4")
+                .userId(1L)
+                .username("admin")
+                .build());
+        assertThat(commentRepository.findAll().size()).isEqualTo(4);
     }
 
     @Test
