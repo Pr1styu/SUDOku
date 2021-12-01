@@ -132,10 +132,7 @@ public class FileUploadTests {
 
         this.mockMvc.perform(multipart("/caff/upload")
                                 .file("caffFile", multipartFile.getBytes())
-                                .file(new MockMultipartFile("fileName", "1.caff".getBytes()))
-                                .contentType("multipart/form-data")
-                                .accept("multipart/form-data")
-                )
+                                .file(new MockMultipartFile("fileName", "1.caff".getBytes())))
                 .andExpect(status().isCreated());
     }
 
