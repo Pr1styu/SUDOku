@@ -1,6 +1,5 @@
 package hu.bme.compsec.sudoku.authserver;
 
-import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest

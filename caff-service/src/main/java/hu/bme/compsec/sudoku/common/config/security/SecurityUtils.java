@@ -24,7 +24,7 @@ public class SecurityUtils {
 
             return jwt.getClaim(USERID_CLAIM);
         } catch (Exception e) {
-            log.error("Cannot parse JWT from authentication principle: {}", auth.getPrincipal());
+            log.error("Cannot parse JWT from authentication principle: {}", auth);
             throw new AccessDeniedException("Cannot parse JWT.");
         }
     }

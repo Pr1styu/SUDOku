@@ -26,7 +26,7 @@ import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/*@SecurityTestExecutionListeners
+@SecurityTestExecutionListeners
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = TestSecurityConfig.class)
 @ContextConfiguration(classes = {CAFFService.class, CAFFRepository.class})
@@ -137,4 +137,4 @@ public class CAFFServiceTest {
         List<CAFFFile> found = caffService.searchCaffFilesByMetaData("sunset");
         assertThat(found.size()).isEqualTo(3);
     }
-}*/
+}

@@ -9,19 +9,14 @@ import hu.bme.compsec.sudoku.authserver.presentation.dto.UserDTO;
 import hu.bme.compsec.sudoku.authserver.presentation.mapping.UserMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import static hu.bme.compsec.sudoku.authserver.config.SecurityUtils.checkPermissionForUserId;

@@ -2,7 +2,6 @@ package hu.bme.compsec.sudoku.authserver.presentation.controller;
 
 import hu.bme.compsec.sudoku.authserver.common.exception.UserNotFoundException;
 import hu.bme.compsec.sudoku.authserver.common.exception.UsernameAlreadyInUseException;
-import hu.bme.compsec.sudoku.authserver.config.SecurityUtils;
 import hu.bme.compsec.sudoku.authserver.presentation.dto.UserDTO;
 import hu.bme.compsec.sudoku.authserver.presentation.dto.UserProfileDTO;
 import hu.bme.compsec.sudoku.authserver.presentation.mapping.UserMapper;
