@@ -63,4 +63,6 @@ public class CAFFFile {
         log.info("Updating CAFF file: {}", this);
     }
 
+    private Long ownerId;
+
 }

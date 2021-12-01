@@ -1,6 +1,6 @@
-package hu.bme.compsec.sudoku.authserver.config;
+package hu.bme.compsec.sudoku.common.config.security;
 
-import hu.bme.compsec.sudoku.authserver.common.UserRole;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,12 +29,17 @@ public class SecurityUtils {
         }
     }
 
-    public static void checkPermissionForUserId(Long userId) {
+    /**
+     * Check the actual user permission and if not match, the admin role also pass the request.
+     * @param userId
+     */
+    public static void checkPermissionForCaffFile(Long userId) {
         var jwtUserId = getUserIdFromJwt();
         // TODO: Fix these once we use UUIDs
         if (!Objects.equals(userId, jwtUserId)) {
+            if (!isAuthenticatedUserAdmin())
             throw new AccessDeniedException(
-                    String.format("User with id {} does NOT have permission for edit user data with id {}.", jwtUserId, userId)
+                    String.format("User with id {} does NOT have permission for edit CAFF file with id {}.", jwtUserId, userId)
             );
         }
     }

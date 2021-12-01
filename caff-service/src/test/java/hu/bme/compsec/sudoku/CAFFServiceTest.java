@@ -1,6 +1,7 @@
 package hu.bme.compsec.sudoku;
 
 import hu.bme.compsec.sudoku.common.exception.CaffFileFormatException;
+import hu.bme.compsec.sudoku.common.exception.CaffFileNotFoundException;
 import hu.bme.compsec.sudoku.data.CAFFRepository;
 import hu.bme.compsec.sudoku.data.domain.CAFFFile;
 import hu.bme.compsec.sudoku.helper.CaffFileHelper;
@@ -106,7 +107,7 @@ public class CAFFServiceTest {
     }
 
     @Test
-    public void testCRUD() throws IOException {
+    public void testCRUD() throws IOException, CaffFileNotFoundException {
         List<CAFFFile> caffFiles = caffService.getAllCaffFile();
         assertThat(caffFiles.size()).isEqualTo(2);
 
