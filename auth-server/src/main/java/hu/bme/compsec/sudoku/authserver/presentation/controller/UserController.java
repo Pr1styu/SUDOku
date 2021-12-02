@@ -18,6 +18,7 @@ import static hu.bme.compsec.sudoku.authserver.config.SecurityUtils.getUserIdFro
 @Slf4j
 @RestController
 @RequestMapping("/user")
+@CrossOrigin(origins = "http://localhost:4200/", maxAge = 3600)
 @AllArgsConstructor
 public class UserController {
 

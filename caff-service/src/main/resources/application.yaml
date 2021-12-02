@@ -2,8 +2,8 @@ server:
   port: 8080
 spring:
   profiles:
-#    active: default, prod
-    active: default, dev
+#    active: default, dev
+    active: default, prod
   h2:
     console:
       enabled: true
