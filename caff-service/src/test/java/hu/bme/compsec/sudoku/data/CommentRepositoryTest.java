@@ -5,8 +5,8 @@ import hu.bme.compsec.sudoku.common.exception.CaffFileFormatException;
 import hu.bme.compsec.sudoku.data.domain.CAFFFile;
 import hu.bme.compsec.sudoku.data.domain.Comment;
 import hu.bme.compsec.sudoku.helper.CaffFileHelper;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -33,7 +33,7 @@ public class CommentRepositoryTest {
     Long caffId = 0L;
     Long commentId = 0L;
 
-    @Before
+    @BeforeAll
     public void initRepository() throws CaffFileFormatException, IOException, CAFFProcessorRuntimeException {
         CAFFFile saved = caffRepository.saveAndFlush(helper.loadCaffFile("1.caff"));
         CAFFFile other = caffRepository.saveAndFlush(helper.loadCaffFile("2.caff"));

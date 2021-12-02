@@ -8,8 +8,8 @@ import hu.bme.compsec.sudoku.data.CommentRepository;
 import hu.bme.compsec.sudoku.data.domain.Comment;
 import hu.bme.compsec.sudoku.helper.CaffFileHelper;
 import hu.bme.compsec.sudoku.presentation.dto.CommentDTO;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +45,7 @@ public class CommentServiceTest {
 
     final CaffFileHelper helper = new CaffFileHelper();
 
-    @Before
+    @BeforeAll
     public void setup() throws CaffFileFormatException, IOException, CAFFProcessorRuntimeException {
         commentRepository = Mockito.mock(CommentRepository.class);
         caffRepository = Mockito.mock(CAFFRepository.class);

@@ -2,13 +2,14 @@ package hu.bme.compsec.sudoku.service;
 
 import hu.bme.compsec.sudoku.common.exception.CAFFProcessorRuntimeException;
 import hu.bme.compsec.sudoku.common.exception.CaffFileFormatException;
+import hu.bme.compsec.sudoku.common.exception.CaffFileNotFoundException;
 import hu.bme.compsec.sudoku.config.TestSecurityConfig;
 import hu.bme.compsec.sudoku.data.CAFFRepository;
 import hu.bme.compsec.sudoku.data.domain.CAFFFile;
 import hu.bme.compsec.sudoku.helper.CaffFileHelper;
 import hu.bme.compsec.sudoku.service.processor.CaffProcessor;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,8 +39,8 @@ public class CAFFServiceTest {
     @MockBean
     public CAFFRepository caffRepository;
 
-    @Before
     @Test
+    @BeforeAll
     public void setup() throws CaffFileFormatException, IOException, CAFFProcessorRuntimeException {
         CaffFileHelper helper = new CaffFileHelper();
 
@@ -102,8 +103,8 @@ public class CAFFServiceTest {
         assertThat(new HashSet<>(caff.get().getMetaData())).isEqualTo(new HashSet<>(metaData));
     }
 
-    /*@Test
-    void testCRUD() throws IOException, CaffFileNotFoundException {
+    @Test
+    public void testCRUD() throws IOException, CaffFileNotFoundException {
         List<CAFFFile> caffFiles = caffService.getAllCaffFile();
         assertThat(caffFiles.size()).isEqualTo(2);
 
@@ -131,5 +132,5 @@ public class CAFFServiceTest {
 
         List<CAFFFile> found = caffService.searchCaffFilesByMetaData("sunset");
         assertThat(found.size()).isEqualTo(3);
-    }*/
+    }
 }

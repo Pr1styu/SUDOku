@@ -2,11 +2,10 @@ package hu.bme.compsec.sudoku.data;
 
 import hu.bme.compsec.sudoku.common.exception.CAFFProcessorRuntimeException;
 import hu.bme.compsec.sudoku.common.exception.CaffFileFormatException;
-import hu.bme.compsec.sudoku.data.CAFFRepository;
 import hu.bme.compsec.sudoku.data.domain.CAFFFile;
 import hu.bme.compsec.sudoku.helper.CaffFileHelper;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -32,7 +31,7 @@ public class CAFFRepositoryTest {
 
     final CaffFileHelper helper = new CaffFileHelper();
 
-    @Before
+    @BeforeAll
     public void initRepository() throws CaffFileFormatException, IOException, CAFFProcessorRuntimeException {
         entityManager.clear();
         String[] fileNames = new String[] {"1.caff", "2.caff", "3.caff"};
