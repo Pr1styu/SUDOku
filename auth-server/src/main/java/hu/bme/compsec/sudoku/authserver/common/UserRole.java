@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public enum UserRole {
 
-    USER(Set.of(UserPermission.CAFF_READ)),
+    USER(Set.of(UserPermission.CAFF_READ, UserPermission.CAFF_WRITE)),
     ADMIN(Set.of(UserPermission.CAFF_READ, UserPermission.CAFF_WRITE, UserPermission.CAFF_DELETE));
 
     private final Set<UserPermission> permissions;
