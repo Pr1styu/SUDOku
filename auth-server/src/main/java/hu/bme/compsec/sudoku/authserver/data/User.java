@@ -16,8 +16,6 @@ import java.util.*;
 public class User {
 
     @Id
-//    @GeneratedValue(generator = "UUID", strategy = GenerationType.IDENTITY)
-//    private UUID id;
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 

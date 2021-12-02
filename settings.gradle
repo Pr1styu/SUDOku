@@ -1,0 +1,3 @@
+rootProject.name = 'SUDOku'
+include 'auth-server'
+include 'caff-service'

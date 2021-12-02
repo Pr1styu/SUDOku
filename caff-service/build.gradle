@@ -4,7 +4,7 @@ plugins {
 	id 'java'
 }
 
-group = 'hu.bme.compsec'
+group = 'hu.bme.compsec.caff'
 version = '0.0.1'
 sourceCompatibility = '11'
 
@@ -16,6 +16,10 @@ configurations {
 
 repositories {
 	mavenCentral()
+}
+
+task prepareKotlinBuildScriptModel {
+
 }
 
 dependencies {
@@ -41,6 +45,14 @@ dependencies {
 	implementation 'commons-fileupload:commons-fileupload:1.4'
 	implementation 'org.apache.commons:commons-collections4:4.4'
 	implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
+	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.13.0'
+	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.13.0'
+	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.13.0'
+	implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version: '2.13.0'
+	implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.13.0'
+	implementation group: 'com.fasterxml.jackson.module', name: 'jackson-module-parameter-names', version: '2.13.0'
+
+
 
 	implementation("com.squareup.moshi:moshi:1.12.0")
 

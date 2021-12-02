@@ -1,6 +1,6 @@
-package hu.bme.compsec.sudoku.authserver.config;
+package hu.bme.compsec.sudoku.common.config.security;
 
-import hu.bme.compsec.sudoku.authserver.common.UserRole;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,10 +13,10 @@ import java.util.stream.Collectors;
 @Slf4j
 public class SecurityUtils {
 
-    private SecurityUtils(){}
-
     public static final String USERID_CLAIM = "user_id";
     public static final String AUTHORITIES_CLAIM = "authorities";
+
+    private SecurityUtils(){}
 
 
     public static Long getUserIdFromJwt() {
@@ -26,16 +26,22 @@ public class SecurityUtils {
 
             return jwt.getClaim(USERID_CLAIM);
         } catch (Exception e) {
-            log.error("Cannot parse JWT from authentication principle");
+            log.error("Cannot parse JWT from authentication principle!");
             throw new AccessDeniedException("Cannot parse JWT.");
         }
     }
 
-    public static void checkPermissionForUserId(Long userId) {
+    /**
+     * Check the actual user permission and if not match, the admin role also pass the request.
+     * @param userId The id of the given user
+     */
+    public static void checkPermissionForCaffFile(Long userId) {
         var jwtUserId = getUserIdFromJwt();
         // TODO: Fix these once we use UUIDs
-        if (!Objects.equals(userId, jwtUserId)) {
-            throw new AccessDeniedException(String.format("User with id %d does NOT have permission for edit user data with id %d.", jwtUserId, userId));
+        if (!Objects.equals(userId, jwtUserId) && !isAuthenticatedUserAdmin()) {
+            throw new AccessDeniedException(
+                    String.format("User with id %d does NOT have permission for edit CAFF file with id %d.", jwtUserId, userId)
+            );
         }
     }
 

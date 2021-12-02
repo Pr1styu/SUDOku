@@ -1,6 +1,8 @@
 package hu.bme.compsec.sudoku.service;
 
+import hu.bme.compsec.sudoku.common.exception.CAFFProcessorRuntimeException;
 import hu.bme.compsec.sudoku.common.exception.CaffFileFormatException;
+import hu.bme.compsec.sudoku.common.exception.CaffFileNotFoundException;
 import hu.bme.compsec.sudoku.data.CAFFRepository;
 import hu.bme.compsec.sudoku.data.domain.CAFFFile;
 import hu.bme.compsec.sudoku.service.processor.CaffProcessor;
@@ -14,6 +16,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+
+import static hu.bme.compsec.sudoku.common.config.security.SecurityUtils.checkPermissionForCaffFile;
+import static hu.bme.compsec.sudoku.common.config.security.SecurityUtils.getUserIdFromJwt;
 
 @Slf4j
 @Service
@@ -38,19 +43,15 @@ public class CAFFService {
 
     @PreAuthorize("hasAuthority('caff:write')")
     public CAFFFile saveCaffFile(MultipartFile uploadedCaffFile, String clientFileName) {
-
-        // TODO: Process raw CAFF file with native component
-
         var caffFileEntity = new CAFFFile();
         caffFileEntity.setFileName(clientFileName);
 
         var processor = new CaffProcessor();
         try {
             processor.process(uploadedCaffFile, clientFileName);
-            //TODO: Load generated preview (jpeg file) and metadata (txt)
             caffFileEntity.setPreview(processor.getPreview());
             caffFileEntity.setMetaData(processor.getMetaData());
-        } catch (CaffFileFormatException e) {
+        } catch (CaffFileFormatException | CAFFProcessorRuntimeException e) {
             log.error("Error while trying to process CAFF file '{}': {}", clientFileName, e.getMessage());
             return null;
         }
@@ -62,27 +63,29 @@ public class CAFFService {
             return null;
         }
 
+        caffFileEntity.setOwnerId(getUserIdFromJwt());
+
         return caffRepository.save(caffFileEntity);
     }
 
     /**
      * This method responsible for the Caff file deletion.
-     * @return true if the entity has been successfully deleted, false if it does not exist in the database.
      */
     @PreAuthorize("hasAuthority('caff:delete')")
-    public boolean deleteCaffFile(Long id) {
-        if (caffRepository.existsById(id)) {
-            caffRepository.deleteById(id);
-            return true;
-        } else {
-            return false;
-        }
+    public void deleteCaffFile(Long id) throws CaffFileNotFoundException {
+        var caffFileEntity = caffRepository.findById(id)
+                .map(caffFile -> {
+                    checkPermissionForCaffFile(caffFile.getOwnerId());
+                    return caffFile;
+                })
+                .orElseThrow(() -> new CaffFileNotFoundException("There is no caff file with id %s.", id));
+
+        caffRepository.delete(caffFileEntity);
     }
 
     @PreAuthorize("hasAuthority('caff:read')")
     public List<CAFFFile> searchCaffFilesByMetaData(String metaData) {
         return caffRepository.findAllByMetaDataIgnoreCase(metaData);
     }
-
 
 }

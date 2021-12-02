@@ -1,16 +1,17 @@
 package hu.bme.compsec.sudoku.data.domain;
 
-import lombok.Data;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import java.sql.Timestamp;
 import java.time.Instant;
 
 @Data
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Comment {
 
     @Id
