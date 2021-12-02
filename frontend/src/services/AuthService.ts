@@ -25,14 +25,15 @@ const login = (username: string, password: string): Promise<AxiosResponse<any>> 
     })
     .then((response) => {
       if (response.data.token) {
-        localStorage.setItem('user', JSON.stringify(response.data));
+        localStorage.setItem('user_basic', JSON.stringify(response.data));
       }
       return response.data;
     });
 };
 
 const logout = (): void => {
-  localStorage.removeItem('user');
+  localStorage.removeItem('user_basic');
+  localStorage.removeItem('user_token');
 };
 
 export default {

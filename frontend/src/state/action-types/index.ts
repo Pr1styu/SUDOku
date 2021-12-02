@@ -7,6 +7,7 @@ export enum ActionType {
   REGISTER_SUCCESS = 'register success',
   REGISTER_FAIL = 'register_fail',
   LOGIN_SUCCESS = 'login_success',
+  LOGIN_SUCCESS_OAUTH = 'login_success_oauth',
   LOGIN_FAIL = 'login_fail',
   LOGOUT = 'logout',
   SET_AUTH_MESSAGE = 'set_auth_message',

@@ -4,8 +4,10 @@ export default function BasicAuthHeader(): any {
 
   if (user && user.username && user.password) {
     return {
-      username: user.username,
-      password: user.password,
+      auth: {
+        username: user.username,
+        password: user.password,
+      },
     };
   } else {
     return {};

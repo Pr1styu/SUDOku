@@ -12,13 +12,14 @@ import routes from './config/routes';
 
 const App: React.FC<RouteComponentProps> = (props) => {
   const dispatch = useDispatch();
-  const { getUserData, getAllCaffFiles } = bindActionCreators(actionCreators, dispatch);
+  const { /*getUserData*/ getAllCaffFiles } = bindActionCreators(actionCreators, dispatch);
 
   const isLoggedIn = useSelector((state: State) => state.AUTH.isLoggedIn);
 
   useEffect(() => {
     logging.info('Loading Application...');
-    getUserData();
+    // TODO:
+    // getUserData();
     getAllCaffFiles();
   }, []);
 

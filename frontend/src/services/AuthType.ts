@@ -1,1 +1,1 @@
-export type AuthType = 'BASIC' | 'JWT';
+export type AuthType = 'BASIC' | 'OAUTH';

@@ -44,6 +44,10 @@ interface ILoginSuccessAction {
   payload: { user: any };
 }
 
+interface ILoginSuccessOAuthAction {
+  type: ActionType.LOGIN_SUCCESS_OAUTH;
+}
+
 interface ILoginFailAction {
   type: ActionType.LOGIN_FAIL;
 }
@@ -56,6 +60,7 @@ export type AuthAction =
   | IRegisterSuccessAction
   | IRegisterFailAction
   | ILoginSuccessAction
+  | ILoginSuccessOAuthAction
   | ILoginFailAction
   | ILogoutAction;
 
