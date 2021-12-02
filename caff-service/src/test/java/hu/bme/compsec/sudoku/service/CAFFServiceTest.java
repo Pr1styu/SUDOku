@@ -1,5 +1,6 @@
 package hu.bme.compsec.sudoku.service;
 
+import hu.bme.compsec.sudoku.common.config.security.UserRole;
 import hu.bme.compsec.sudoku.common.exception.CAFFProcessorRuntimeException;
 import hu.bme.compsec.sudoku.common.exception.CaffFileFormatException;
 import hu.bme.compsec.sudoku.common.exception.CaffFileNotFoundException;
@@ -8,17 +9,15 @@ import hu.bme.compsec.sudoku.data.CAFFRepository;
 import hu.bme.compsec.sudoku.data.domain.CAFFFile;
 import hu.bme.compsec.sudoku.helper.CaffFileHelper;
 import hu.bme.compsec.sudoku.service.processor.CaffProcessor;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.security.test.context.annotation.SecurityTestExecutionListeners;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -26,22 +25,17 @@ import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SecurityTestExecutionListeners
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = TestSecurityConfig.class)
-@ContextConfiguration(classes = {CAFFService.class, CAFFRepository.class})
-@TestPropertySource(locations = "classpath:application-test.properties")
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class CAFFServiceTest {
 
-    @Autowired
     private CAFFService caffService;
 
-    @MockBean
     public CAFFRepository caffRepository;
 
-    @Test
     @BeforeAll
-    public void setup() throws CaffFileFormatException, IOException, CAFFProcessorRuntimeException {
+    public void setup() throws CaffFileFormatException, IOException, CAFFProcessorRuntimeException, InterruptedException {
         CaffFileHelper helper = new CaffFileHelper();
 
         MultipartFile multipart = helper.loadMultipartFile("1.caff");
@@ -104,7 +98,7 @@ public class CAFFServiceTest {
     }
 
     @Test
-    public void testCRUD() throws IOException, CaffFileNotFoundException {
+    void testCRUD() throws IOException, CaffFileNotFoundException {
         List<CAFFFile> caffFiles = caffService.getAllCaffFile();
         assertThat(caffFiles.size()).isEqualTo(2);
 
@@ -133,4 +127,101 @@ public class CAFFServiceTest {
         List<CAFFFile> found = caffService.searchCaffFilesByMetaData("sunset");
         assertThat(found.size()).isEqualTo(3);
     }
+
+    private long getRandomId() {
+        return new Random().nextInt(100);
+    }
+
+    @Test
+    public void shouldDeleteOwnFileAsAdmin() throws Exception {
+        // Mock JWT
+        var adminsFileId = getRandomId();
+        var adminUserId = getRandomId();
+
+        TestSecurityConfig.mockAuthWithUserRoleAndId(UserRole.ADMIN); // The JWT will contain ADMIN's authorities (=roles + permissions)
+        TestSecurityConfig.mockAuthenticatedUserId(adminUserId); // The JWT will contain the USER_ID claim with this mock value
+
+        // Mock Caff File entity with proper id and ownerId values
+        var mockCaffFileEntity = Optional.of(
+                CAFFFile.builder()
+                        .id(adminsFileId)
+                        .ownerId(adminUserId)
+                        .build()
+        );
+
+        // Mock the repository to add back the proper entity
+        Mockito.when(caffRepository.findById(adminsFileId)).thenReturn(mockCaffFileEntity);
+
+        // Call the service level method
+        caffService.deleteCaffFile(adminsFileId);
+    }
+
+    @Test
+    public void shouldDeleteOthersFileAsAdmin() throws Exception {
+        var otherFileId = getRandomId();
+        var otherUserId = getRandomId();
+        var adminUserId = getRandomId();
+
+        TestSecurityConfig.mockAuthWithUserRoleAndId(UserRole.ADMIN);
+        TestSecurityConfig.mockAuthenticatedUserId(adminUserId);
+
+        var mockCaffFileEntity = Optional.of(
+                CAFFFile.builder()
+                        .id(otherFileId)
+                        .ownerId(otherUserId)
+                        .build()
+        );
+
+        Mockito.when(caffRepository.findById(otherFileId)).thenReturn(mockCaffFileEntity);
+
+        caffService.deleteCaffFile(otherFileId);
+    }
+
+    @Test
+    public void shouldDeleteOwnFile() throws Exception {
+        var fileId = getRandomId();
+        var userId = getRandomId();
+
+
+        TestSecurityConfig.mockAuthWithUserRoleAndId(UserRole.USER);
+        TestSecurityConfig.mockAuthenticatedUserId(userId);
+
+        var mockCaffFileEntity = Optional.of(
+                CAFFFile.builder()
+                        .id(fileId)
+                        .ownerId(userId)
+                        .build()
+        );
+
+        Mockito.when(caffRepository.findById(fileId)).thenReturn(mockCaffFileEntity);
+
+        caffService.deleteCaffFile(fileId);
+    }
+
+    @Test
+    public void shouldFailOnDeleteOthersFile() throws Exception {
+        var userId = getRandomId();
+        var otherFileId = getRandomId();
+        var otherUserId = getRandomId();
+
+        TestSecurityConfig.mockAuthWithUserRoleAndId(UserRole.USER);
+        TestSecurityConfig.mockAuthenticatedUserId(userId);
+
+        var mockCaffFileEntity = Optional.of(
+                CAFFFile.builder()
+                        .id(otherFileId)
+                        .ownerId(otherUserId)
+                        .build()
+        );
+
+        Mockito.when(caffRepository.findById(otherFileId)).thenReturn(mockCaffFileEntity);
+
+        Assertions.assertThrows(AccessDeniedException.class, () -> {
+            caffService.deleteCaffFile(otherFileId);
+        });
+    }
+
+    // TODO: Create test for cover CaffFileNotFoundException thrown
+
+
 }

@@ -88,9 +88,6 @@ public class CAFFController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity deleteCaffFile(@PathVariable Long id) throws CaffFileNotFoundException {
-
-        // TODO: Check permission for requested file
-
         if (caffService.deleteCaffFile(id)) {
             return ResponseEntity.ok().build();
         } else {

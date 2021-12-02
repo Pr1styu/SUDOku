@@ -2,8 +2,8 @@ package hu.bme.compsec.sudoku.common.exception;
 
 public class CaffFileNotFoundException extends Exception {
 
-    public CaffFileNotFoundException(String msg, Object... args) {
-        super(String.format(msg, args));
+    public CaffFileNotFoundException(String format, Object... args) {
+        super(String.format(format.replace("{}", "%s"), args));
     }
 
 }

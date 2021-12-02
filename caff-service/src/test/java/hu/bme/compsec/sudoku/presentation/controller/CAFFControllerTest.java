@@ -39,7 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @SpringBootTest(classes = TestSecurityConfig.class)
 @WithMockUser(username = "admin", password = "admin", authorities = {"caff:read", "caff:write", "caff:delete"})
-class CAFFControllerTest {
+public class CAFFControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -58,7 +58,7 @@ class CAFFControllerTest {
     private final JsonAdapter<CommentDTO> commentJsonAdapter = moshi.adapter(CommentDTO.class);
 
     @Test
-    void shouldListAllFiles() throws Exception {
+    public void shouldListAllFiles() throws Exception {
         given(caffServiceMock.getAllCaffFile())
                 .willReturn(helper.loadAllCaffFiles());
 
@@ -76,7 +76,7 @@ class CAFFControllerTest {
     }
 
     @Test
-    void shouldReturnCaffById() throws Exception {
+    public void shouldReturnCaffById() throws Exception {
         final long mockId = 1L;
         CAFFFile f = helper.loadCaffFile("1.caff");
         var mockCaffFile = CAFFFile.builder().fileName(f.getFileName())
@@ -104,7 +104,7 @@ class CAFFControllerTest {
     }
 
     @Test
-    void should404WhenMissingFile() throws Exception {
+    public void should404WhenMissingFile() throws Exception {
         this.mockMvc.perform(get("/caff/1")
                         .with(user("admin").password("admin")))
                 .andExpect(status().isNotFound());
@@ -115,7 +115,7 @@ class CAFFControllerTest {
     }
 
     @Test
-    void shouldReturnBadRequestForUpload() throws Exception {
+    public void shouldReturnBadRequestForUpload() throws Exception {
         MockMultipartFile multipartFile = helper.loadMultipartFile("1.caff");
         this.mockMvc.perform(multipart("/caff/upload")
                                 .file("caffFile", multipartFile.getBytes())
@@ -130,7 +130,7 @@ class CAFFControllerTest {
     }
 
     @Test
-    void shouldUploadSuccessfully() throws Exception {
+    public void shouldUploadSuccessfully() throws Exception {
         final long mockId = new Random().nextInt(100);
         CAFFFile f = helper.loadCaffFile("1.caff");
         MockMultipartFile multipartFile = helper.loadMultipartFileWithNullFields("1.caff");
@@ -152,7 +152,7 @@ class CAFFControllerTest {
     }
 
     @Test
-    void shouldDownloadCaff() throws Exception {
+    public void shouldDownloadCaff() throws Exception {
         final long mockId = 1L;
         CAFFFile f = helper.loadCaffFile("1.caff");
         var mockCaffFile = CAFFFile.builder().fileName(f.getFileName())
@@ -178,7 +178,14 @@ class CAFFControllerTest {
     }
 
     @Test
-    void shouldDeleteFile() throws Exception {
+    public void shouldDeleteFileAsAdmin() throws Exception {
+        //TODO: double check this, I can't believe this is enough
+        mockMvc.perform(delete("/caff/1"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void shouldDeleteOwnFile() throws Exception {
         //TODO: double check this, I can't believe this is enough
         mockMvc.perform(delete("/caff/1")
                         .with(user("admin").password("admin")))
@@ -186,7 +193,14 @@ class CAFFControllerTest {
     }
 
     @Test
-    void shouldReturnCaffByMetadata() throws Exception {
+    public void shouldFailOnDeleteOthersFile() throws Exception {
+        mockMvc.perform(delete("/caff/1")
+                        .with(user("admin").password("admin")))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void shouldReturnCaffByMetadata() throws Exception {
         given(caffServiceMock.searchCaffFilesByMetaData("sunset"))
                 .willReturn(helper.loadAllCaffFiles());
 
@@ -201,7 +215,7 @@ class CAFFControllerTest {
     }
 
     @Test
-    void shouldReturnCommentsForCaffFile() throws Exception {
+    public void shouldReturnCommentsForCaffFile() throws Exception {
         ArrayList<Comment> comments = new ArrayList<>();
         for (int i = 1; i <= 3; i++) {
             comments.add(Comment.builder()
@@ -229,7 +243,7 @@ class CAFFControllerTest {
     }
 
     @Test
-    void shouldAddCommentSuccessfully() throws Exception {
+    public void shouldAddCommentSuccessfully() throws Exception {
         CommentDTO commentDTO = new CommentDTO("Test comment1", "admin");
         given(commentServiceMock.addCommentToCaffFile(1L, commentDTO))
                 .willReturn(true);
@@ -242,7 +256,7 @@ class CAFFControllerTest {
     }
 
     @Test
-    void shouldReturnNotFoundWhenAddingComment() throws Exception {
+    public void shouldReturnNotFoundWhenAddingComment() throws Exception {
         CommentDTO commentDTO = new CommentDTO("Test comment1", "admin");
         mockMvc.perform(post("/caff/2/comment")
                         .with(user("admin").password("admin"))
