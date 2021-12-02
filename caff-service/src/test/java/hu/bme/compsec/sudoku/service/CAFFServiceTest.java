@@ -138,8 +138,9 @@ public class CAFFServiceTest {
         var adminsFileId = getRandomId();
         var adminUserId = getRandomId();
 
-        TestSecurityConfig.mockAuthWithUserRoleAndId(UserRole.ADMIN); // The JWT will contain ADMIN's authorities (=roles + permissions)
+        // Order is important as we should set the USER_ID claim value before we generate the JWT
         TestSecurityConfig.mockAuthenticatedUserId(adminUserId); // The JWT will contain the USER_ID claim with this mock value
+        TestSecurityConfig.mockAuthWithUserRoleAndId(UserRole.ADMIN); // The JWT will contain ADMIN's authorities (=roles + permissions)
 
         // Mock Caff File entity with proper id and ownerId values
         var mockCaffFileEntity = Optional.of(
@@ -162,8 +163,8 @@ public class CAFFServiceTest {
         var otherUserId = getRandomId();
         var adminUserId = getRandomId();
 
-        TestSecurityConfig.mockAuthWithUserRoleAndId(UserRole.ADMIN);
         TestSecurityConfig.mockAuthenticatedUserId(adminUserId);
+        TestSecurityConfig.mockAuthWithUserRoleAndId(UserRole.ADMIN);
 
         var mockCaffFileEntity = Optional.of(
                 CAFFFile.builder()
@@ -183,8 +184,8 @@ public class CAFFServiceTest {
         var userId = getRandomId();
 
 
-        TestSecurityConfig.mockAuthWithUserRoleAndId(UserRole.USER);
         TestSecurityConfig.mockAuthenticatedUserId(userId);
+        TestSecurityConfig.mockAuthWithUserRoleAndId(UserRole.USER);
 
         var mockCaffFileEntity = Optional.of(
                 CAFFFile.builder()
@@ -199,13 +200,13 @@ public class CAFFServiceTest {
     }
 
     @Test
-    public void shouldFailOnDeleteOthersFile() throws Exception {
+    public void shouldFailOnDeleteOthersFile() {
         var userId = getRandomId();
         var otherFileId = getRandomId();
         var otherUserId = getRandomId();
 
-        TestSecurityConfig.mockAuthWithUserRoleAndId(UserRole.USER);
         TestSecurityConfig.mockAuthenticatedUserId(userId);
+        TestSecurityConfig.mockAuthWithUserRoleAndId(UserRole.USER);
 
         var mockCaffFileEntity = Optional.of(
                 CAFFFile.builder()
