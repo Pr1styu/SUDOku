@@ -70,17 +70,22 @@ public class CAFFService {
 
     /**
      * This method responsible for the Caff file deletion.
+     * @return
      */
     @PreAuthorize("hasAuthority('caff:delete')")
-    public void deleteCaffFile(Long id) throws CaffFileNotFoundException {
+    public boolean deleteCaffFile(Long id) throws CaffFileNotFoundException {
         var caffFileEntity = caffRepository.findById(id)
                 .map(caffFile -> {
                     checkPermissionForCaffFile(caffFile.getOwnerId());
                     return caffFile;
                 })
                 .orElseThrow(() -> new CaffFileNotFoundException("There is no caff file with id %s.", id));
-
-        caffRepository.delete(caffFileEntity);
+        try {
+            caffRepository.delete(caffFileEntity);
+            return true;
+        }catch (Exception e){
+            return false;
+        }
     }
 
     @PreAuthorize("hasAuthority('caff:read')")

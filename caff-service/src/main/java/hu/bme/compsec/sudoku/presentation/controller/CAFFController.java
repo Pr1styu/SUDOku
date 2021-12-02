@@ -1,5 +1,6 @@
 package hu.bme.compsec.sudoku.presentation.controller;
 
+import hu.bme.compsec.sudoku.common.exception.CaffFileNotFoundException;
 import hu.bme.compsec.sudoku.presentation.dto.CAFFFileDetailDTO;
 import hu.bme.compsec.sudoku.presentation.dto.CAFFFilePreviewDTO;
 import hu.bme.compsec.sudoku.presentation.dto.CommentDTO;
@@ -86,7 +87,7 @@ public class CAFFController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteCaffFile(@PathVariable Long id) {
+    public ResponseEntity deleteCaffFile(@PathVariable Long id) throws CaffFileNotFoundException {
 
         // TODO: Check permission for requested file
 
