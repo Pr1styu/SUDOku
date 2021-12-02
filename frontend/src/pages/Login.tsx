@@ -1,24 +1,22 @@
 import { Redirect, RouteComponentProps } from 'react-router';
 import { State } from '../state';
-//import { setAuthMessage } from '../state/action-creators';
 import { useSelector } from 'react-redux';
-//import AuthService from '../services/AuthService';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
 import CircularProgress from '@mui/material/CircularProgress';
 import Copyright from '../components/test/Copyright';
 import CssBaseline from '@mui/material/CssBaseline';
-import FormControlLabel from '@mui/material/FormControlLabel';
+import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Grid';
 import IComponent from '../interfaces/component';
-import Link from '@mui/material/Link';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import MuiLink from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import React, { useState } from 'react';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import config from '../config/config';
 
 const Login: React.FC<IComponent & RouteComponentProps<any>> = (props) => {
   const [loading, setLoading] = useState(false);
@@ -28,34 +26,13 @@ const Login: React.FC<IComponent & RouteComponentProps<any>> = (props) => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-
     setLoading(true);
-
-    // Basic login for the time being
-    // TODO: Delete this (Http Basic login with admin)
     localStorage.setItem(
       'user',
       JSON.stringify({ username: data.get('username'), password: data.get('password') })
     );
     props.history.push('/profile');
     window.location.reload();
-
-    // TODO: Jwt login
-    /*
-    AuthService.login(
-      data.get('username')?.toString() ?? '',
-      data.get('password')?.toString() ?? ''
-    ).then(
-      () => {
-        props.history.push('/profile');
-        window.location.reload();
-      },
-      (error) => {
-        const resMessage = error.response?.data?.message ?? error.message ?? error.toString();
-        setLoading(false);
-        setAuthMessage(resMessage);
-      }
-    );*/
   };
 
   if (isLoggedIn) {
@@ -120,12 +97,37 @@ const Login: React.FC<IComponent & RouteComponentProps<any>> = (props) => {
             <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
               {loading ? <CircularProgress /> : 'Sign In'}
             </Button>
+            <Divider>or</Divider>
+            <Button
+              fullWidth
+              variant="contained"
+              href={config.urls.oauth2.authorize}
+              sx={{
+                mt: 3,
+                mb: 2,
+                bgcolor: 'black',
+                ':hover': {
+                  bgcolor: '#424242',
+                  color: 'white',
+                },
+              }}
+            >
+              {loading ? <CircularProgress /> : 'Sign In with OAuth2'}
+              <Box
+                component="img"
+                alt="Oauth2"
+                src="/oauth2.png"
+                sx={{
+                  width: 60,
+                }}
+              />
+            </Button>
             <Grid container>
               <Grid item xs></Grid>
               <Grid item>
-                <Link href="/register" variant="body2">
+                <MuiLink href="/register" variant="body2">
                   {"Don't have an account? Sign Up"}
-                </Link>
+                </MuiLink>
               </Grid>
             </Grid>
             <Copyright sx={{ mt: 5 }} />

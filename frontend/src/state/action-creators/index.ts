@@ -7,6 +7,9 @@ import ICaff from '../../interfaces/caff';
 import IComment from '../../interfaces/comment';
 import IEditUserData from '../../interfaces/userDataEdit';
 import UserService from '../../services/UserService';
+import config from '../../config/config';
+
+const authType = config.authType;
 
 export const depositMoney = (amount: number) => {
   return (dispatch: Dispatch<TestAction>): void => {
@@ -121,6 +124,14 @@ export const login = (username: string, password: string) => {
   };
 };
 
+export const loginOauth = () => {
+  return (dispatch: Dispatch<AuthAction>): void => {
+    dispatch({
+      type: ActionType.LOGIN_SUCCESS_OAUTH,
+    });
+  };
+};
+
 export const logout = () => {
   return (dispatch: Dispatch<AuthAction>): void => {
     AuthService.logout();
@@ -174,19 +185,19 @@ export const saveUserDataEdit = (edited: IEditUserData) => {
 
 export const getAllCaffFiles = () => {
   return (dispatch: Dispatch<CaffAction>): Promise<void> => {
-    return CaffService.getAllCaffFiles('BASIC').then((response) => {
+    return CaffService.getAllCaffFiles(authType).then((response) => {
       dispatch({
         type: ActionType.GET_ALL_CAFF_FILES,
       });
 
       response.data.forEach((caff: ICaff) => {
-        CaffService.getCaffFile('BASIC', caff.id).then((response) => {
+        CaffService.getCaffFile(authType, caff.id).then((response) => {
           dispatch({
             type: ActionType.GET_CAFF_FILE,
             payload: response.data,
           });
         });
-        CaffService.downloadCaffFile('BASIC', caff.id).then((response) => {
+        CaffService.downloadCaffFile(authType, caff.id).then((response) => {
           dispatch({
             type: ActionType.DOWNLOAD_CAFF_FILE,
             payload: { id: caff.id, file: response.data },
@@ -201,7 +212,7 @@ export const getAllCaffFiles = () => {
 
 export const getCaffFile = (id: number) => {
   return (dispatch: Dispatch<CaffAction>): Promise<void> => {
-    return CaffService.getCaffFile('BASIC', id).then((response) => {
+    return CaffService.getCaffFile(authType, id).then((response) => {
       dispatch({
         type: ActionType.GET_CAFF_FILE,
         payload: response.data,
@@ -214,7 +225,7 @@ export const getCaffFile = (id: number) => {
 
 export const downloadCaffFile = (id: number) => {
   return (dispatch: Dispatch<CaffAction>): Promise<void> => {
-    return CaffService.downloadCaffFile('BASIC', id).then((response) => {
+    return CaffService.downloadCaffFile(authType, id).then((response) => {
       dispatch({
         type: ActionType.DOWNLOAD_CAFF_FILE,
         payload: response.data,
@@ -227,7 +238,7 @@ export const downloadCaffFile = (id: number) => {
 
 export const addComment = (comment: IComment, id: number) => {
   return (dispatch: Dispatch<CaffAction>): Promise<void> => {
-    return CaffService.addComment('BASIC', comment, id).then(() => {
+    return CaffService.addComment(authType, comment, id).then(() => {
       dispatch({
         type: ActionType.ADD_COMMENT,
         payload: { comment, id },
@@ -240,7 +251,7 @@ export const addComment = (comment: IComment, id: number) => {
 
 export const uploadCaffFile = (fileName: string, file: File) => {
   return (dispatch: Dispatch<CaffAction>): Promise<void> => {
-    return CaffService.uploadCaffFile('BASIC', fileName, file).then((response) => {
+    return CaffService.uploadCaffFile(authType, fileName, file).then((response) => {
       dispatch({
         type: ActionType.UPLOAD_CAFF_FILE,
         payload: response.data,
@@ -253,7 +264,7 @@ export const uploadCaffFile = (fileName: string, file: File) => {
 
 export const deleteCaffFile = (id: number) => {
   return (dispatch: Dispatch<CaffAction>): Promise<void> => {
-    return CaffService.deleteCaffFile('BASIC', id).then(() => {
+    return CaffService.deleteCaffFile(authType, id).then(() => {
       dispatch({
         type: ActionType.DELETE_CAFF_FILE,
         payload: id,

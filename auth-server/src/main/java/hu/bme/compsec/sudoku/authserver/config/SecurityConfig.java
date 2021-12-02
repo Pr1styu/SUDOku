@@ -35,7 +35,7 @@ public class SecurityConfig {
 						.mvcMatchers("/register").permitAll()
 						.anyRequest().authenticated()
 				)
-				.httpBasic(withDefaults())
+				.formLogin(withDefaults())
 				.csrf().ignoringRequestMatchers(PathRequest.toH2Console())
 				.and().headers().frameOptions().sameOrigin(); // For h2 GUI only
 

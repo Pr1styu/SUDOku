@@ -128,7 +128,7 @@ const Menu: React.FC<IComponent> = () => {
 
   const menuElementsCaff = [
     {
-      path: '/caff',
+      path: '/browse',
       name: 'Browse CAFF files',
       icon: <ImageSearchIcon />,
       show: isLoggedIn,

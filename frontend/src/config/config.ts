@@ -1,35 +1,123 @@
-// Backend base URLs
-const BACKEND_PROTOCOL = 'http';
-const BACKEND_HOST = 'localhost';
-const BACKEND_PORT = '8080';
-const BACKEND_BASE_PATH = 'caff';
+import { AuthType } from '../services/AuthType';
+
+// Frontend base URLs
+const FRONTEND_PROTOCOL = 'http';
+const FRONTEND_HOST = 'localhost';
+const FRONTEND_HOST_IP = '127.0.0.1';
+const FRONTEND_PORT = 4200;
+const FRONTEND_BASE_URL = FRONTEND_PROTOCOL + '://' + FRONTEND_HOST + ':' + FRONTEND_PORT + '/';
+const FRONTEND_BASE_URL_IP =
+  FRONTEND_PROTOCOL + '://' + FRONTEND_HOST_IP + ':' + FRONTEND_PORT + '/';
+
+// Proxy
 const USE_PROXY = true;
-const BACKEND_BASE_URL = USE_PROXY
-  ? BACKEND_BASE_PATH
-  : BACKEND_PROTOCOL + '://' + BACKEND_HOST + ':' + BACKEND_PORT + '/' + BACKEND_BASE_PATH;
-// Backend service URLs
+
+// Backend base URLs
+const BACKEND_SERVICE_PROTOCOL = 'http';
+const BACKEND_SERVICE_HOST = 'localhost';
+const BACKEND_SERVICE_PORT = '8080';
+const BACKEND_SERVICE_BASE_PATH = 'caff';
+const BACKEND_SERVICE_BASE_URL = USE_PROXY
+  ? BACKEND_SERVICE_BASE_PATH
+  : BACKEND_SERVICE_PROTOCOL +
+    '://' +
+    BACKEND_SERVICE_HOST +
+    ':' +
+    BACKEND_SERVICE_PORT +
+    '/' +
+    BACKEND_SERVICE_BASE_PATH;
+
+const BACKEND_AUTH_SERVER_PROTOCOL = 'http';
+const BACKEND_AUTH_SERVER_HOST = 'localhost';
+const BACKEND_AUTH_SERVER_PORT = '9000';
+const BACKEND_AUTH_SERVER_BASE_PATH = '/oauth2/';
+const BACKEND_AUTH_SERVER_BASE_URL_NO_PROXY =
+  BACKEND_AUTH_SERVER_PROTOCOL +
+  '://' +
+  BACKEND_AUTH_SERVER_HOST +
+  ':' +
+  BACKEND_AUTH_SERVER_PORT +
+  BACKEND_AUTH_SERVER_BASE_PATH;
+const BACKEND_AUTH_SERVER_BASE_URL = USE_PROXY
+  ? BACKEND_AUTH_SERVER_BASE_PATH
+  : BACKEND_AUTH_SERVER_PROTOCOL +
+    '://' +
+    BACKEND_AUTH_SERVER_HOST +
+    ':' +
+    BACKEND_AUTH_SERVER_PORT +
+    BACKEND_AUTH_SERVER_BASE_PATH;
 
 // Authentication
-const SIGN_UP_URL = BACKEND_BASE_URL + 'register';
-const SIGN_IN_URL = BACKEND_BASE_URL + 'authenticate';
+const SIGN_UP_URL = BACKEND_SERVICE_BASE_URL + 'register';
+const SIGN_IN_URL = BACKEND_SERVICE_BASE_URL + 'authenticate';
+
+const AUTH_TYPE: AuthType = 'OAUTH';
+
+// OAuth2
+const RESPONSE_TYPE = 'code';
+const GRANT_TYPE = 'authorization_code';
+const CLIENT_ID = 'frontend';
+const SCOPE = 'openid';
+const REDIRECT_URI = FRONTEND_BASE_URL_IP + 'authorized';
+
+const AUTHORIZE_BASE_URL = BACKEND_AUTH_SERVER_BASE_URL_NO_PROXY + 'authorize';
+const AUTHORIZE_URL =
+  AUTHORIZE_BASE_URL +
+  '?response_type=' +
+  RESPONSE_TYPE +
+  '&client_id=' +
+  CLIENT_ID +
+  '&scope=' +
+  SCOPE +
+  '&redirect_uri=' +
+  REDIRECT_URI;
+const TOKEN_BASE_URL = BACKEND_AUTH_SERVER_BASE_URL + 'token';
+const TOKEN_URL = (CODE: string): string =>
+  TOKEN_BASE_URL +
+  '?grant_type=' +
+  GRANT_TYPE +
+  '&code=' +
+  CODE +
+  '&scope=' +
+  SCOPE +
+  '&redirect_uri=' +
+  REDIRECT_URI;
+
+const CLIENT_NAME = 'frontend';
+const CLIENT_PASSWORD = 'secret';
 
 // User data
-const GET_USER_DATA = BACKEND_BASE_URL + 'userdata';
-const UPDATE_USER_DATA = BACKEND_BASE_URL + 'updateUserdata';
+const GET_USER_DATA = BACKEND_SERVICE_BASE_URL + 'userdata';
+const UPDATE_USER_DATA = BACKEND_SERVICE_BASE_URL + 'updateUserdata';
 
 // Caff files
-const GET_ALL_CAFF_FILES = BACKEND_BASE_URL;
-const DOWNLOAD_CAFF_FILE = BACKEND_BASE_URL + '/download/';
-const UPLOAD_CAFF_FILE = BACKEND_BASE_URL + '/upload';
+const GET_ALL_CAFF_FILES = BACKEND_SERVICE_BASE_URL;
+const DOWNLOAD_CAFF_FILE = BACKEND_SERVICE_BASE_URL + '/download/';
+const UPLOAD_CAFF_FILE = BACKEND_SERVICE_BASE_URL + '/upload';
 
 const config = {
   defaults: {
     namespace: 'App',
   },
+  authType: AUTH_TYPE,
   urls: {
+    fontendBaseUrl: FRONTEND_BASE_URL,
     auth: {
       signIn: SIGN_IN_URL,
       signUp: SIGN_UP_URL,
+    },
+    oauth2: {
+      authorizeBase: AUTHORIZE_BASE_URL,
+      authorize: AUTHORIZE_URL,
+      token: TOKEN_URL,
+      params: {
+        responseType: RESPONSE_TYPE,
+        clientId: CLIENT_ID,
+        scope: SCOPE,
+        redirectUri: REDIRECT_URI,
+        clientName: CLIENT_NAME,
+        clientPassword: CLIENT_PASSWORD,
+      },
     },
     user: {
       getUserData: GET_USER_DATA,

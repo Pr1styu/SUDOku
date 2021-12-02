@@ -1,43 +1,40 @@
-//import authHeader from './AuthHeader';
 import { AuthType } from './AuthType';
 import IComment from '../interfaces/comment';
+import authHeader from './AuthHeader';
 import axios, { AxiosResponse } from 'axios';
 import basicAuthHeader from './BasicAuthHeader';
 import config from '../config/config';
 
-//const urlConfig = { headers: { 'Content-Type': 'application/json', ...authHeader() } };
+const basicAuthUrlConfig = {
+  headers: { 'Content-Type': 'application/json', ...basicAuthHeader() },
+};
+const tokenAuthUrlConfig = { headers: { 'Content-Type': 'application/json', ...authHeader() } };
 
 const getAllCaffFiles = (authType: AuthType): Promise<AxiosResponse<any>> => {
   if (authType === 'BASIC') {
-    return axios.get(config.urls.caff.getAllCaffFiles, { auth: basicAuthHeader() });
-
-    //TODO: JWT AUTH
+    return axios.get(config.urls.caff.getAllCaffFiles, basicAuthUrlConfig);
   } else {
-    return axios.get(config.urls.caff.getAllCaffFiles, { auth: basicAuthHeader() });
+    return axios.get(config.urls.caff.getAllCaffFiles, tokenAuthUrlConfig);
   }
 };
 
 const getCaffFile = (authType: AuthType, id: number): Promise<AxiosResponse<any>> => {
   if (authType === 'BASIC') {
-    return axios.get(config.urls.caff.getAllCaffFiles + '/' + id, { auth: basicAuthHeader() });
-
-    //TODO: JWT AUTH
+    return axios.get(config.urls.caff.getAllCaffFiles + '/' + id, basicAuthUrlConfig);
   } else {
-    return axios.get(config.urls.caff.getAllCaffFiles + '/' + id, { auth: basicAuthHeader() });
+    return axios.get(config.urls.caff.getAllCaffFiles + '/' + id, tokenAuthUrlConfig);
   }
 };
 
 const downloadCaffFile = (authType: AuthType, id: number): Promise<AxiosResponse<any>> => {
   if (authType === 'BASIC') {
     return axios.get(config.urls.caff.downloadCaffFile + id, {
-      auth: basicAuthHeader(),
+      ...basicAuthHeader(),
       responseType: 'blob',
     });
-
-    //TODO: JWT AUTH
   } else {
     return axios.get(config.urls.caff.downloadCaffFile + id, {
-      auth: basicAuthHeader(),
+      ...authHeader(),
       responseType: 'blob',
     });
   }
@@ -52,19 +49,13 @@ const addComment = (
     return axios.post(
       config.urls.caff.getAllCaffFiles + '/' + id + '/comment',
       { text: comment.text, username: comment.userName },
-      {
-        auth: basicAuthHeader(),
-      }
+      basicAuthUrlConfig
     );
-
-    //TODO: JWT AUTH
   } else {
     return axios.post(
       config.urls.caff.getAllCaffFiles + '/' + id + '/comment',
       { text: comment.text, username: comment.userName },
-      {
-        auth: basicAuthHeader(),
-      }
+      tokenAuthUrlConfig
     );
   }
 };
@@ -79,34 +70,39 @@ const uploadCaffFile = (
     formData.append('fileName', fileName);
     formData.append('caffFile', file);
 
-    return axios.post(config.urls.caff.uploadCaffFile, formData, {
-      auth: basicAuthHeader(),
-    });
-
-    //TODO: JWT AUTH
+    return axios.post(config.urls.caff.uploadCaffFile, formData, basicAuthUrlConfig);
   } else {
     const formData = new FormData();
     formData.append('fileName', fileName);
     formData.append('caffFile', file);
 
-    return axios.post(config.urls.caff.uploadCaffFile, formData, {
-      auth: basicAuthHeader(),
-    });
+    return axios.post(config.urls.caff.uploadCaffFile, formData, tokenAuthUrlConfig);
   }
 };
 
 const deleteCaffFile = (authType: AuthType, id: number): Promise<AxiosResponse<any>> => {
   if (authType === 'BASIC') {
-    return axios.delete(config.urls.caff.getAllCaffFiles + '/' + id, {
-      auth: basicAuthHeader(),
-    });
-
-    //TODO: JWT AUTH
+    return axios.delete(config.urls.caff.getAllCaffFiles + '/' + id, basicAuthUrlConfig);
   } else {
-    return axios.delete(config.urls.caff.getAllCaffFiles + '/' + id, {
-      auth: basicAuthHeader(),
-    });
+    return axios.delete(config.urls.caff.getAllCaffFiles + '/' + id, tokenAuthUrlConfig);
   }
+};
+
+const getOauthToken = (code: string): Promise<void> => {
+  return axios
+    .post(
+      config.urls.oauth2.token(code),
+      {},
+      {
+        auth: {
+          username: 'frontend',
+          password: 'secret',
+        },
+      }
+    )
+    .then((response) => {
+      localStorage.setItem('user_token', JSON.stringify(response.data));
+    });
 };
 
 export default {
@@ -116,4 +112,5 @@ export default {
   addComment,
   uploadCaffFile,
   deleteCaffFile,
+  getOauthToken,
 };

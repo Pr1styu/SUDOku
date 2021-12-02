@@ -5,9 +5,9 @@ server:
 logging:
   level:
     root: INFO
-    org.springframework.boot: INFO
-    org.springframework.security: INFO
-    org.springframework.security.oauth2: INFO
+    org.springframework.boot: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.security.oauth2: DEBUG
 
 spring:
   h2:

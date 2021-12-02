@@ -1,8 +1,11 @@
 import { ActionType } from '../action-types';
 import { AuthAction } from '../actions';
 import IUser from '../../interfaces/userData';
+import config from '../../config/config';
 
-const userString = localStorage.getItem('user');
+const authType = config.authType;
+const userString =
+  authType === 'OAUTH' ? localStorage.getItem('user_token') : localStorage.getItem('user_basic');
 const user: (IUser & { token: string }) | null = userString ? JSON.parse(userString) : null;
 
 const initialState = user ? { isLoggedIn: true, user } : { isLoggedIn: false, user: null };
@@ -25,6 +28,11 @@ const reducer = (state: authState = initialState, action: AuthAction): authState
         ...state,
         isLoggedIn: true,
         user: action.payload.user,
+      };
+    case ActionType.LOGIN_SUCCESS_OAUTH:
+      return {
+        ...state,
+        isLoggedIn: true,
       };
     case ActionType.LOGIN_FAIL:
       return {

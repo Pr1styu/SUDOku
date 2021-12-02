@@ -29,7 +29,7 @@ import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 @Slf4j
 @RestController
 @AllArgsConstructor
-@CrossOrigin(origins = "https://localhost:4200/", maxAge = 3600)
+@CrossOrigin(origins = "http://localhost:4200/", maxAge = 3600)
 @RequestMapping("/caff")
 public class CAFFController {
 
@@ -62,7 +62,7 @@ public class CAFFController {
                                                             UriComponentsBuilder b) {
         var createdCaffFileEntity = caffService.saveCaffFile(uploadedCaffFile, FilenameUtils.getBaseName(StringUtils.cleanPath(clientFileName)));
         if (createdCaffFileEntity != null) {
-            UriComponents uriComponents = b.path("/caff/{id}").buildAndExpand(createdCaffFileEntity.getId());
+            UriComponents uriComponents = b.path("/{id}").buildAndExpand(createdCaffFileEntity.getId());
             return ResponseEntity.created(uriComponents.toUri()).body(caffMapper.toDetailDTO(createdCaffFileEntity));
         } else {
             return ResponseEntity.badRequest().build();
@@ -87,11 +87,13 @@ public class CAFFController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteCaffFile(@PathVariable Long id) {
-        try {
-            caffService.deleteCaffFile(id);
+    public ResponseEntity deleteCaffFile(@PathVariable Long id) throws CaffFileNotFoundException {
+
+        // TODO: Check permission for requested file
+
+        if (caffService.deleteCaffFile(id)) {
             return ResponseEntity.ok().build();
-        } catch (CaffFileNotFoundException e) {
+        } else {
             return ResponseEntity.notFound().build();
         }
     }
@@ -118,7 +120,7 @@ public class CAFFController {
     }
 
     @PostMapping("/{id}/comment")
-    public ResponseEntity<String> addCommentForCaffFile(@PathVariable Long id, @RequestBody CommentDTO commentDTO) {
+    public ResponseEntity addCommentForCaffFile(@PathVariable Long id, @RequestBody CommentDTO commentDTO) {
 
         log.info("Adding comment '{}' for caff file with id {}.", commentDTO.getText(), id);
 
