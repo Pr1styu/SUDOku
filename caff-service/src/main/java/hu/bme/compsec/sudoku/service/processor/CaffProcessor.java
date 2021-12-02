@@ -47,7 +47,7 @@ public final class CaffProcessor {
     @Getter
     private List<String> metaData;
 
-    public void process(MultipartFile uploadedCaffFile, String clientFileName) throws CaffFileFormatException, CAFFProcessorRuntimeException {
+    public void process(MultipartFile uploadedCaffFile, String clientFileName) throws CaffFileFormatException, CAFFProcessorRuntimeException, InterruptedException, IOException {
         /*
          * DONE 1. Save uploaded caff file (uploadedCaffFile) to the filesystem.
          * DONE 2. Call the native component with proper params
@@ -57,12 +57,23 @@ public final class CaffProcessor {
          * */
 
         saveCaffFileToFileSystem(uploadedCaffFile, clientFileName);
-        parseCaffFile();
+        try {
+            parseCaffFile();
 
-        loadPreview();
-        extractMetaData();
+            loadPreview();
+            extractMetaData();
 
-        cleanWorkDir();
+            cleanWorkDir();
+        }catch(InterruptedException e){
+            cleanWorkDir();
+            cleanPreviewAndMetadata();
+            throw new InterruptedException("Reverted changes that happened during parsing");
+        }
+    }
+
+    private void cleanPreviewAndMetadata() throws IOException {
+        Files.deleteIfExists(generatedPreviewPath);
+        Files.deleteIfExists(generatedMetaDataPath);
     }
 
     @PostConstruct
@@ -114,7 +125,7 @@ public final class CaffProcessor {
      * CAFFParser -i <caff fájl helye> <-of> <jpeg kimeneti helye és neve> <-ot> <metaadatoknak a kimeneti helye és neve>
      * CAFFParser -of "hello.jpeg" -i "C:\Users\ABC\CLionProjects\SUDOku\NativeComponent\CAFFTest\3.caff" -ot "txtout.txt"
      * */
-    private void parseCaffFile() throws CaffFileFormatException {
+    private void parseCaffFile() throws CaffFileFormatException, InterruptedException {
         String parserCommand = createParserCommand();
         ProcessBuilder processBuilder = new ProcessBuilder(parserCommand.split(" "));
         File parseLogFile = workDir.resolve(savedBaseName + PARSER_LOG_EXTENSION).toFile(); // TODO: Move logs another place
@@ -136,7 +147,7 @@ public final class CaffProcessor {
             throw new CaffFileFormatException("Could not parse caff file: {}", savedBaseName);
         } catch (InterruptedException e) {
             log.error("Could process caff file {} on time.", savedBaseName);
-            throw new CaffFileFormatException("Too complex caff file to parse!");
+            throw new InterruptedException("HELLO");
         }
     }
 

@@ -34,7 +34,7 @@ public class CommentRepositoryTest {
     Long commentId = 0L;
 
     @Before
-    public void initRepository() throws CaffFileFormatException, IOException, CAFFProcessorRuntimeException {
+    public void initRepository() throws CaffFileFormatException, IOException, CAFFProcessorRuntimeException, InterruptedException {
         CAFFFile saved = caffRepository.saveAndFlush(helper.loadCaffFile("1.caff"));
         CAFFFile other = caffRepository.saveAndFlush(helper.loadCaffFile("2.caff"));
         caffId = saved.getId();
