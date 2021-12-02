@@ -10,8 +10,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.OAuth2TokenType;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.authorization.JwtEncodingContext;
@@ -37,7 +35,7 @@ public class SecurityConfig {
 						.mvcMatchers("/register").permitAll()
 						.anyRequest().authenticated()
 				)
-				.httpBasic(withDefaults())
+				.formLogin(withDefaults())
 				.csrf().ignoringRequestMatchers(PathRequest.toH2Console())
 				.and().headers().frameOptions().sameOrigin(); // For h2 GUI only
 
