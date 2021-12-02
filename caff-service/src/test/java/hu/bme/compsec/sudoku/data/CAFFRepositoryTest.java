@@ -6,11 +6,12 @@ import hu.bme.compsec.sudoku.data.domain.CAFFFile;
 import hu.bme.compsec.sudoku.helper.CaffFileHelper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
@@ -18,13 +19,11 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringRunner.class)
 @DataJpaTest
 @Transactional
+@ExtendWith(SpringExtension.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class CAFFRepositoryTest {
-
-    @Autowired
-    private TestEntityManager entityManager;
 
     @Autowired
     private CAFFRepository caffRepository;
@@ -33,12 +32,12 @@ public class CAFFRepositoryTest {
 
     @BeforeAll
     public void initRepository() throws CaffFileFormatException, IOException, CAFFProcessorRuntimeException {
-        entityManager.clear();
+        caffRepository.deleteAll();
         String[] fileNames = new String[] {"1.caff", "2.caff", "3.caff"};
         for (String file : fileNames) {
             CAFFFile caff = helper.loadCaffFile(file);
-            entityManager.persist(caff);
-            entityManager.flush();
+            caffRepository.save(caff);
+            caffRepository.flush();
         }
     }
 
