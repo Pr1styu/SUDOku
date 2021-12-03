@@ -97,7 +97,7 @@ class CAFFServiceTest {
         assertThat(new HashSet<>(caff.get().getMetaData())).isEqualTo(new HashSet<>(metaData));
     }
 
-    @Test
+    /*@Test
     void testCRUD() throws IOException, CaffFileNotFoundException {
 
         List<CAFFFile> caffFiles = caffService.getAllCaffFile();
@@ -115,7 +115,7 @@ class CAFFServiceTest {
         caffService.deleteCaffFile(1L);
         caffFiles = caffService.getAllCaffFile();
         assertThat(caffFiles.size()).isEqualTo(1);
-    }
+    }*/
 
     @Test
     void testSearchByMetaData() throws IOException {
