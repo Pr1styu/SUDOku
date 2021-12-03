@@ -1,3 +1,25 @@
 plugins {
     id "org.sonarqube" version "3.3"
+    id 'jacoco'
+    id 'java'
 }
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+    }
+
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                    "hu/bme/compsec/sudoku/authserver/**/*.*"
+            ])
+        }))
+    }
+}
+
+test {
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+
