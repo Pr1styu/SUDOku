@@ -136,7 +136,20 @@ public final class CaffProcessor {
             throw new CaffFileFormatException("Could not parse caff file: {}", savedBaseName);
         } catch (InterruptedException e) {
             log.error("Could process caff file {} on time.", savedBaseName);
+            cleanWorkDir();
+            cleanPreviewAndMetaData();
+            Thread.currentThread().interrupt();
             throw new CaffFileFormatException("Too complex caff file to parse!");
+        }
+    }
+
+    private void cleanPreviewAndMetaData() {
+        try {
+            Files.delete(generatedPreviewPath);
+            Files.delete(generatedMetaDataPath);
+            log.info("Cleaned up after interrupt exception.");
+        }catch(IOException e){
+            log.warn("IOException occurred during clean up it might be just that the files were not created in the first place. Message: {}", e.getMessage());
         }
     }
 
