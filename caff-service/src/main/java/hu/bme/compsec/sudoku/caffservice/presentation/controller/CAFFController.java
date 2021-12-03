@@ -69,7 +69,7 @@ public class CAFFController {
         }
     }
 
-    @GetMapping("/download/{id}")
+    @GetMapping("/{id}/download")
     public ResponseEntity<Resource> downloadFiles(@PathVariable Long id) {
         return caffService.getCaffFileById(id)
                 .map(caffFile -> {
