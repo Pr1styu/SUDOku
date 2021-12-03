@@ -13,4 +13,6 @@ public class UserProfileDTO {
 
     private String profilePicture;
 
+    private UserType userType;
+
 }

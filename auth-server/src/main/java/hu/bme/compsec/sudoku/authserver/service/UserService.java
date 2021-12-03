@@ -4,6 +4,7 @@ import hu.bme.compsec.sudoku.authserver.common.exception.UserNotFoundException;
 import hu.bme.compsec.sudoku.authserver.common.exception.UsernameAlreadyInUseException;
 import hu.bme.compsec.sudoku.authserver.data.User;
 import hu.bme.compsec.sudoku.authserver.data.UserRepository;
+import hu.bme.compsec.sudoku.authserver.presentation.dto.UserProfileDTO;
 import hu.bme.compsec.sudoku.authserver.presentation.dto.UserDTO;
 import hu.bme.compsec.sudoku.authserver.presentation.mapping.UserMapper;
 import hu.bme.compsec.sudoku.common.security.UserRole;
@@ -96,7 +97,7 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    private void checkUsernameExistence(UserDTO dto) throws UsernameAlreadyInUseException {
+    private void checkUsernameExistence(UserProfileDTO dto) throws UsernameAlreadyInUseException {
         if (userRepository.findByUsername(dto.getUsername()).isPresent()) {
             throw new UsernameAlreadyInUseException("Username {} is already in use!", dto.getUsername());
         }

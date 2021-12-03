@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
+import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.OAuth2TokenType;
@@ -37,7 +38,10 @@ public class SecurityConfig {
 				)
 				.formLogin(withDefaults())
 				.csrf().ignoringRequestMatchers(PathRequest.toH2Console())
-				.and().headers().frameOptions().sameOrigin(); // For h2 GUI only
+				.and().headers().frameOptions().sameOrigin() // For h2 GUI only
+
+				.and()
+				.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
 
 		return http.build();
 	}
