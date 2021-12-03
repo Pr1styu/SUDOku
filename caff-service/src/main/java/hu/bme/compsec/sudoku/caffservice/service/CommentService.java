@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static hu.bme.compsec.sudoku.common.security.SecurityUtils.getUserIdFromJwt;
+
 @Service
 @Transactional
 @AllArgsConstructor
@@ -30,7 +32,7 @@ public class CommentService {
 
             var comment = new Comment();
             comment.setText(commentDTO.getText());
-//            comment.setUserId(auth.getDetails());
+            comment.setUserId(getUserIdFromJwt());
             comment.setUsername(getAuthenticatedUserName());
             caffFile.addComment(comment);
 
