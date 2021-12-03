@@ -1,4 +1,4 @@
-package hu.bme.compsec.sudoku.helper;
+package hu.bme.compsec.sudoku.caffservice.helper;
 
 import hu.bme.compsec.sudoku.caffservice.common.exception.CAFFProcessorRuntimeException;
 import hu.bme.compsec.sudoku.caffservice.common.exception.CaffFileFormatException;

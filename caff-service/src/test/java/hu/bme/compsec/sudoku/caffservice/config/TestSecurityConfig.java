@@ -1,4 +1,4 @@
-package hu.bme.compsec.sudoku.config;
+package hu.bme.compsec.sudoku.caffservice.config;
 
 import hu.bme.compsec.sudoku.common.security.UserRole;
 import org.springframework.boot.test.context.TestConfiguration;
