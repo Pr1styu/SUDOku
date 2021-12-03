@@ -6,15 +6,13 @@ import hu.bme.compsec.sudoku.authserver.presentation.dto.UserDTO;
 import hu.bme.compsec.sudoku.authserver.presentation.dto.UserProfileDTO;
 import hu.bme.compsec.sudoku.authserver.presentation.dto.UserType;
 import hu.bme.compsec.sudoku.common.security.UserRole;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Named;
+import org.mapstruct.*;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-@Mapper(componentModel = "spring", uses = PasswordEncoderMapper.class)
+@Mapper(componentModel = "spring", uses = PasswordEncoderMapper.class, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public interface UserMapper {
 
     @Mapping(target = "id", ignore = true)
@@ -40,5 +38,11 @@ public interface UserMapper {
 
         return UserType.USER;
     }
+
+    @Mapping(target="id", ignore = true)
+    @Mapping(target = "roles", ignore = true)
+    @Mapping(target = "enabled", ignore = true)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateUserFromDto(UserDTO dto, @MappingTarget User entity);
 
 }

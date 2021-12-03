@@ -75,9 +75,9 @@ public class UserService implements UserDetailsService {
         }
 
         try {
-            var updatedEntity = userMapper.toEntity(dto);
-            updatedEntity.setId(userEntity.getId());
-            userRepository.save(updatedEntity);
+            userMapper.updateUserFromDto(dto, userEntity);
+            userEntity.setId(userEntity.getId());
+            userRepository.save(userEntity);
             return true;
         } catch (Exception e) {
             log.error("Error while update client data: {}", e.getMessage());

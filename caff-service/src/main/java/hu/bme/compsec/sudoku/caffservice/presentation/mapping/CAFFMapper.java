@@ -7,10 +7,11 @@ import hu.bme.compsec.sudoku.caffservice.presentation.dto.CAFFFilePreviewDTO;
 import hu.bme.compsec.sudoku.caffservice.presentation.dto.CommentDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.NullValueCheckStrategy;
 
 import java.util.Base64;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public interface CAFFMapper {
 
     @Mapping(target = "size", source = "rawBytes")
