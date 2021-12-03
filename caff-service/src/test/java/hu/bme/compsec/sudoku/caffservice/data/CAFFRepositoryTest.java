@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Transactional
 @ExtendWith(SpringExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class CAFFRepositoryTest {
+class CAFFRepositoryTest {
 
     @Autowired
     private CAFFRepository caffRepository;
@@ -41,32 +41,32 @@ public class CAFFRepositoryTest {
     }
 
     @Test
-    public void testFindByName() {
+    void testFindByName() {
         CAFFFile found = caffRepository.findByFileName("1.caff");
         assertThat(found.getFileName()).isEqualTo("1.caff");
     }
 
     @Test
-    public void testFindAll() {
+    void testFindAll() {
         List<CAFFFile> caffFiles = caffRepository.findAll();
         assertThat(caffFiles.size()).isEqualTo(3);
     }
 
     @Test
-    public void testRemove() {
+    void testRemove() {
         CAFFFile test = caffRepository.findByFileName("1.caff");
         caffRepository.delete(test);
         assertThat(caffRepository.findAll().size()).isEqualTo(2);
     }
 
     @Test
-    public void testInsert() throws CaffFileFormatException, IOException, CAFFProcessorRuntimeException {
+    void testInsert() throws CaffFileFormatException, IOException, CAFFProcessorRuntimeException {
         caffRepository.save(helper.loadCaffFile("3.caff"));
         assertThat(caffRepository.findAll().size()).isEqualTo(4);
     }
 
     @Test
-    public void testFindByMetadata() {
+    void testFindByMetadata() {
         List<CAFFFile> result = caffRepository.findAllByMetaDataIgnoreCase("sunset");
         assertThat(result.size()).isEqualTo(3);
     }
