@@ -31,12 +31,12 @@ const getCaffFile = (authType: AuthType, id: number): Promise<AxiosResponse<any>
 
 const downloadCaffFile = (authType: AuthType, id: number): Promise<AxiosResponse<any>> => {
   if (authType === 'BASIC') {
-    return axios.get(config.urls.caff.downloadCaffFile + id, {
+    return axios.get(config.urls.caff.downloadCaffFile(id), {
       headers: { ...basicAuthHeader() },
       responseType: 'blob',
     });
   } else {
-    return axios.get(config.urls.caff.downloadCaffFile + id, {
+    return axios.get(config.urls.caff.downloadCaffFile(id), {
       headers: { ...authHeader() },
       responseType: 'blob',
     });
