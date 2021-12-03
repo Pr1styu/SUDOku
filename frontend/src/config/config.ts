@@ -92,7 +92,8 @@ const UPDATE_USER_DATA = BACKEND_SERVICE_BASE_URL + 'updateUserdata';
 
 // Caff files
 const GET_ALL_CAFF_FILES = BACKEND_SERVICE_BASE_URL;
-const DOWNLOAD_CAFF_FILE = BACKEND_SERVICE_BASE_URL + '/download/';
+const DOWNLOAD_CAFF_FILE = (id: number): string =>
+  BACKEND_SERVICE_BASE_URL + '/' + id + '/download/';
 const UPLOAD_CAFF_FILE = BACKEND_SERVICE_BASE_URL + '/upload';
 
 const config = {

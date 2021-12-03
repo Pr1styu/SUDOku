@@ -32,16 +32,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ContextConfiguration(classes = {CommentService.class, CommentRepository.class})
 @TestPropertySource(locations = "classpath:application-test.properties")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class CommentServiceTest {
+class CommentServiceTest {
 
     @Autowired
     private CommentService commentService;
 
     @MockBean
-    public CommentRepository commentRepository;
+    private CommentRepository commentRepository;
 
     @MockBean
-    public CAFFRepository caffRepository;
+    private CAFFRepository caffRepository;
 
     final CaffFileHelper helper = new CaffFileHelper();
 
@@ -72,7 +72,7 @@ public class CommentServiceTest {
     }
 
     @Test
-    public void testGetALlCommentsForCaffFile() {
+    void testGetALlCommentsForCaffFile() {
         List<Comment> comments = commentService.getAllCommentForCaffFile(1L);
         assertThat(comments.size()).isEqualTo(3);
     }
@@ -85,7 +85,7 @@ public class CommentServiceTest {
     }*/
 
     @Test
-    public void testTryAddCommentToNonExistingCaffFile() {
+    void testTryAddCommentToNonExistingCaffFile() {
         boolean result = commentService.addCommentToCaffFile(4L, new CommentDTO("Test comment4", "admin"));
         assertThat(result).isFalse();
     }
