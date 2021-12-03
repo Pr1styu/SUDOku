@@ -5,7 +5,7 @@ import AuthService from '../../services/AuthService';
 import CaffService from '../../services/CaffService';
 import ICaff from '../../interfaces/caff';
 import IComment from '../../interfaces/comment';
-import IEditUserData from '../../interfaces/userDataEdit';
+import IUserData from '../../interfaces/userData';
 import UserService from '../../services/UserService';
 import config from '../../config/config';
 
@@ -143,7 +143,7 @@ export const logout = () => {
 
 export const getUserData = () => {
   return (dispatch: Dispatch<UserAction>): Promise<void> => {
-    return UserService.getUserData().then((response) => {
+    return UserService.getUserData(authType).then((response) => {
       dispatch({
         type: ActionType.GET_USER_DATA,
         payload: response.data,
@@ -162,7 +162,7 @@ export const clearUserData = () => {
   };
 };
 
-export const editUserData = (edited: IEditUserData) => {
+export const editUserData = (edited: IUserData) => {
   return (dispatch: Dispatch<UserAction>): void => {
     dispatch({
       type: ActionType.EDIT_USER_DATA,
@@ -171,9 +171,9 @@ export const editUserData = (edited: IEditUserData) => {
   };
 };
 
-export const saveUserDataEdit = (edited: IEditUserData) => {
+export const saveUserDataEdit = (edited: IUserData) => {
   return (dispatch: Dispatch<UserAction>): Promise<void> => {
-    return UserService.updateUserData(edited).then(() => {
+    return UserService.updateUserData(authType, edited).then(() => {
       dispatch({
         type: ActionType.SAVE_USER_DATA_EDIT,
       });
@@ -195,12 +195,6 @@ export const getAllCaffFiles = () => {
           dispatch({
             type: ActionType.GET_CAFF_FILE,
             payload: response.data,
-          });
-        });
-        CaffService.downloadCaffFile(authType, caff.id).then((response) => {
-          dispatch({
-            type: ActionType.DOWNLOAD_CAFF_FILE,
-            payload: { id: caff.id, file: response.data },
           });
         });
       });
