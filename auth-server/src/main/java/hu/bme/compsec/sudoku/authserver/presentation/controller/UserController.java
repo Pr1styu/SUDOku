@@ -12,12 +12,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import static hu.bme.compsec.sudoku.authserver.config.SecurityUtils.getUserIdFromJwt;
+import static hu.bme.compsec.sudoku.common.security.SecurityUtils.getUserIdFromJwt;
 
 @Slf4j
 @RestController
 @RequestMapping("/user")
-@CrossOrigin(origins = "http://localhost:4200/", maxAge = 3600)
+//@CrossOrigin(origins = "http://localhost:4200/", maxAge = 3600)
 @AllArgsConstructor
 public class UserController {
 

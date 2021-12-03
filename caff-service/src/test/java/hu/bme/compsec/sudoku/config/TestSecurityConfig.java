@@ -1,6 +1,6 @@
 package hu.bme.compsec.sudoku.config;
 
-import hu.bme.compsec.sudoku.common.config.security.UserRole;
+import hu.bme.compsec.sudoku.common.security.UserRole;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,7 +12,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import java.time.Instant;
 import java.util.Map;
 
-import static hu.bme.compsec.sudoku.common.config.security.SecurityUtils.USERID_CLAIM;
+import static hu.bme.compsec.sudoku.common.security.SecurityUtils.USERID_CLAIM;
 
 @TestConfiguration
 public class TestSecurityConfig {

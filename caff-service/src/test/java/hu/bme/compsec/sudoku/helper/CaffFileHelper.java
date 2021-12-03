@@ -1,9 +1,9 @@
 package hu.bme.compsec.sudoku.helper;
 
-import hu.bme.compsec.sudoku.common.exception.CAFFProcessorRuntimeException;
-import hu.bme.compsec.sudoku.common.exception.CaffFileFormatException;
-import hu.bme.compsec.sudoku.data.domain.CAFFFile;
-import hu.bme.compsec.sudoku.service.processor.CaffProcessor;
+import hu.bme.compsec.sudoku.caffservice.common.exception.CAFFProcessorRuntimeException;
+import hu.bme.compsec.sudoku.caffservice.common.exception.CaffFileFormatException;
+import hu.bme.compsec.sudoku.caffservice.data.domain.CAFFFile;
+import hu.bme.compsec.sudoku.caffservice.service.processor.CaffProcessor;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 

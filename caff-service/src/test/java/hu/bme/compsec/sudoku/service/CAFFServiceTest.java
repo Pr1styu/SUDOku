@@ -1,14 +1,15 @@
 package hu.bme.compsec.sudoku.service;
 
-import hu.bme.compsec.sudoku.common.config.security.UserRole;
-import hu.bme.compsec.sudoku.common.exception.CAFFProcessorRuntimeException;
-import hu.bme.compsec.sudoku.common.exception.CaffFileFormatException;
-import hu.bme.compsec.sudoku.common.exception.CaffFileNotFoundException;
+import hu.bme.compsec.sudoku.caffservice.common.exception.CAFFProcessorRuntimeException;
+import hu.bme.compsec.sudoku.caffservice.common.exception.CaffFileFormatException;
+import hu.bme.compsec.sudoku.caffservice.common.exception.CaffFileNotFoundException;
+import hu.bme.compsec.sudoku.caffservice.service.CAFFService;
+import hu.bme.compsec.sudoku.common.security.UserRole;
 import hu.bme.compsec.sudoku.config.TestSecurityConfig;
-import hu.bme.compsec.sudoku.data.CAFFRepository;
-import hu.bme.compsec.sudoku.data.domain.CAFFFile;
+import hu.bme.compsec.sudoku.caffservice.data.CAFFRepository;
+import hu.bme.compsec.sudoku.caffservice.data.domain.CAFFFile;
 import hu.bme.compsec.sudoku.helper.CaffFileHelper;
-import hu.bme.compsec.sudoku.service.processor.CaffProcessor;
+import hu.bme.compsec.sudoku.caffservice.service.processor.CaffProcessor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

@@ -1,13 +1,14 @@
 package hu.bme.compsec.sudoku.service;
 
-import hu.bme.compsec.sudoku.common.exception.CAFFProcessorRuntimeException;
-import hu.bme.compsec.sudoku.common.exception.CaffFileFormatException;
+import hu.bme.compsec.sudoku.caffservice.common.exception.CAFFProcessorRuntimeException;
+import hu.bme.compsec.sudoku.caffservice.common.exception.CaffFileFormatException;
+import hu.bme.compsec.sudoku.caffservice.service.CommentService;
 import hu.bme.compsec.sudoku.config.TestSecurityConfig;
-import hu.bme.compsec.sudoku.data.CAFFRepository;
-import hu.bme.compsec.sudoku.data.CommentRepository;
-import hu.bme.compsec.sudoku.data.domain.Comment;
+import hu.bme.compsec.sudoku.caffservice.data.CAFFRepository;
+import hu.bme.compsec.sudoku.caffservice.data.CommentRepository;
+import hu.bme.compsec.sudoku.caffservice.data.domain.Comment;
 import hu.bme.compsec.sudoku.helper.CaffFileHelper;
-import hu.bme.compsec.sudoku.presentation.dto.CommentDTO;
+import hu.bme.compsec.sudoku.caffservice.presentation.dto.CommentDTO;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;

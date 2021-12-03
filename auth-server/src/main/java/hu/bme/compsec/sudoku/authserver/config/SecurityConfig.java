@@ -2,7 +2,7 @@ package hu.bme.compsec.sudoku.authserver.config;
 
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
-import hu.bme.compsec.sudoku.authserver.common.UserRole;
+import hu.bme.compsec.sudoku.common.security.UserRole;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,8 +19,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static hu.bme.compsec.sudoku.authserver.config.SecurityUtils.AUTHORITIES_CLAIM;
-import static hu.bme.compsec.sudoku.authserver.config.SecurityUtils.USERID_CLAIM;
+import static hu.bme.compsec.sudoku.common.security.SecurityUtils.AUTHORITIES_CLAIM;
+import static hu.bme.compsec.sudoku.common.security.SecurityUtils.USERID_CLAIM;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 

@@ -1,7 +1,7 @@
 package hu.bme.compsec.sudoku.authserver.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import hu.bme.compsec.sudoku.authserver.common.UserRole;
+import hu.bme.compsec.sudoku.common.security.UserRole;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 

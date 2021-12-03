@@ -1,12 +1,12 @@
 package hu.bme.compsec.sudoku.authserver.service;
 
-import hu.bme.compsec.sudoku.authserver.common.UserRole;
 import hu.bme.compsec.sudoku.authserver.common.exception.UserNotFoundException;
 import hu.bme.compsec.sudoku.authserver.common.exception.UsernameAlreadyInUseException;
 import hu.bme.compsec.sudoku.authserver.data.User;
 import hu.bme.compsec.sudoku.authserver.data.UserRepository;
 import hu.bme.compsec.sudoku.authserver.presentation.dto.UserDTO;
 import hu.bme.compsec.sudoku.authserver.presentation.mapping.UserMapper;
+import hu.bme.compsec.sudoku.common.security.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,8 +19,8 @@ import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Optional;
 
-import static hu.bme.compsec.sudoku.authserver.config.SecurityUtils.checkPermissionForUserId;
-import static hu.bme.compsec.sudoku.authserver.config.SecurityUtils.getUserIdFromJwt;
+import static hu.bme.compsec.sudoku.common.security.SecurityUtils.checkPermission;
+import static hu.bme.compsec.sudoku.common.security.SecurityUtils.getUserIdFromJwt;
 
 @Slf4j
 @Service
@@ -64,7 +64,7 @@ public class UserService implements UserDetailsService {
         final Long authenticatedUserId = getUserIdFromJwt();
         var userEntity = userRepository.findById(authenticatedUserId)
                 .map(user -> {
-                     checkPermissionForUserId(user.getId());
+                     checkPermission(user.getId());
                     return user;
                 })
                 .orElseThrow(() -> new UserNotFoundException("There is no user with id {} in the db.", authenticatedUserId));

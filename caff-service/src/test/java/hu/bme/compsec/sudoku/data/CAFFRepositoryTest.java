@@ -1,8 +1,9 @@
 package hu.bme.compsec.sudoku.data;
 
-import hu.bme.compsec.sudoku.common.exception.CAFFProcessorRuntimeException;
-import hu.bme.compsec.sudoku.common.exception.CaffFileFormatException;
-import hu.bme.compsec.sudoku.data.domain.CAFFFile;
+import hu.bme.compsec.sudoku.caffservice.common.exception.CAFFProcessorRuntimeException;
+import hu.bme.compsec.sudoku.caffservice.common.exception.CaffFileFormatException;
+import hu.bme.compsec.sudoku.caffservice.data.CAFFRepository;
+import hu.bme.compsec.sudoku.caffservice.data.domain.CAFFFile;
 import hu.bme.compsec.sudoku.helper.CaffFileHelper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -10,7 +11,6 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
