@@ -18,10 +18,8 @@ const App: React.FC<RouteComponentProps> = (props) => {
 
   useEffect(() => {
     logging.info('Loading Application...');
-    // TODO:
-    // getUserData();
-    getAllCaffFiles();
-  }, []);
+    isLoggedIn && getAllCaffFiles();
+  }, [isLoggedIn]);
 
   const loginAndRegisterPage = routes.filter(
     (route) => route.name === 'Login' || route.name === 'Register'

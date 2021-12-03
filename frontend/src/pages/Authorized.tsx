@@ -22,8 +22,10 @@ const Authorized: React.FC<IComponent> = () => {
 
   useEffect(() => {
     const code = query.get('code');
-    loginOauth();
-    code && CaffService.getOauthToken(code);
+    code &&
+      CaffService.getOauthToken(code).then(() => {
+        loginOauth();
+      });
   }, []);
 
   return (
