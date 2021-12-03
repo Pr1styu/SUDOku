@@ -99,15 +99,17 @@ public class CAFFServiceTest {
 
     @Test
     void testCRUD() throws IOException, CaffFileNotFoundException {
+
         List<CAFFFile> caffFiles = caffService.getAllCaffFile();
         assertThat(caffFiles.size()).isEqualTo(2);
 
         CaffFileHelper helper = new CaffFileHelper();
         MultipartFile file = helper.loadMultipartFile("3.caff");
-        caffService.saveCaffFile(file, "3. caff");
+        caffService.saveCaffFile(file, "3.caff");
 
         caffFiles = caffService.getAllCaffFile();
         assertThat(caffFiles.size()).isEqualTo(3);
+
 
         caffService.deleteCaffFile(3L);
         caffService.deleteCaffFile(1L);
@@ -117,6 +119,11 @@ public class CAFFServiceTest {
 
     @Test
     void testSearchByMetaData() throws IOException {
+        var adminUserId = 1L;
+
+        TestSecurityConfig.mockAuthenticatedUserId(adminUserId);
+        TestSecurityConfig.mockAuthWithUserRoleAndId(UserRole.ADMIN);
+
         for (int i = 1; i <= 3; i++) {
             CaffFileHelper helper = new CaffFileHelper();
             String fileName = i + ".caff";
