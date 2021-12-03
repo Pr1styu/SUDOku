@@ -68,10 +68,12 @@ public class UserController {
     }
 
     @PostMapping("/forgotPassword")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<String> forgotPassword() {
         userService.forgotPassword();
         return ResponseEntity.accepted().build();
     }
+
     //TODO Delete this or actually make a ranewpassword service
     @PostMapping("/renewPassword")
     public ResponseEntity<String> renewPassword() {
@@ -79,6 +81,7 @@ public class UserController {
         return ResponseEntity.accepted().build();
     }
 
+    @DeleteMapping("")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<String> deleteUserAccount() {
         userService.deleteUser();

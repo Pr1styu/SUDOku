@@ -6,6 +6,7 @@ import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import hu.bme.compsec.sudoku.authserver.config.jackson.LongMixin;
 import hu.bme.compsec.sudoku.authserver.config.jackson.SecurityUserMixin;
 import hu.bme.compsec.sudoku.authserver.config.jose.Jwks;
 import org.springframework.context.annotation.Bean;
@@ -24,16 +25,19 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.oidc.OidcScopes;
+import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.oauth2.server.authorization.*;
 import org.springframework.security.oauth2.server.authorization.client.JdbcRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.config.ClientSettings;
 import org.springframework.security.oauth2.server.authorization.config.ProviderSettings;
+import org.springframework.security.oauth2.server.authorization.config.TokenSettings;
 import org.springframework.security.oauth2.server.authorization.jackson2.OAuth2AuthorizationServerJackson2Module;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.jackson2.SecurityJackson2Modules;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
 
@@ -64,13 +68,13 @@ public class AuthorizationServerConfig {
 				.scope("write")
 				.clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
 
-//				.tokenSettings(TokenSettings.builder()
-//						.accessTokenTimeToLive(Duration.ofHours(1))
-//						.idTokenSignatureAlgorithm(SignatureAlgorithm.RS512)
-//						.refreshTokenTimeToLive(Duration.ofDays(15))
-//						.reuseRefreshTokens(false)
-//						.build()
-//				)
+				.tokenSettings(TokenSettings.builder()
+						.accessTokenTimeToLive(Duration.ofHours(1))
+						.idTokenSignatureAlgorithm(SignatureAlgorithm.RS512)
+						.refreshTokenTimeToLive(Duration.ofDays(15))
+						.reuseRefreshTokens(false)
+						.build()
+				)
 
 				.build();
 
@@ -99,6 +103,7 @@ public class AuthorizationServerConfig {
 		objectMapper.registerModules(securityModules);
 		objectMapper.registerModule(new OAuth2AuthorizationServerJackson2Module());
 
+		objectMapper.addMixIn(Long.class, LongMixin.class);
 		objectMapper.addMixIn(SecurityUser.class, SecurityUserMixin.class);
 
 		rowMapper.setObjectMapper(objectMapper);
