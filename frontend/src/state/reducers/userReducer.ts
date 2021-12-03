@@ -13,7 +13,7 @@ const reducer = (state: any = initialState, action: UserAction): any => {
       return {
         ...state,
         username: action.payload.username,
-        displayname: action.payload.displayname,
+        fullName: action.payload.fullName,
         email: action.payload.email,
       };
     default:

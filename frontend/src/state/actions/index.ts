@@ -1,7 +1,6 @@
 import { ActionType } from '../action-types';
 import ICaff from '../../interfaces/caff';
 import IComment from '../../interfaces/comment';
-import IEditUserData from '../../interfaces/userDataEdit';
 import IUserData from '../../interfaces/userData';
 
 interface IDepositAction {
@@ -75,7 +74,7 @@ interface IClearUserDataAction {
 
 interface IEditUserDataAction {
   type: ActionType.EDIT_USER_DATA;
-  payload: IEditUserData;
+  payload: IUserData;
 }
 
 interface ISaveUserDataEdit {
