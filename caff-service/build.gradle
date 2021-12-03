@@ -59,6 +59,12 @@ dependencies {
 	testImplementation 'org.junit.vintage:junit-vintage-engine'
 }
 
+jacocoTestReport {
+	reports {
+		xml.enabled true
+	}
+}
+
 test {
 	useJUnitPlatform()
 	finalizedBy jacocoTestReport
