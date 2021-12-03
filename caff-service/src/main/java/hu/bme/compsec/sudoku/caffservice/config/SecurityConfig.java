@@ -1,5 +1,6 @@
 package hu.bme.compsec.sudoku.caffservice.config;
 
+import hu.bme.compsec.sudoku.common.security.UserRole;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,11 +20,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import hu.bme.compsec.sudoku.common.security.UserRole;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -36,7 +33,6 @@ public class SecurityConfig {
     @Profile("dev")
     SecurityFilterChain securityFilterChainDev(HttpSecurity http) throws Exception {
         http
-                .cors().and()
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
@@ -46,7 +42,9 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .httpBasic(withDefaults())
-                .csrf().disable()
+                .csrf(csrfConfig -> csrfConfig
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                )
                 .headers().frameOptions().sameOrigin(); // For h2 GUI only
 
         return http.build();
@@ -71,25 +69,21 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-//                .cors().and()
                 .authorizeRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers(PathRequest.toH2Console()).permitAll() // TODO: Turn this off once the db model finalized
-                        .mvcMatchers("/swagger-resources/**", "/swagger-ui/**", "/webjars/springfox-swagger-ui/**", "/v2/api-docs**", "/swagger**")
-                        .permitAll()
+                        .requestMatchers(PathRequest.toH2Console()).hasRole(UserRole.ADMIN.name())
+                        .mvcMatchers("/swagger-resources/**", "/swagger-ui/**", "/webjars/springfox-swagger-ui/**", "/v2/api-docs**", "/swagger**").hasRole(UserRole.ADMIN.name())
                         .anyRequest().authenticated()
                 )
-                .oauth2ResourceServer()
-                .jwt()
-                .jwtAuthenticationConverter(getJwtAuthenticationConverter());
+                .csrf(csrfConfig -> csrfConfig
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                )
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwt -> jwt
+                                .jwtAuthenticationConverter(getJwtAuthenticationConverter())
+                        )
+                );
 
         return http.build();
-    }
-
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
-        return source;
     }
 
     @Bean

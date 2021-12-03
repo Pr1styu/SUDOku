@@ -19,7 +19,6 @@ public class SecurityUtils {
     public static final String AUTHORITIES_CLAIM = "authorities";
 
 
-
     public static Long getUserIdFromJwt() {
         var auth = SecurityContextHolder.getContext().getAuthentication();
         try {
@@ -51,7 +50,6 @@ public class SecurityUtils {
         throw new AccessDeniedException(
                 String.format("User with id %d does NOT have permission for resource connecting to userId %d.",jwtUserId, userId));
     }
-
 
     private static boolean isAuthenticatedUserAdmin() {
         var authorities = SecurityContextHolder.getContext()

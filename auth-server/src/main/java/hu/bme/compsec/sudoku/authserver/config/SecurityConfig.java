@@ -16,6 +16,7 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.authorization.JwtEncodingContext;
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenCustomizer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -37,9 +38,11 @@ public class SecurityConfig {
 						.anyRequest().authenticated()
 				)
 				.formLogin(withDefaults())
-				.csrf().ignoringRequestMatchers(PathRequest.toH2Console())
-				.and().headers().frameOptions().sameOrigin() // For h2 GUI only
-
+				.csrf(csrfConfig -> csrfConfig
+						.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+						.ignoringRequestMatchers(PathRequest.toH2Console())
+				)
+				.headers().frameOptions().sameOrigin() // For h2 GUI only
 				.and()
 				.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
 

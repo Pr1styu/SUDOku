@@ -17,7 +17,7 @@ import static hu.bme.compsec.sudoku.common.security.SecurityUtils.getUserIdFromJ
 @Slf4j
 @RestController
 @RequestMapping("/user")
-//@CrossOrigin(origins = "http://localhost:4200/", maxAge = 3600)
+@CrossOrigin(origins = "http://127.0.0.1:4200/", maxAge = 3600)
 @AllArgsConstructor
 public class UserController {
 
