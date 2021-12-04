@@ -1,13 +1,13 @@
 import { combineReducers } from 'redux';
-import authMessageReducer from './authMessageReducer';
 import authReducer from './authReducer';
 import caffReducer from './caffReducer';
+import infoMessageReducer from './infoMessageReducer';
 import testReducer from './testReducer';
 import userReducer from './userReducer';
 
 const reducers = combineReducers({
   TEST: testReducer,
-  AUTH_MESSAGE: authMessageReducer,
+  INFO_MESSAGE: infoMessageReducer,
   AUTH: authReducer,
   USER: userReducer,
   CAFF: caffReducer,

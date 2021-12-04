@@ -10,8 +10,8 @@ export enum ActionType {
   LOGIN_SUCCESS_OAUTH = 'login_success_oauth',
   LOGIN_FAIL = 'login_fail',
   LOGOUT = 'logout',
-  SET_AUTH_MESSAGE = 'set_auth_message',
-  CLEAR_AUTH_MESSAGE = 'clear_auth_message',
+  SET_INFO_MESSAGE = 'set_info_message',
+  CLEAR_INFO_MESSAGE = 'clear_info_message',
   // User data
   GET_USER_DATA = 'get_user_data',
   CLEAR_USER_DATA = 'clear_user_data',

@@ -23,12 +23,12 @@ interface IBankruptAction {
 export type TestAction = IDepositAction | IWithdrawAction | IBankruptAction;
 
 interface IMessageAction {
-  type: ActionType.SET_AUTH_MESSAGE;
+  type: ActionType.SET_INFO_MESSAGE;
   payload: string;
 }
 
 interface IClearMessageAction {
-  type: ActionType.CLEAR_AUTH_MESSAGE;
+  type: ActionType.CLEAR_INFO_MESSAGE;
 }
 
 export type MessageAction = IMessageAction | IClearMessageAction;

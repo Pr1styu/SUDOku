@@ -39,54 +39,20 @@ export const bankrupt = () => {
   };
 };
 
-export const setAuthMessage = (message: string) => {
+export const setInfoMessage = (message: string) => {
   return (dispatch: Dispatch<MessageAction>): void => {
     dispatch({
-      type: ActionType.SET_AUTH_MESSAGE,
+      type: ActionType.SET_INFO_MESSAGE,
       payload: message,
     });
   };
 };
 
-export const clearMessage = () => {
+export const clearInfoMessage = () => {
   return (dispatch: Dispatch<MessageAction>): void => {
     dispatch({
-      type: ActionType.CLEAR_AUTH_MESSAGE,
+      type: ActionType.CLEAR_INFO_MESSAGE,
     });
-  };
-};
-
-export const register = (user: IUserData) => {
-  return (dispatch: Dispatch<AuthAction | MessageAction>): Promise<void> => {
-    return AuthService.register(user).then(
-      (response) => {
-        dispatch({
-          type: ActionType.REGISTER_SUCCESS,
-        });
-
-        dispatch({
-          type: ActionType.SET_AUTH_MESSAGE,
-          payload: response.data.message,
-        });
-
-        return Promise.resolve();
-      },
-
-      (error) => {
-        const message = error.response?.data?.message ?? error.message ?? error.toString();
-
-        dispatch({
-          type: ActionType.REGISTER_FAIL,
-        });
-
-        dispatch({
-          type: ActionType.SET_AUTH_MESSAGE,
-          payload: message,
-        });
-
-        return Promise.reject();
-      }
-    );
   };
 };
 

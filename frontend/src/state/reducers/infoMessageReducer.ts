@@ -5,9 +5,9 @@ const initialState = '';
 
 const reducer = (state: string = initialState, action: MessageAction): string => {
   switch (action.type) {
-    case ActionType.SET_AUTH_MESSAGE:
+    case ActionType.SET_INFO_MESSAGE:
       return action.payload;
-    case ActionType.CLEAR_AUTH_MESSAGE:
+    case ActionType.CLEAR_INFO_MESSAGE:
       return initialState;
     default:
       return state;

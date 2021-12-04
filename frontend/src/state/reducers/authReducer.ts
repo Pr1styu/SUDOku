@@ -20,16 +20,6 @@ type authState = {
 
 const reducer = (state: authState = initialState, action: AuthAction): authState => {
   switch (action.type) {
-    case ActionType.REGISTER_SUCCESS:
-      return {
-        ...state,
-        isLoggedIn: false,
-      };
-    case ActionType.REGISTER_FAIL:
-      return {
-        ...state,
-        isLoggedIn: false,
-      };
     case ActionType.LOGIN_SUCCESS:
       return {
         ...state,
