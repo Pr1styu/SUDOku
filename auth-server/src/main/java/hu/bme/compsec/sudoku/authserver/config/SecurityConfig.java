@@ -65,7 +65,6 @@ public class SecurityConfig {
 						.collect(Collectors.toSet());
 
 				context.getClaims().claim(AUTHORITIES_CLAIM, authorities);
-				// TODO: Get proper place for this.
 				var securityUser = (SecurityUser) principal.getPrincipal();
 				context.getClaims().claim(USERID_CLAIM, securityUser.getId());
 			}

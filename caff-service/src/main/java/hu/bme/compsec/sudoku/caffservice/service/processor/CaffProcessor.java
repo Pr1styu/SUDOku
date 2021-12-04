@@ -117,7 +117,7 @@ public final class CaffProcessor {
     private void parseCaffFile() throws CaffFileFormatException {
         String parserCommand = createParserCommand();
         ProcessBuilder processBuilder = new ProcessBuilder(parserCommand.split(" "));
-        File parseLogFile = workDir.resolve(savedBaseName + PARSER_LOG_EXTENSION).toFile(); // TODO: Move logs another place
+        File parseLogFile = workDir.resolve(savedBaseName + PARSER_LOG_EXTENSION).toFile();
         processBuilder.redirectErrorStream(true);
         processBuilder.redirectOutput(ProcessBuilder.Redirect.appendTo(parseLogFile));
         try {
@@ -139,7 +139,7 @@ public final class CaffProcessor {
             cleanWorkDir();
             cleanPreviewAndMetaData();
             Thread.currentThread().interrupt();
-            throw new CaffFileFormatException("Too complex caff file to parse!");
+            throw new CaffFileFormatException("Too complex caff file {} to parse!", savedBaseName);
         }
     }
 
@@ -173,8 +173,6 @@ public final class CaffProcessor {
             log.info("Caff preview {} loaded successfully.", savedBaseName);
         } catch (Exception e) {
             log.error("Cannot load preview image for caff file {} due to: {}", savedBaseName, e.getMessage());
-            // TODO: Set default image as preview?
-//            this.preview =
         }
     }
 
