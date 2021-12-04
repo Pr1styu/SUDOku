@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpServerErrorException;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
@@ -87,13 +88,15 @@ public class UserService implements UserDetailsService {
 
     public void forgotPassword() {
         if (userRepository.findById(getUserIdFromJwt()).isPresent()) {
-            // TODO: Send mail with random and ...
+            // Send mail with random and ...
         }
+        throw new UnsupportedOperationException("Password recovery function is not yet implemented.");
     }
 
-    public void deleteUser() {
-        if (userRepository.findById(getUserIdFromJwt()).isPresent()) {
-            userRepository.deleteById(getUserIdFromJwt());
+    public void deleteUser(Long id) {
+        checkPermission(id);
+        if (userRepository.findById(id).isPresent()) {
+            userRepository.deleteById(id);
         }
     }
 
