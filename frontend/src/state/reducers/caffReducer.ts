@@ -4,18 +4,14 @@ import ICaff from '../../interfaces/caff';
 
 const initialState = {
   preloadDone: false,
-  downloadDone: [],
   uploadDone: false,
   caff_files: [],
-  downloadFile: null,
 };
 
 type caffState = {
   preloadDone: boolean;
-  downloadDone: number[];
   uploadDone: boolean;
   caff_files: ICaff[];
-  downloadFile: Blob | null;
 };
 
 const reducer = (state: caffState = initialState, action: CaffAction): caffState => {
@@ -33,8 +29,6 @@ const reducer = (state: caffState = initialState, action: CaffAction): caffState
     case ActionType.DOWNLOAD_CAFF_FILE:
       return {
         ...state,
-        downloadFile: new Blob([action.payload.file]),
-        downloadDone: [...state.downloadDone, action.payload.id],
       };
     case ActionType.ADD_COMMENT:
       return {

@@ -160,7 +160,15 @@ export const getCaffFile = (id: number) => {
   };
 };
 
-export const downloadCaffFile = (id: number) => {
+// Helper function for download
+const download = (fileUrl: string, fileName: string) => {
+  const a = document.createElement('a');
+  a.href = fileUrl;
+  a.setAttribute('download', fileName);
+  a.click();
+};
+
+export const downloadCaffFile = (id: number, filename: string) => {
   return (dispatch: Dispatch<CaffAction>): Promise<void> => {
     return CaffService.downloadCaffFile(authType, id).then((response) => {
       dispatch({
@@ -168,7 +176,9 @@ export const downloadCaffFile = (id: number) => {
         payload: response.data,
       });
 
-      return Promise.resolve();
+      const file = new Blob([response.data.file]);
+      const fileUrl = window.URL.createObjectURL(file);
+      download(fileUrl, `${filename}.caff`);
     });
   };
 };

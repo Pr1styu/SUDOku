@@ -6,16 +6,13 @@ import AddComment from './AddComment';
 import Comment from './Comment';
 import ICaff from '../interfaces/caff';
 import IComponent from '../interfaces/component';
-import React, { useState } from 'react';
+import React from 'react';
 
 const Caff: React.FC<IComponent & ICaff> = (caff: ICaff) => {
-  const [objectUrl, setObjectUrl] = useState('#');
-
-  const caffStore = useSelector((state: State) => state.CAFF);
   const user = useSelector((state: State) => state.AUTH.user);
 
   const dispatch = useDispatch();
-  const { deleteCaffFile } = bindActionCreators(actionCreators, dispatch);
+  const { deleteCaffFile, downloadCaffFile } = bindActionCreators(actionCreators, dispatch);
 
   const download = (fileUrl: string, fileName: string) => {
     const a = document.createElement('a');
@@ -90,10 +87,9 @@ const Caff: React.FC<IComponent & ICaff> = (caff: ICaff) => {
           <Button
             variant="contained"
             sx={{ mr: '1em' }}
-            disabled={!caffStore.downloadDone.includes(caff.id)}
+            disabled={false}
             onClick={() => {
-              setObjectUrl(window.URL.createObjectURL(caffStore.downloadFile));
-              download(objectUrl, 'file.caff');
+              downloadCaffFile(caff.id, caff.fileName);
             }}
           >
             Download CAFF
