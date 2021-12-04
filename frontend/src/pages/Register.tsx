@@ -1,8 +1,6 @@
 import * as React from 'react';
+import { Alert } from '@mui/material';
 import { RouteComponentProps } from 'react-router';
-import { State, actionCreators } from '../state';
-import { bindActionCreators } from 'redux';
-import { useDispatch, useSelector } from 'react-redux';
 import { useState } from 'react';
 import AuthService from '../services/AuthService';
 import Avatar from '@mui/material/Avatar';
@@ -20,21 +18,15 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
 const Register: React.FC<IComponent & RouteComponentProps<any>> = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [successful, setSuccessful] = useState(false);
+  const [error, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('Failed to create new user.');
   const [loading, setLoading] = useState(false);
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const authMessage = useSelector((state: State) => state.AUTH_MESSAGE);
-
-  const dispatch = useDispatch();
-  const { setAuthMessage } = bindActionCreators(actionCreators, dispatch);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
 
-    setAuthMessage('A');
     setSuccessful(false);
     setLoading(true);
 
@@ -44,16 +36,15 @@ const Register: React.FC<IComponent & RouteComponentProps<any>> = () => {
       email: data.get('email')?.toString() ?? '',
       password: data.get('password')?.toString() ?? '',
     }).then(
-      (response) => {
-        setAuthMessage(response.data.message);
+      () => {
         setSuccessful(true);
       },
       (error) => {
-        const resMessage = error.response?.data?.message ?? error.message ?? error.toString();
-
-        setAuthMessage(resMessage);
         setSuccessful(false);
         setLoading(false);
+        setError(true);
+        const errorMessage = error.response?.data?.message ?? error.message ?? error.toString();
+        errorMessage && setErrorMessage(errorMessage);
       }
     );
   };
@@ -130,6 +121,32 @@ const Register: React.FC<IComponent & RouteComponentProps<any>> = () => {
                 autoComplete="new-password"
               />
             </Grid>
+            {successful && (
+              <Grid item xs={12}>
+                <Alert severity="success">
+                  <Typography
+                    variant="body1"
+                    component="div"
+                    sx={{ color: 'green', fontWeight: 'bold' }}
+                  >
+                    Registration successful! You can <Link href="/login">sing in </Link>.
+                  </Typography>
+                </Alert>
+              </Grid>
+            )}
+            {error && (
+              <Grid item xs={12}>
+                <Alert severity="error">
+                  <Typography
+                    variant="body1"
+                    component="div"
+                    sx={{ color: 'red', fontWeight: 'bold' }}
+                  >
+                    {errorMessage}
+                  </Typography>
+                </Alert>
+              </Grid>
+            )}
           </Grid>
           <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
             {loading ? <CircularProgress /> : 'Sign Up'}
