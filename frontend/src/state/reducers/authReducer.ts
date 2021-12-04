@@ -7,7 +7,7 @@ const tokenString = localStorage.getItem('user_token') || '{}';
 const userString = localStorage.getItem('user_basic') || '{}';
 
 const initialState = {
-  isLoggedIn: false,
+  isLoggedIn: !!tokenString || !!userString,
   user: JSON.parse(userString),
   token: JSON.parse(tokenString),
 };
