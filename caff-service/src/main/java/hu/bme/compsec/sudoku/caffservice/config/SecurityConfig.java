@@ -69,7 +69,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .cors(withDefaults())
+                .cors().and()
                 .authorizeRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers(PathRequest.toH2Console()).hasRole(UserRole.ADMIN.name())
                         .mvcMatchers("/swagger-resources/**", "/swagger-ui/**", "/webjars/springfox-swagger-ui/**", "/v2/api-docs**", "/swagger**").hasRole(UserRole.ADMIN.name())

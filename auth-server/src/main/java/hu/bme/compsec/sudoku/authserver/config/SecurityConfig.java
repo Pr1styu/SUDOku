@@ -33,7 +33,7 @@ public class SecurityConfig {
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http
-				.cors(withDefaults())
+				.cors().and()
 				.authorizeRequests(authorizeRequests -> authorizeRequests
 						.requestMatchers(PathRequest.toH2Console()).hasRole(UserRole.ADMIN.name())
 						.mvcMatchers("/register").permitAll()
