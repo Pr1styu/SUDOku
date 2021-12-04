@@ -1,6 +1,9 @@
 import { ActionType } from '../action-types';
 import ICaff from '../../interfaces/caff';
 import IComment from '../../interfaces/comment';
+import IPropertyUpdate from '../../interfaces/propertyUpdate';
+import IToken from '../../interfaces/token';
+import IUser from '../../interfaces/user';
 import IUserData from '../../interfaces/userData';
 
 interface IDepositAction {
@@ -40,11 +43,12 @@ interface IRegisterFailAction {
 
 interface ILoginSuccessAction {
   type: ActionType.LOGIN_SUCCESS;
-  payload: { user: any };
+  payload: IUser;
 }
 
 interface ILoginSuccessOAuthAction {
   type: ActionType.LOGIN_SUCCESS_OAUTH;
+  payload: IToken;
 }
 
 interface ILoginFailAction {
@@ -74,7 +78,7 @@ interface IClearUserDataAction {
 
 interface IEditUserDataAction {
   type: ActionType.EDIT_USER_DATA;
-  payload: IUserData;
+  payload: IPropertyUpdate;
 }
 
 interface ISaveUserDataEdit {

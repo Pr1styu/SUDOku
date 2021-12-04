@@ -9,7 +9,7 @@ import Paper from '@mui/material/Paper';
 import React from 'react';
 
 const TestPage: React.FC<IPage> = () => {
-  const authUser = useSelector((state: State) => state.AUTH.user);
+  const authToken = useSelector((state: State) => state.AUTH.token);
   const user = useSelector((state: State) => state.USER);
 
   const dispatch = useDispatch();
@@ -36,7 +36,7 @@ const TestPage: React.FC<IPage> = () => {
                 Your access token is the following:
               </Typography>
               <Paper sx={{ wordWrap: 'break-word', p: '1em', mt: '1em', mb: '2em' }}>
-                {authUser?.token ?? 'unavailable'}
+                {authToken?.access_token ?? 'unavailable'}
               </Paper>
               <Typography variant="h5" gutterBottom sx={{ mt: '2em' }}>
                 Redux state test:

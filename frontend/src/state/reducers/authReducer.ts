@@ -1,15 +1,22 @@
 import { ActionType } from '../action-types';
 import { AuthAction } from '../actions';
-import IUser from '../../interfaces/userData';
-import config from '../../config/config';
+import IToken from '../../interfaces/token';
+import IUser from '../../interfaces/user';
 
-const authType = config.authType;
-const userString =
-  authType === 'OAUTH' ? localStorage.getItem('user_token') : localStorage.getItem('user_basic');
-const user: (IUser & { token: string }) | null = userString ? JSON.parse(userString) : null;
+const tokenString = localStorage.getItem('user_token') || '{}';
+const userString = localStorage.getItem('user_basic') || '{}';
 
-const initialState = user ? { isLoggedIn: true, user } : { isLoggedIn: false, user: null };
-type authState = typeof initialState;
+const initialState = {
+  isLoggedIn: false,
+  user: JSON.parse(userString),
+  token: JSON.parse(tokenString),
+};
+
+type authState = {
+  isLoggedIn: boolean;
+  user: IUser | null;
+  token: IToken | null;
+};
 
 const reducer = (state: authState = initialState, action: AuthAction): authState => {
   switch (action.type) {
@@ -27,24 +34,20 @@ const reducer = (state: authState = initialState, action: AuthAction): authState
       return {
         ...state,
         isLoggedIn: true,
-        user: action.payload.user,
+        user: action.payload,
       };
     case ActionType.LOGIN_SUCCESS_OAUTH:
       return {
         ...state,
         isLoggedIn: true,
-      };
-    case ActionType.LOGIN_FAIL:
-      return {
-        ...state,
-        isLoggedIn: false,
-        user: null,
+        token: action.payload,
       };
     case ActionType.LOGOUT:
       return {
         ...state,
         isLoggedIn: false,
         user: null,
+        token: null,
       };
     default:
       return state;

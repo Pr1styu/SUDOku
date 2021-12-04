@@ -1,6 +1,7 @@
 import { Redirect, RouteComponentProps } from 'react-router';
-import { State } from '../state';
-import { useSelector } from 'react-redux';
+import { State, actionCreators } from '../state';
+import { bindActionCreators } from 'redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -18,21 +19,21 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import config from '../config/config';
 
-const Login: React.FC<IComponent & RouteComponentProps<any>> = (props) => {
+const Login: React.FC<IComponent & RouteComponentProps<any>> = () => {
   const [loading, setLoading] = useState(false);
+
+  const dispatch = useDispatch();
+  const { login } = bindActionCreators(actionCreators, dispatch);
 
   const { isLoggedIn } = useSelector((state: State) => state.AUTH);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
+    const username = data.get('username')?.toString();
+    const password = data.get('password')?.toString();
     setLoading(true);
-    localStorage.setItem(
-      'user',
-      JSON.stringify({ username: data.get('username'), password: data.get('password') })
-    );
-    props.history.push('/profile');
-    window.location.reload();
+    username && password && login(username, password);
   };
 
   if (isLoggedIn) {

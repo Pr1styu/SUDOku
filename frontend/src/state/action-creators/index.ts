@@ -5,6 +5,8 @@ import AuthService from '../../services/AuthService';
 import CaffService from '../../services/CaffService';
 import ICaff from '../../interfaces/caff';
 import IComment from '../../interfaces/comment';
+import IPropertyUpdate from '../../interfaces/propertyUpdate';
+import IToken from '../../interfaces/token';
 import IUserData from '../../interfaces/userData';
 import UserService from '../../services/UserService';
 import config from '../../config/config';
@@ -54,15 +56,9 @@ export const clearMessage = () => {
   };
 };
 
-export const register = (
-  username: string,
-  password: string,
-  passwordAgain: string,
-  nickname: string,
-  email: string
-) => {
+export const register = (user: IUserData) => {
   return (dispatch: Dispatch<AuthAction | MessageAction>): Promise<void> => {
-    return AuthService.register(username, password, passwordAgain, nickname, email).then(
+    return AuthService.register(user).then(
       (response) => {
         dispatch({
           type: ActionType.REGISTER_SUCCESS,
@@ -95,39 +91,20 @@ export const register = (
 };
 
 export const login = (username: string, password: string) => {
-  return (dispatch: Dispatch<AuthAction | MessageAction>): Promise<void> => {
-    return AuthService.login(username, password).then(
-      (data) => {
-        dispatch({
-          type: ActionType.LOGIN_SUCCESS,
-          payload: { user: data },
-        });
-
-        return Promise.resolve();
-      },
-
-      (error) => {
-        const message = error.response?.data?.message ?? error.message ?? error.toString();
-
-        dispatch({
-          type: ActionType.LOGIN_FAIL,
-        });
-
-        dispatch({
-          type: ActionType.SET_AUTH_MESSAGE,
-          payload: message,
-        });
-
-        return Promise.reject();
-      }
-    );
+  return (dispatch: Dispatch<AuthAction | MessageAction>): void => {
+    AuthService.login(username, password);
+    dispatch({
+      type: ActionType.LOGIN_SUCCESS,
+      payload: { username, password },
+    });
   };
 };
 
-export const loginOauth = () => {
+export const loginOauth = (token: IToken) => {
   return (dispatch: Dispatch<AuthAction>): void => {
     dispatch({
       type: ActionType.LOGIN_SUCCESS_OAUTH,
+      payload: token,
     });
   };
 };
@@ -162,11 +139,11 @@ export const clearUserData = () => {
   };
 };
 
-export const editUserData = (edited: IUserData) => {
+export const editUserData = (editedProperty: IPropertyUpdate) => {
   return (dispatch: Dispatch<UserAction>): void => {
     dispatch({
       type: ActionType.EDIT_USER_DATA,
-      payload: edited,
+      payload: editedProperty,
     });
   };
 };

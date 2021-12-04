@@ -34,17 +34,16 @@ const Register: React.FC<IComponent & RouteComponentProps<any>> = () => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
 
-    setAuthMessage('');
+    setAuthMessage('A');
     setSuccessful(false);
     setLoading(true);
 
-    AuthService.register(
-      data.get('username')?.toString() ?? '',
-      data.get('password')?.toString() ?? '',
-      data.get('passwordAgain')?.toString() ?? '',
-      data.get('dispalyName')?.toString() ?? '',
-      data.get('email')?.toString() ?? ''
-    ).then(
+    AuthService.register({
+      username: data.get('username')?.toString() ?? '',
+      fullName: data.get('fullName')?.toString() ?? '',
+      email: data.get('email')?.toString() ?? '',
+      password: data.get('password')?.toString() ?? '',
+    }).then(
       (response) => {
         setAuthMessage(response.data.message);
         setSuccessful(true);
@@ -93,10 +92,10 @@ const Register: React.FC<IComponent & RouteComponentProps<any>> = () => {
               <TextField
                 required
                 fullWidth
-                id="nickname"
-                label="Nickname"
-                name="nickname"
-                autoComplete="nickname"
+                autoComplete="name"
+                id="fullName"
+                label="Full Name"
+                name="fullName"
               />
             </Grid>
             <Grid item xs={12}>
@@ -124,9 +123,9 @@ const Register: React.FC<IComponent & RouteComponentProps<any>> = () => {
               <TextField
                 required
                 fullWidth
-                name="passwordAgain"
+                name="password"
                 label="Password Again"
-                type="passwordAgain"
+                type="password"
                 id="passwordAgain"
                 autoComplete="new-password"
               />

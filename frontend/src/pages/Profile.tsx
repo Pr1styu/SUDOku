@@ -48,11 +48,8 @@ const Profile: React.FC<IComponent & RouteComponentProps<any>> = () => {
                       onChange={(e) => {
                         setEdited(true);
                         editUserData({
-                          username: e.target.value,
-                          fullName: user.fullName,
-                          email: user.email,
-                          userType: user.userType,
-                          profilePicture: user.profilePicture,
+                          name: 'username',
+                          value: e.target.value,
                         });
                       }}
                     />
@@ -73,11 +70,8 @@ const Profile: React.FC<IComponent & RouteComponentProps<any>> = () => {
                       onChange={(e) => {
                         setEdited(true);
                         editUserData({
-                          username: user.username,
-                          fullName: e.target.value,
-                          email: user.email,
-                          userType: user.userType,
-                          profilePicture: user.profilePicture,
+                          name: 'fullName',
+                          value: e.target.value,
                         });
                       }}
                     />
@@ -109,11 +103,8 @@ const Profile: React.FC<IComponent & RouteComponentProps<any>> = () => {
                       onChange={(e) => {
                         setEdited(true);
                         editUserData({
-                          username: user.username,
-                          fullName: user.fullName,
-                          email: e.target.value,
-                          userType: user.userType,
-                          profilePicture: user.profilePicture,
+                          name: 'email',
+                          value: e.target.value,
                         });
                       }}
                     />
@@ -131,13 +122,7 @@ const Profile: React.FC<IComponent & RouteComponentProps<any>> = () => {
                     variant="contained"
                     size="large"
                     onClick={() => {
-                      saveUserDataEdit({
-                        username: user.username,
-                        fullName: user.fullName,
-                        email: user.username,
-                        userType: user.userType,
-                        profilePicture: user.profilePicture,
-                      });
+                      saveUserDataEdit(user);
                       setEditing(false);
                     }}
                     disabled={!edited}

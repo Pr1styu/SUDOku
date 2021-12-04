@@ -91,7 +91,7 @@ const deleteCaffFile = (authType: AuthType, id: number): Promise<AxiosResponse<a
   }
 };
 
-const getOauthToken = (code: string): Promise<void> => {
+const getOauthToken = (code: string): Promise<any> => {
   return axios
     .post(
       config.urls.oauth2.token(code),
@@ -105,6 +105,7 @@ const getOauthToken = (code: string): Promise<void> => {
     )
     .then((response) => {
       localStorage.setItem('user_token', JSON.stringify(response.data));
+      return Promise.resolve(response.data);
     });
 };
 

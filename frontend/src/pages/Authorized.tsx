@@ -8,6 +8,7 @@ import Container from '@mui/material/Container';
 import Copyright from '../components/test/Copyright';
 import Grid from '@mui/material/Grid';
 import IComponent from '../interfaces/component';
+import IToken from '../interfaces/token';
 import React, { useEffect } from 'react';
 
 const useQuery = () => {
@@ -23,8 +24,8 @@ const Authorized: React.FC<IComponent> = () => {
   useEffect(() => {
     const code = query.get('code');
     code &&
-      CaffService.getOauthToken(code).then(() => {
-        loginOauth();
+      CaffService.getOauthToken(code).then((token: IToken) => {
+        loginOauth(token);
       });
   }, []);
 

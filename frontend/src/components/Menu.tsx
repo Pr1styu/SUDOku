@@ -92,8 +92,8 @@ const Menu: React.FC<IComponent> = () => {
   };
 
   useEffect(() => {
-    setShowAdminBoard(user.role === 'Admin' ?? false);
-    setShowUserBoard((user.role === 'Admin' || user.role === 'Normal') ?? false);
+    setShowAdminBoard(user.userType === 'ADMIN' ?? false);
+    setShowUserBoard((user.userType === 'ADMIN' || user.userType === 'USER') ?? false);
   }, [user]);
 
   const menuElementsHome = [

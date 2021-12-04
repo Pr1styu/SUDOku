@@ -49,8 +49,7 @@ const BACKEND_AUTH_SERVER_BASE_URL = USE_PROXY
     BACKEND_AUTH_SERVER_BASE_PATH;
 
 // Authentication
-const SIGN_UP_URL = BACKEND_SERVICE_BASE_URL + 'register';
-const SIGN_IN_URL = BACKEND_SERVICE_BASE_URL + 'authenticate';
+const SIGN_UP_URL = BACKEND_AUTH_SERVER_BASE_PATH_USER + '/register';
 
 const AUTH_TYPE: AuthType = 'OAUTH';
 
@@ -104,10 +103,7 @@ const config = {
   authType: AUTH_TYPE,
   urls: {
     fontendBaseUrl: FRONTEND_BASE_URL,
-    auth: {
-      signIn: SIGN_IN_URL,
-      signUp: SIGN_UP_URL,
-    },
+    signUp: SIGN_UP_URL,
     oauth2: {
       authorizeBase: AUTHORIZE_BASE_URL,
       authorize: AUTHORIZE_URL,
