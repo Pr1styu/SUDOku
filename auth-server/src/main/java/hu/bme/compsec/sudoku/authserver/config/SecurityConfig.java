@@ -32,15 +32,13 @@ public class SecurityConfig {
 		http
 				.cors().and()
 				.authorizeRequests(authorizeRequests -> authorizeRequests
-						.mvcMatchers("/register").permitAll()
+						.mvcMatchers("/user/register").permitAll()
 						.anyRequest().authenticated()
 				)
 				.formLogin(withDefaults())
 				.csrf(csrfConfig -> csrfConfig
 						.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
 				)
-				.headers().frameOptions().sameOrigin() // For h2 GUI only
-				.and()
 				.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
 
 		return http.build();

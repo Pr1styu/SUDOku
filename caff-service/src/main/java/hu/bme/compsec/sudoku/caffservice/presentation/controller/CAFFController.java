@@ -24,6 +24,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static hu.bme.compsec.sudoku.common.security.SecurityUtils.getUserIdFromJwt;
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 
 @Slf4j
@@ -76,11 +77,9 @@ public class CAFFController {
                             Resource resource = new ByteArrayResource(caffFile.getRawBytes());
 
                             HttpHeaders httpHeaders = new HttpHeaders();
-                            httpHeaders.add("File-Name", caffFile.getFileName());
-                            httpHeaders.add(CONTENT_DISPOSITION, "attachment;File-Name=" + resource.getFilename());
-                            return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM) // TODO: Check this with frontend
+                            httpHeaders.add(CONTENT_DISPOSITION, "attachment; filename=" + caffFile.getFileName());
+                            return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM)
                                     .headers(httpHeaders).body(resource);
-
                         }
                 )
                 .orElseGet(() -> ResponseEntity.notFound().build());
@@ -112,15 +111,11 @@ public class CAFFController {
                 .map(caffMapper::toCommentDTO)
                 .collect(Collectors.toList());
 
-        // TODO: Improve responses based on more possible scenario
         return ResponseEntity.ok(comments);
     }
 
     @PostMapping("/{id}/comment")
     public ResponseEntity<String> addCommentForCaffFile(@PathVariable Long id, @RequestBody CommentDTO commentDTO) {
-
-        log.info("Adding comment '{}' for caff file with id {}.", commentDTO.getText(), id);
-
         var commentAdded = commentService.addCommentToCaffFile(id, commentDTO);
         if (commentAdded) {
             return ResponseEntity.accepted().build();
