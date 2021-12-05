@@ -84,7 +84,7 @@ class CommentServiceTest {
     }
 
     @Test
-    void testGetALlCommentsForCaffFile() {
+    void testGetAllCommentsForCaffFile() {
         List<Comment> comments = commentService.getAllCommentForCaffFile(1L);
         assertThat(comments.size()).isEqualTo(3);
 
