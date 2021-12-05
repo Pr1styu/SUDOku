@@ -18,14 +18,13 @@ import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import ListSubheader from '@mui/material/ListSubheader';
-import LockIcon from '@mui/icons-material/Lock';
 import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MenuIcon from '@mui/icons-material/Menu';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import MuiDrawer from '@mui/material/Drawer';
 import PersonIcon from '@mui/icons-material/Person';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 
@@ -81,8 +80,6 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 const Menu: React.FC<IComponent> = () => {
   const { isLoggedIn } = useSelector((state: State) => state.AUTH);
-  const [showUserBoard, setShowUserBoard] = useState(false);
-  const [showAdminBoard, setShowAdminBoard] = useState(false);
 
   const user = useSelector((state: State) => state.USER);
 
@@ -90,11 +87,6 @@ const Menu: React.FC<IComponent> = () => {
   const toggleDrawer = () => {
     setOpen(!open);
   };
-
-  useEffect(() => {
-    setShowAdminBoard(user.userType === 'ADMIN' ?? false);
-    setShowUserBoard((user.userType === 'ADMIN' || user.userType === 'USER') ?? false);
-  }, [user]);
 
   const menuElementsHome = [
     {
@@ -138,15 +130,6 @@ const Menu: React.FC<IComponent> = () => {
       name: 'Add new CAFF file',
       icon: <AddPhotoAlternateIcon />,
       show: isLoggedIn,
-    },
-  ];
-
-  const menuElementsAdmin = [
-    {
-      path: '/admin',
-      name: 'Admin Board',
-      icon: <LockIcon />,
-      show: isLoggedIn && showAdminBoard,
     },
   ];
 
@@ -267,22 +250,6 @@ const Menu: React.FC<IComponent> = () => {
             </div>
           )}
           {menuElementsCaff.map(
-            (element) =>
-              element.show && (
-                <ListItem button key={element.name} component={NavLink} to={element.path}>
-                  <ListItemIcon>{element.icon}</ListItemIcon>
-                  <ListItemText primary={element.name} />
-                </ListItem>
-              )
-          )}
-        </List>
-        <List>
-          {menuElementsAdmin[0].show && (
-            <div>
-              <Divider /> <ListSubheader inset>Administrator</ListSubheader>
-            </div>
-          )}
-          {menuElementsAdmin.map(
             (element) =>
               element.show && (
                 <ListItem button key={element.name} component={NavLink} to={element.path}>

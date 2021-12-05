@@ -2,6 +2,7 @@ import { Box, Button, Paper, Typography } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { actionCreators } from '../state';
 import { bindActionCreators } from 'redux';
+import { useCookies } from 'react-cookie';
 import { useDispatch } from 'react-redux';
 import Container from '@mui/material/Container';
 import Copyright from '../components/test/Copyright';
@@ -13,8 +14,11 @@ const Logout: React.FC<IComponent> = () => {
   const dispatch = useDispatch();
   const { logout, clearUserData } = bindActionCreators(actionCreators, dispatch);
 
+  const [, , removeCookie] = useCookies(['JSESSIONID']);
+
   useEffect(() => {
     logout();
+    removeCookie('JSESSIONID');
     clearUserData();
   }, []);
 

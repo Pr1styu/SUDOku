@@ -8,14 +8,12 @@ import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Copyright from '../components/test/Copyright';
 import CssBaseline from '@mui/material/CssBaseline';
-import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Grid';
 import IComponent from '../interfaces/component';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import MuiLink from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import React, { useState } from 'react';
-import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import config from '../config/config';
 
@@ -37,7 +35,7 @@ const Login: React.FC<IComponent & RouteComponentProps<any>> = () => {
   };
 
   if (isLoggedIn) {
-    return <Redirect to="/profile" />;
+    return <Redirect to="/home" />;
   }
 
   return (
@@ -74,31 +72,6 @@ const Login: React.FC<IComponent & RouteComponentProps<any>> = () => {
             Sign in
           </Typography>
           <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="username"
-              label="Username"
-              name="username"
-              autoComplete="username"
-              autoFocus
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-            />
-
-            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
-              {loading ? <CircularProgress /> : 'Sign In'}
-            </Button>
-            <Divider>or</Divider>
             <Button
               fullWidth
               variant="contained"
@@ -111,6 +84,7 @@ const Login: React.FC<IComponent & RouteComponentProps<any>> = () => {
                   bgcolor: '#424242',
                   color: 'white',
                 },
+                width: 400,
               }}
             >
               {loading ? <CircularProgress /> : 'Sign In with OAuth2'}

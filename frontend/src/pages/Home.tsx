@@ -21,14 +21,29 @@ const Home: React.FC<IComponent & RouteComponentProps<any>> = () => {
               <Typography variant="h6" gutterBottom>
                 Welcome to the home page!
               </Typography>
-              <Button variant="contained" sx={{ mr: '1em' }} component={Link} to={'/test'}>
-                Test page
+              <Typography variant="body1" gutterBottom sx={{ mt: 2 }}>
+                See your profile settings on the Profile page:
+              </Typography>
+              <Button variant="outlined" sx={{ mr: '1em' }} component={Link} to={'/profile'}>
+                Profile
               </Button>
-              <Button variant="contained" sx={{ mr: '1em' }} component={Link} to={'/muitest'}>
-                Material UI test page
+              <Typography variant="body1" gutterBottom sx={{ mt: 2 }}>
+                Browse CAFF file images on the Browse CAFF fiels page:
+              </Typography>
+              <Button variant="outlined" sx={{ mr: '1em' }} component={Link} to={'/browse'}>
+                Browse files
               </Button>
-              <Button variant="contained" sx={{ mr: '1em' }} component={Link} to={'/404'}>
-                404 page
+              <Typography variant="body1" gutterBottom sx={{ mt: 2 }}>
+                Upload your CAFF file on the Add new CAFF file page:
+              </Typography>
+              <Button variant="outlined" sx={{ mr: '1em' }} component={Link} to={'/addcaff'}>
+                Add file
+              </Button>
+              <Typography variant="body1" gutterBottom sx={{ mt: 2 }}>
+                Are you done with your task? Sign out:
+              </Typography>
+              <Button variant="outlined" sx={{ mr: '1em' }} component={Link} to={'/logout'}>
+                Sign out
               </Button>
             </Box>
           </Paper>
