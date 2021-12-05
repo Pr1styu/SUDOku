@@ -104,7 +104,6 @@ class CAFFControllerTest {
 
         CAFFFileDetailDTO detail = caffMapper.toDetailDTO(mockCaffFile);
         String jsonString = caffJsonAdapter.toJson(detail);
-        System.out.println(detail);
 
         mockMvc.perform(get("/caff/" + mockId)
                         .with(user("admin").password("admin")))
