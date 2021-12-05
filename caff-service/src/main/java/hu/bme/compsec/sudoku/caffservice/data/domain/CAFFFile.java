@@ -21,7 +21,6 @@ public class CAFFFile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // TODO: Add validation
     private String fileName;
 
     @Lob
