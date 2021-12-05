@@ -3,7 +3,7 @@ package hu.bme.compsec.sudoku.caffservice.presentation.controller;
 import com.nimbusds.jose.shaded.json.JSONArray;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
-import hu.bme.compsec.sudoku.caffservice.config.TestSecurityConfig;
+import config.TestSecurityConfig;
 import hu.bme.compsec.sudoku.caffservice.data.domain.CAFFFile;
 import hu.bme.compsec.sudoku.caffservice.data.domain.Comment;
 import hu.bme.compsec.sudoku.caffservice.helper.CaffFileHelper;

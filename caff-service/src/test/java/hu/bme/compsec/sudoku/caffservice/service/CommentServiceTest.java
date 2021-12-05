@@ -1,14 +1,16 @@
 package hu.bme.compsec.sudoku.caffservice.service;
 
-import hu.bme.compsec.sudoku.caffservice.config.TestSecurityConfig;
-import hu.bme.compsec.sudoku.caffservice.helper.CaffFileHelper;
+import config.TestSecurityConfig;
 import hu.bme.compsec.sudoku.caffservice.common.exception.CAFFProcessorRuntimeException;
 import hu.bme.compsec.sudoku.caffservice.common.exception.CaffFileFormatException;
 import hu.bme.compsec.sudoku.caffservice.data.CAFFRepository;
 import hu.bme.compsec.sudoku.caffservice.data.CommentRepository;
 import hu.bme.compsec.sudoku.caffservice.data.domain.Comment;
+import hu.bme.compsec.sudoku.caffservice.helper.CaffFileHelper;
 import hu.bme.compsec.sudoku.caffservice.presentation.dto.CommentDTO;
+import hu.bme.compsec.sudoku.common.security.UserRole;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static config.TestSecurityConfig.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
@@ -71,22 +74,31 @@ class CommentServiceTest {
         Mockito.when(commentRepository.findAllByCaffFileId(1L)).thenReturn(comments);
     }
 
+    @BeforeEach
+    public void mockJWT() {
+        var userId = getRandomId();
+        mockAuthenticatedUserId(userId);
+        mockAuthWithUserRoleAndId(UserRole.USER);
+    }
+
     @Test
     void testGetALlCommentsForCaffFile() {
+
         List<Comment> comments = commentService.getAllCommentForCaffFile(1L);
         assertThat(comments.size()).isEqualTo(3);
     }
 
-    /*@Test
+    @Test
     void testAddCommentToCaffFile() {
         boolean result = commentService.addCommentToCaffFile(1L, new CommentDTO("Test comment4", "admin"));
         //TODO: getAuthenticatedUserName() throws NullPointerException
         assertThat(result).isTrue();
-    }*/
+    }
 
     @Test
     void testTryAddCommentToNonExistingCaffFile() {
         boolean result = commentService.addCommentToCaffFile(4L, new CommentDTO("Test comment4", "admin"));
         assertThat(result).isFalse();
     }
+
 }

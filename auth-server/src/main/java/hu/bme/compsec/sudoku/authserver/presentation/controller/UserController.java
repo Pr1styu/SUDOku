@@ -53,7 +53,7 @@ public class UserController {
     @PutMapping("/update")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<String> updateUserData(@RequestBody UserDTO dto) {
-        log.trace("User with id {} about to modify user data to.", getUserIdFromJwt());
+        log.trace("User with id {} about to modify user data.", getUserIdFromJwt());
 
         try {
             if (userService.updateUser(dto)) {

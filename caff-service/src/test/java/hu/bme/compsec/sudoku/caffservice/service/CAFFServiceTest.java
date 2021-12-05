@@ -1,6 +1,6 @@
 package hu.bme.compsec.sudoku.caffservice.service;
 
-import hu.bme.compsec.sudoku.caffservice.config.TestSecurityConfig;
+import config.TestSecurityConfig;
 import hu.bme.compsec.sudoku.caffservice.common.exception.CAFFProcessorRuntimeException;
 import hu.bme.compsec.sudoku.caffservice.common.exception.CaffFileFormatException;
 import hu.bme.compsec.sudoku.caffservice.common.exception.CaffFileNotFoundException;
@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.*;
 
+import static config.TestSecurityConfig.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
@@ -121,8 +122,8 @@ class CAFFServiceTest {
     void testSearchByMetaData() throws IOException {
         var adminUserId = 1L;
 
-        TestSecurityConfig.mockAuthenticatedUserId(adminUserId);
-        TestSecurityConfig.mockAuthWithUserRoleAndId(UserRole.ADMIN);
+        mockAuthenticatedUserId(adminUserId);
+        mockAuthWithUserRoleAndId(UserRole.ADMIN);
 
         for (int i = 1; i <= 3; i++) {
             CaffFileHelper helper = new CaffFileHelper();
@@ -135,9 +136,6 @@ class CAFFServiceTest {
         assertThat(found.size()).isEqualTo(3);
     }
 
-    private long getRandomId() {
-        return new Random().nextInt(100);
-    }
 
     @Test
     void shouldDeleteOwnFileAsAdmin() throws Exception {
@@ -146,8 +144,8 @@ class CAFFServiceTest {
         var adminUserId = getRandomId();
 
         // Order is important as we should set the USER_ID claim value before we generate the JWT
-        TestSecurityConfig.mockAuthenticatedUserId(adminUserId); // The JWT will contain the USER_ID claim with this mock value
-        TestSecurityConfig.mockAuthWithUserRoleAndId(UserRole.ADMIN); // The JWT will contain ADMIN's authorities (=roles + permissions)
+        mockAuthenticatedUserId(adminUserId); // The JWT will contain the USER_ID claim with this mock value
+        mockAuthWithUserRoleAndId(UserRole.ADMIN); // The JWT will contain ADMIN's authorities (=roles + permissions)
 
         // Mock Caff File entity with proper id and ownerId values
         var mockCaffFileEntity = Optional.of(
@@ -170,8 +168,8 @@ class CAFFServiceTest {
         var otherUserId = getRandomId();
         var adminUserId = getRandomId();
 
-        TestSecurityConfig.mockAuthenticatedUserId(adminUserId);
-        TestSecurityConfig.mockAuthWithUserRoleAndId(UserRole.ADMIN);
+        mockAuthenticatedUserId(adminUserId);
+        mockAuthWithUserRoleAndId(UserRole.ADMIN);
 
         var mockCaffFileEntity = Optional.of(
                 CAFFFile.builder()
@@ -191,8 +189,8 @@ class CAFFServiceTest {
         var userId = getRandomId();
 
 
-        TestSecurityConfig.mockAuthenticatedUserId(userId);
-        TestSecurityConfig.mockAuthWithUserRoleAndId(UserRole.USER);
+        mockAuthenticatedUserId(userId);
+        mockAuthWithUserRoleAndId(UserRole.USER);
 
         var mockCaffFileEntity = Optional.of(
                 CAFFFile.builder()
@@ -212,8 +210,8 @@ class CAFFServiceTest {
         var otherFileId = getRandomId();
         var otherUserId = getRandomId();
 
-        TestSecurityConfig.mockAuthenticatedUserId(userId);
-        TestSecurityConfig.mockAuthWithUserRoleAndId(UserRole.USER);
+        mockAuthenticatedUserId(userId);
+        mockAuthWithUserRoleAndId(UserRole.USER);
 
         var mockCaffFileEntity = Optional.of(
                 CAFFFile.builder()
