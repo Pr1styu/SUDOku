@@ -48,7 +48,7 @@ public class SecurityUtils {
         }
 
         throw new AccessDeniedException(
-                String.format("User with id %d does NOT have permission for resource connecting to userId %d.",jwtUserId, userId));
+                String.format("User with id %d does NOT have permission for resource/profile related to userId %d.",jwtUserId, userId));
     }
 
     private static boolean isAuthenticatedUserAdmin() {

@@ -26,7 +26,6 @@ public class TestSecurityConfig {
     TestSecurityConfig.mockUserId = id;
   }
 
-
   public static void mockAuthWithUserRoleAndId(UserRole userRole) {
     JwtAuthenticationToken jwt = new JwtAuthenticationToken(
             jwt(),
@@ -39,7 +38,6 @@ public class TestSecurityConfig {
     SecurityContextHolder.setContext(ctx);
   }
 
-
   @Bean
   public JwtDecoder jwtDecoder() {
     return token -> jwt();
@@ -49,7 +47,6 @@ public class TestSecurityConfig {
    * Here we can mock the JWT with custom claims.
    */
   public static Jwt jwt() {
-
     Map<String, Object> claims = Map.of(
             SUB, "sub",
             USERID_CLAIM, mockUserId
@@ -63,5 +60,4 @@ public class TestSecurityConfig {
             claims
     );
   }
-
 }

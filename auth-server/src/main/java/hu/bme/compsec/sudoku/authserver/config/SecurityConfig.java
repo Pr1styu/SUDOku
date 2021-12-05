@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.OAuth2TokenType;
@@ -32,6 +33,7 @@ public class SecurityConfig {
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http
+				.cors().and()
 				.authorizeRequests(authorizeRequests -> authorizeRequests
 						.requestMatchers(PathRequest.toH2Console()).hasRole(UserRole.ADMIN.name())
 						.mvcMatchers("/register").permitAll()
@@ -65,7 +67,6 @@ public class SecurityConfig {
 						.collect(Collectors.toSet());
 
 				context.getClaims().claim(AUTHORITIES_CLAIM, authorities);
-				// TODO: Get proper place for this.
 				var securityUser = (SecurityUser) principal.getPrincipal();
 				context.getClaims().claim(USERID_CLAIM, securityUser.getId());
 			}

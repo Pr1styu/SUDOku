@@ -74,17 +74,12 @@ public class UserController {
         return ResponseEntity.accepted().build();
     }
 
-    //TODO Delete this or actually make a ranewpassword service
-    @PostMapping("/renewPassword")
-    public ResponseEntity<String> renewPassword() {
-        userService.forgotPassword();
-        return ResponseEntity.accepted().build();
-    }
-
-    @DeleteMapping("")
+    @DeleteMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<String> deleteUserAccount() {
-        userService.deleteUser();
+    public ResponseEntity<String> deleteUserAccount(@PathVariable("id") Long id) {
+        log.trace("User with id {} about to delete user account with id {}.", getUserIdFromJwt(), id);
+
+        userService.deleteUser(id);
         return ResponseEntity.accepted().build();
     }
 

@@ -31,18 +31,20 @@ public class CAFFService {
 
     @PreAuthorize("hasAuthority('caff:read')")
     public List<CAFFFile> getAllCaffFile() {
-        log.info("Fetching all caff files.");
+        log.info("Fetching all caff files by user with id {}.", getUserIdFromJwt());
         return caffRepository.findAll();
     }
 
     @PreAuthorize("hasAuthority('caff:read')")
     public Optional<CAFFFile> getCaffFileById(Long id) {
-        log.info("Fetching CAFF file with id: {}", id);
+        log.info("Fetching CAFF file with id {} by user with id {}.", id, getUserIdFromJwt());
         return caffRepository.findById(id);
     }
 
     @PreAuthorize("hasAuthority('caff:write')")
     public CAFFFile saveCaffFile(MultipartFile uploadedCaffFile, String clientFileName) {
+        log.info("Trying to save CAFF file with fileName '{}' by user with id {}.", clientFileName, getUserIdFromJwt());
+
         var caffFileEntity = new CAFFFile();
         caffFileEntity.setFileName(clientFileName);
 
@@ -65,7 +67,9 @@ public class CAFFService {
 
         caffFileEntity.setOwnerId(getUserIdFromJwt());
 
-        return caffRepository.save(caffFileEntity);
+        var savedCaffEntity = caffRepository.save(caffFileEntity);
+        log.info("Saved CAFF file with filename '{}' and id {} by user with id {}.", savedCaffEntity.getFileName(), savedCaffEntity.getId(), getUserIdFromJwt());
+        return savedCaffEntity;
     }
 
     /**
@@ -74,6 +78,7 @@ public class CAFFService {
      */
     @PreAuthorize("hasAuthority('caff:delete')")
     public boolean deleteCaffFile(Long id) throws CaffFileNotFoundException {
+        log.info("Trying to delete CAFF file with id {} by user with id {}.", id, getUserIdFromJwt());
         var caffFileEntity = caffRepository.findById(id)
                 .map(caffFile -> {
                     checkPermission(caffFile.getOwnerId());
@@ -82,6 +87,7 @@ public class CAFFService {
                 .orElseThrow(() -> new CaffFileNotFoundException("There is no caff file with id %s.", id));
         try {
             caffRepository.delete(caffFileEntity);
+            log.info("CAFF file with id {} deleted by user with id {}.", caffFileEntity.getId(), getUserIdFromJwt());
             return true;
         }catch (Exception e){
             return false;
@@ -90,6 +96,7 @@ public class CAFFService {
 
     @PreAuthorize("hasAuthority('caff:read')")
     public List<CAFFFile> searchCaffFilesByMetaData(String metaData) {
+        log.info("Searching for CAFF files with metaData {} by user with id {}.", metaData, getUserIdFromJwt());
         return caffRepository.findAllByMetaDataIgnoreCase(metaData);
     }
 
