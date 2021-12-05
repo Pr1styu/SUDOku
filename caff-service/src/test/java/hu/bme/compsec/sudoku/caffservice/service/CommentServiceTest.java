@@ -48,7 +48,7 @@ class CommentServiceTest {
 
     final CaffFileHelper helper = new CaffFileHelper();
 
-    @BeforeAll
+    @BeforeEach
     public void setup() throws CaffFileFormatException, IOException, CAFFProcessorRuntimeException {
         commentRepository = Mockito.mock(CommentRepository.class);
         caffRepository = Mockito.mock(CAFFRepository.class);
@@ -57,6 +57,7 @@ class CommentServiceTest {
         for (String file : helper.getAllFileNames()) {
             int id = Integer.parseInt(Character.toString(file.charAt(0)));
             Mockito.when(caffRepository.findById((long) id)).thenReturn(Optional.ofNullable(helper.loadAllCaffFiles().get(id - 1)));
+            Mockito.when(caffRepository.getById((long) id)).thenReturn(helper.loadAllCaffFiles().get(id - 1));
             Mockito.when(caffRepository.existsById((long) id)).thenReturn(true);
         }
         Mockito.when(caffRepository.findAll()).thenReturn(helper.loadAllCaffFiles());
@@ -91,7 +92,6 @@ class CommentServiceTest {
     @Test
     void testAddCommentToCaffFile() {
         boolean result = commentService.addCommentToCaffFile(1L, new CommentDTO("Test comment4", "admin"));
-        //TODO: getAuthenticatedUserName() throws NullPointerException
         assertThat(result).isTrue();
     }
 
@@ -100,5 +100,4 @@ class CommentServiceTest {
         boolean result = commentService.addCommentToCaffFile(4L, new CommentDTO("Test comment4", "admin"));
         assertThat(result).isFalse();
     }
-
 }
