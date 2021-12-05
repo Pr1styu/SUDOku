@@ -198,14 +198,15 @@ class CAFFControllerTest {
 
     @Test
     void shouldDeleteFileAsAdmin() throws Exception {
-
         var userId = getRandomId();
         mockAuthenticatedUserId(userId);
         mockAuthWithUserRoleAndId(UserRole.ADMIN);
 
+        given(caffServiceMock.deleteCaffFile(1L))
+                .willReturn(true);
+
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setBearerAuth(TestSecurityConfig.jwt().getTokenValue());
-        //TODO: consider implementing this to check responses
         mockMvc.perform(delete("/caff/1")
                         .headers(httpHeaders))
                 .andExpect(status().isOk());
@@ -213,15 +214,16 @@ class CAFFControllerTest {
 
     @Test
     void shouldDeleteOwnFile() throws Exception {
-
         var userId = getRandomId();
         mockAuthenticatedUserId(userId);
         mockAuthWithUserRoleAndId(UserRole.USER);
 
+        given(caffServiceMock.deleteCaffFile(1L))
+                .willReturn(true);
+
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setBearerAuth(TestSecurityConfig.jwt().getTokenValue());
 
-        //TODO: consider implementing this to check responses
         mockMvc.perform(delete("/caff/1")
                         .headers(httpHeaders))
                 .andExpect(status().isOk());
@@ -229,15 +231,16 @@ class CAFFControllerTest {
 
     @Test
     void shouldFailOnDeleteOthersFile() throws Exception {
-
         var userId = getRandomId();
         mockAuthenticatedUserId(userId);
         mockAuthWithUserRoleAndId(UserRole.USER);
 
+        given(caffServiceMock.deleteCaffFile(1L))
+                .willReturn(true);
+
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setBearerAuth(TestSecurityConfig.jwt().getTokenValue());
 
-        //TODO: consider implementing this to check responses
         mockMvc.perform(delete("/caff/1")
                         .headers(httpHeaders))
                 .andExpect(status().isOk());
