@@ -50,13 +50,13 @@ public class CAFFFile {
     @PrePersist
     public void onCreate() {
         this.creationTime = this.modificationTime = new Timestamp(Instant.now().toEpochMilli());
-        log.info("Saving CAFF file: {}", this);
+        log.debug("Saving CAFF file: {}", this);
     }
 
     @PreUpdate
     public void onModify() {
         this.modificationTime = new Timestamp(Instant.now().toEpochMilli());
-        log.info("Updating CAFF file: {}", this);
+        log.debug("Updating CAFF file: {}", this);
     }
 
     private Long ownerId;

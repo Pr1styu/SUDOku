@@ -47,15 +47,8 @@ public final class CaffProcessor {
     @Getter
     private List<String> metaData;
 
-    public void process(MultipartFile uploadedCaffFile, String clientFileName) throws CaffFileFormatException, CAFFProcessorRuntimeException {
-        /*
-         * DONE 1. Save uploaded caff file (uploadedCaffFile) to the filesystem.
-         * DONE 2. Call the native component with proper params
-         * DONE 3. Load preview image (generated jpg) bytes
-         * 3.5 and get meta data from generated txt. (After we can clean the workdir.)
-         * DONE 4. Save CAFFFile entity. ( in service level calling this method)
-         * */
 
+    public void process(MultipartFile uploadedCaffFile, String clientFileName) throws CaffFileFormatException, CAFFProcessorRuntimeException {
         saveCaffFileToFileSystem(uploadedCaffFile, clientFileName);
         parseCaffFile();
 
@@ -90,7 +83,7 @@ public final class CaffProcessor {
     }
 
     private void saveCaffFileToFileSystem(MultipartFile uploadedCaffFile, String clientFileName) throws CAFFProcessorRuntimeException {
-        log.info("Trying to save caff file {} to the filesystem with name {}.", clientFileName, savedBaseName);
+        log.trace("Trying to save caff file '{}' to the filesystem with name {}.", clientFileName, savedBaseName);
         try {
             workDir = Paths.get(WORK_DIR_PATH);
             if (!Files.exists(workDir)) {
@@ -103,9 +96,9 @@ public final class CaffProcessor {
             this.generatedMetaDataPath = workDir.resolve(savedBaseName + GENERATED_METADATA_EXTENSION);
 
             Files.copy(uploadedCaffFile.getInputStream(), savedCaffFilePath);
-            log.info("Uploaded caff file {} successfully saved with name {}.", clientFileName, savedCaffFileName);
+            log.trace("Uploaded caff file '{}' successfully saved with name {}.", clientFileName, savedCaffFileName);
         } catch (Exception e) {
-            log.info("Uploaded caff file {} could not be saved to filesystem.", clientFileName);
+            log.warn("Uploaded caff file '{}' could not be saved to filesystem.", clientFileName);
             throw new CAFFProcessorRuntimeException("Uploaded caff file could not be saved to filesystem due to: " + e.getMessage());
         }
     }
@@ -121,7 +114,7 @@ public final class CaffProcessor {
         processBuilder.redirectErrorStream(true);
         processBuilder.redirectOutput(ProcessBuilder.Redirect.appendTo(parseLogFile));
         try {
-            log.info("Starting parser with command: \n\t{}", parserCommand);
+            log.trace("Starting parser with command: \n\t{}", parserCommand);
             final Process parserProcess = processBuilder.start();
             parserProcess.waitFor(PARSING_TIMEOUT_MIN, TimeUnit.MINUTES);
             final int parseResultCode = parserProcess.exitValue();
@@ -170,7 +163,7 @@ public final class CaffProcessor {
     private void loadPreview() {
         try {
             this.preview = Files.readAllBytes(generatedPreviewPath);
-            log.info("Caff preview {} loaded successfully.", savedBaseName);
+            log.trace("Caff file {} preview loaded successfully.", savedBaseName);
         } catch (Exception e) {
             log.error("Cannot load preview image for caff file {} due to: {}", savedBaseName, e.getMessage());
         }
@@ -185,6 +178,7 @@ public final class CaffProcessor {
                 ciffList.getCiffs().forEach(ciff -> tags.addAll(ciff.getTags()));
             }
             metaData = new ArrayList<>(tags);
+            log.trace("Caff file {} metaData extracted successfully.", savedBaseName);
         } catch (IOException e) {
             log.error("Cannot extract meta data caff file {} due to: {}", savedBaseName, e.getMessage());
         }
