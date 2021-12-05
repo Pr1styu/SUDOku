@@ -24,6 +24,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -84,9 +85,11 @@ class CommentServiceTest {
 
     @Test
     void testGetALlCommentsForCaffFile() {
-
         List<Comment> comments = commentService.getAllCommentForCaffFile(1L);
         assertThat(comments.size()).isEqualTo(3);
+
+        List<Comment> emptyList = commentService.getAllCommentForCaffFile(2L);
+        assertThat(emptyList.size()).isEqualTo(0);
     }
 
     @Test
