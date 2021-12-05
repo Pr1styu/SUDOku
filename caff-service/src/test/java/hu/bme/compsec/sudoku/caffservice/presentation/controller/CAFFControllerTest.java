@@ -163,7 +163,7 @@ class CAFFControllerTest {
         given(caffServiceMock.getCaffFileById(mockId))
                 .willReturn(Optional.of(mockCaffFile));
 
-        mockMvc.perform(get("/caff/download/" + mockId)
+        mockMvc.perform(get("/caff/"+ mockId+"/download")
                         .with(user("admin").password("admin"))
                         .accept("application/octet-stream")
                         .contentType("application/octet-stream"))
