@@ -43,7 +43,7 @@ const Register: React.FC<IComponent & RouteComponentProps<any>> = () => {
         setSuccessful(false);
         setLoading(false);
         setError(true);
-        const errorMessage = error.response?.data?.message ?? error.message ?? error.toString();
+        const errorMessage = error.response?.data || 'Error: Could not create account.';
         errorMessage && setErrorMessage(errorMessage);
       }
     );
