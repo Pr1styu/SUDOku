@@ -15,6 +15,7 @@ import org.springframework.security.oauth2.server.authorization.JwtEncodingConte
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenCustomizer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -37,6 +38,7 @@ public class SecurityConfig {
 				)
 				.formLogin(withDefaults())
 				.csrf(csrfConfig -> csrfConfig
+						.ignoringRequestMatchers(new AntPathRequestMatcher("/user/register"))
 						.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
 				)
 				.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
