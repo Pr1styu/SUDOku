@@ -1,15 +1,16 @@
 import { Box, Paper, Typography } from '@mui/material';
-import { actionCreators } from '../state';
+import { Redirect, useLocation } from 'react-router-dom';
+import { State, actionCreators } from '../state';
 import { bindActionCreators } from 'redux';
-import { useDispatch } from 'react-redux';
-import { useLocation } from 'react-router-dom';
-import CaffService from '../services/CaffService';
+import { useDispatch, useSelector } from 'react-redux';
 import Container from '@mui/material/Container';
 import Copyright from '../components/test/Copyright';
 import Grid from '@mui/material/Grid';
 import IComponent from '../interfaces/component';
 import IToken from '../interfaces/token';
 import React, { useEffect } from 'react';
+import TokenService from '../services/TokenService';
+import logging from '../config/logging';
 
 const useQuery = () => {
   const { search } = useLocation();
@@ -21,13 +22,18 @@ const Authorized: React.FC<IComponent> = () => {
   const dispatch = useDispatch();
   const { loginOauth } = bindActionCreators(actionCreators, dispatch);
 
+  const isLoggedIn = useSelector((state: State) => state.AUTH.isLoggedIn);
+
   useEffect(() => {
+    logging.info('Authorized, token granted!');
     const code = query.get('code');
-    code &&
-      CaffService.getOauthToken(code).then((token: IToken) => {
+    logging.info('Code valid: ' + !!code);
+    if (code) {
+      TokenService.getOauthToken(code).then((token: IToken) => {
         loginOauth(token);
       });
-  }, []);
+    }
+  }, [isLoggedIn]);
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
@@ -41,6 +47,7 @@ const Authorized: React.FC<IComponent> = () => {
               <Typography variant="body1" gutterBottom component="div" sx={{ mb: '1em' }}>
                 Successfully authorized!
               </Typography>
+              <Redirect to="/home" />
             </Box>
           </Paper>
         </Grid>

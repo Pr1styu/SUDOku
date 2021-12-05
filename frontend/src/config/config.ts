@@ -11,6 +11,7 @@ const FRONTEND_BASE_URL_IP =
 
 // Proxy
 const USE_PROXY = true;
+const INTERCEPTOR_DEBUG = true;
 
 // Backend base URLs
 const BACKEND_SERVICE_PROTOCOL = 'http';
@@ -56,6 +57,7 @@ const AUTH_TYPE: AuthType = 'OAUTH';
 // OAuth2
 const RESPONSE_TYPE = 'code';
 const GRANT_TYPE = 'authorization_code';
+const GRANT_TYPE_REFRESH_TOKEN = 'refresh_token';
 const CLIENT_ID = 'frontend';
 const SCOPE = 'openid';
 const REDIRECT_URI = FRONTEND_BASE_URL_IP + 'authorized';
@@ -82,6 +84,8 @@ const TOKEN_URL = (CODE: string): string =>
   SCOPE +
   '&redirect_uri=' +
   REDIRECT_URI;
+const REFRESH_TOKEN_URL = (REFRESH_TOKEN: string): string =>
+  TOKEN_BASE_URL + '?grant_type=' + GRANT_TYPE_REFRESH_TOKEN + '&refresh_token=' + REFRESH_TOKEN;
 
 const CLIENT_NAME = 'frontend';
 const CLIENT_PASSWORD = 'secret';
@@ -101,6 +105,7 @@ const config = {
     namespace: 'App',
   },
   authType: AUTH_TYPE,
+  interceptorDebug: INTERCEPTOR_DEBUG,
   urls: {
     fontendBaseUrl: FRONTEND_BASE_URL,
     signUp: SIGN_UP_URL,
@@ -108,6 +113,7 @@ const config = {
       authorizeBase: AUTHORIZE_BASE_URL,
       authorize: AUTHORIZE_URL,
       token: TOKEN_URL,
+      refresh_token: REFRESH_TOKEN_URL,
       params: {
         responseType: RESPONSE_TYPE,
         clientId: CLIENT_ID,

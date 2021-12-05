@@ -14,13 +14,14 @@ const App: React.FC<RouteComponentProps> = (props) => {
   const dispatch = useDispatch();
   const { getUserData, getAllCaffFiles } = bindActionCreators(actionCreators, dispatch);
 
-  const isLoggedIn = useSelector((state: State) => state.AUTH.isLoggedIn);
+  const authState = useSelector((state: State) => state.AUTH);
+  const startedRetrieving = useSelector((state: State) => state.CAFF.startedRetrieving);
 
   useEffect(() => {
     logging.info('Loading Application...');
-    isLoggedIn && getUserData();
-    isLoggedIn && getAllCaffFiles();
-  }, [isLoggedIn]);
+    authState.isLoggedIn && getUserData();
+    authState.isLoggedIn && !startedRetrieving && getAllCaffFiles();
+  }, [authState]);
 
   const loginAndRegisterPage = routes.filter(
     (route) => route.name === 'Login' || route.name === 'Register'
@@ -52,7 +53,7 @@ const App: React.FC<RouteComponentProps> = (props) => {
                 render={(props: RouteComponentProps<any>) => (
                   <div>
                     <route.component name={route.name} {...props} {...route.props} />
-                    {!isLoggedIn && route.name !== 'Register' && <Redirect to="/login" />}
+                    {!authState.isLoggedIn && route.name !== 'Register' && <Redirect to="/login" />}
                   </div>
                 )}
               />

@@ -1,9 +1,12 @@
+import { AxiosResponse } from 'axios';
 import IUserData from '../interfaces/userData';
-import axios, { AxiosResponse } from 'axios';
 import config from '../config/config';
+import useAxios from './useAxios';
+
+const httpClient = useAxios();
 
 const register = (user: IUserData): Promise<AxiosResponse<any>> => {
-  return axios.post(config.urls.signUp, user);
+  return httpClient.post(config.urls.signUp, user);
 };
 
 const login = (username: string, password: string): void => {
@@ -13,6 +16,8 @@ const login = (username: string, password: string): void => {
 const logout = (): void => {
   localStorage.removeItem('user_basic');
   localStorage.removeItem('user_token');
+  localStorage.removeItem('token_valid_since');
+  localStorage.removeItem('token_expires_at');
 };
 
 export default {

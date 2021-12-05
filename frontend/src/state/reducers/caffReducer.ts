@@ -3,15 +3,19 @@ import { CaffAction } from '../actions';
 import ICaff from '../../interfaces/caff';
 
 const initialState = {
-  preloadDone: false,
+  startedRetrieving: false,
   uploadDone: false,
   caff_files: [],
 };
 
 type caffState = {
-  preloadDone: boolean;
+  startedRetrieving: boolean;
   uploadDone: boolean;
   caff_files: ICaff[];
+};
+
+const containsId = (files: ICaff[], id: number): boolean => {
+  return files.filter((file) => file.id === id).length > 0;
 };
 
 const reducer = (state: caffState = initialState, action: CaffAction): caffState => {
@@ -19,12 +23,19 @@ const reducer = (state: caffState = initialState, action: CaffAction): caffState
     case ActionType.GET_ALL_CAFF_FILES:
       return {
         ...state,
-        preloadDone: true,
+        startedRetrieving: true,
       };
     case ActionType.GET_CAFF_FILE:
       return {
         ...state,
-        caff_files: [...state.caff_files, action.payload],
+        caff_files: containsId(state.caff_files, action.payload.id)
+          ? state.caff_files
+          : [...state.caff_files, action.payload],
+      };
+    case ActionType.CLEAR_CAFF_FILES:
+      return {
+        ...state,
+        caff_files: [],
       };
     case ActionType.DOWNLOAD_CAFF_FILE:
       return {

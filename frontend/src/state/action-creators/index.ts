@@ -127,23 +127,25 @@ export const saveUserDataEdit = (edited: IUserData) => {
 };
 
 export const getAllCaffFiles = () => {
-  return (dispatch: Dispatch<CaffAction>): Promise<void> => {
-    return CaffService.getAllCaffFiles(authType).then((response) => {
-      dispatch({
-        type: ActionType.GET_ALL_CAFF_FILES,
-      });
+  return (dispatch: Dispatch<CaffAction>): Promise<any> => {
+    return CaffService.getAllCaffFiles(authType)
+      .then((response) => {
+        dispatch({
+          type: ActionType.GET_ALL_CAFF_FILES,
+        });
 
-      response.data.forEach((caff: ICaff) => {
-        CaffService.getCaffFile(authType, caff.id).then((response) => {
-          dispatch({
-            type: ActionType.GET_CAFF_FILE,
-            payload: response.data,
+        return Promise.resolve(response.data);
+      })
+      .then((files) => {
+        files.forEach((caff: ICaff) => {
+          CaffService.getCaffFile(authType, caff.id).then((response) => {
+            dispatch({
+              type: ActionType.GET_CAFF_FILE,
+              payload: response.data,
+            });
           });
         });
       });
-
-      return Promise.resolve();
-    });
   };
 };
 

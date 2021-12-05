@@ -100,6 +100,10 @@ interface IGetCaffFileAction {
   payload: ICaff;
 }
 
+interface IClearCaffFilesAction {
+  type: ActionType.CLEAR_CAFF_FILES;
+}
+
 interface IDownloadCaffFileAction {
   type: ActionType.DOWNLOAD_CAFF_FILE;
   payload: any;
@@ -127,6 +131,7 @@ interface IResetUploadDone {
 export type CaffAction =
   | IGetAllCaffFilesAction
   | IGetCaffFileAction
+  | IClearCaffFilesAction
   | IDownloadCaffFileAction
   | IAddCommentAction
   | IUploadCaffFile
