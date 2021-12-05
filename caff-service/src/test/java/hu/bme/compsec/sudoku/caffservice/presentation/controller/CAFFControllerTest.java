@@ -195,6 +195,11 @@ class CAFFControllerTest {
 
     @Test
     void shouldDeleteFileAsAdmin() throws Exception {
+
+        var userId = getRandomId();
+        mockAuthenticatedUserId(userId);
+        mockAuthWithUserRoleAndId(UserRole.ADMIN);
+
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setBearerAuth(TestSecurityConfig.jwt().getTokenValue());
         //TODO: consider implementing this to check responses
@@ -206,6 +211,10 @@ class CAFFControllerTest {
     @Test
     void shouldDeleteOwnFile() throws Exception {
 
+        var userId = getRandomId();
+        mockAuthenticatedUserId(userId);
+        mockAuthWithUserRoleAndId(UserRole.USER);
+
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setBearerAuth(TestSecurityConfig.jwt().getTokenValue());
         //TODO: consider implementing this to check responses
@@ -216,6 +225,10 @@ class CAFFControllerTest {
 
     @Test
     void shouldFailOnDeleteOthersFile() throws Exception {
+
+        var userId = getRandomId();
+        mockAuthenticatedUserId(userId);
+        mockAuthWithUserRoleAndId(UserRole.USER);
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setBearerAuth(TestSecurityConfig.jwt().getTokenValue());

@@ -24,7 +24,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static hu.bme.compsec.sudoku.common.security.SecurityUtils.getUserIdFromJwt;
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 
 @Slf4j
@@ -63,7 +62,7 @@ public class CAFFController {
                                                             UriComponentsBuilder b) {
         var createdCaffFileEntity = caffService.saveCaffFile(uploadedCaffFile, FilenameUtils.getBaseName(StringUtils.cleanPath(clientFileName)));
         if (createdCaffFileEntity != null) {
-            UriComponents uriComponents = b.path("/{id}").buildAndExpand(createdCaffFileEntity.getId());
+            UriComponents uriComponents = b.path("caff/{id}").buildAndExpand(createdCaffFileEntity.getId());
             return ResponseEntity.created(uriComponents.toUri()).body(caffMapper.toDetailDTO(createdCaffFileEntity));
         } else {
             return ResponseEntity.badRequest().build();
