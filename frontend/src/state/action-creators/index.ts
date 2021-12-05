@@ -124,7 +124,7 @@ export const saveUserDataEdit = (edited: IUserData) => {
 
       dispatch({
         type: ActionType.SET_INFO_MESSAGE,
-        payload: { message: 'Updated profile', type: 'success' },
+        payload: { message: 'Updated profile', type: 'success' as VariantType },
       });
 
       return Promise.resolve();
@@ -201,7 +201,7 @@ export const addComment = (comment: IComment, id: number) => {
 
       dispatch({
         type: ActionType.SET_INFO_MESSAGE,
-        payload: { message: 'Added comment', type: 'success' },
+        payload: { message: 'Added comment', type: 'success' as VariantType },
       });
 
       return Promise.resolve();
@@ -219,7 +219,7 @@ export const uploadCaffFile = (fileName: string, file: File) => {
 
       dispatch({
         type: ActionType.SET_INFO_MESSAGE,
-        payload: { message: 'Uploaded CAFF file', type: 'success' },
+        payload: { message: 'Uploaded CAFF file', type: 'success' as VariantType },
       });
 
       return Promise.resolve();
@@ -229,19 +229,26 @@ export const uploadCaffFile = (fileName: string, file: File) => {
 
 export const deleteCaffFile = (id: number) => {
   return (dispatch: Dispatch<CaffAction | MessageAction>): Promise<void> => {
-    return CaffService.deleteCaffFile(authType, id).then(() => {
-      dispatch({
-        type: ActionType.DELETE_CAFF_FILE,
-        payload: id,
-      });
+    return CaffService.deleteCaffFile(authType, id)
+      .then(() => {
+        dispatch({
+          type: ActionType.DELETE_CAFF_FILE,
+          payload: id,
+        });
 
-      dispatch({
-        type: ActionType.SET_INFO_MESSAGE,
-        payload: { message: 'Deleted CAFF file', type: 'success' },
-      });
+        dispatch({
+          type: ActionType.SET_INFO_MESSAGE,
+          payload: { message: 'Deleted CAFF file', type: 'success' as VariantType },
+        });
 
-      return Promise.resolve();
-    });
+        return Promise.resolve();
+      })
+      .catch(() => {
+        dispatch({
+          type: ActionType.SET_INFO_MESSAGE,
+          payload: { message: "Can't delete file!", type: 'error' as VariantType },
+        });
+      });
   };
 };
 

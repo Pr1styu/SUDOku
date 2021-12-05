@@ -62,7 +62,8 @@ const BrowseCaff: React.FC<IComponent & RouteComponentProps<any>> = () => {
               </Grid>
               {caffStore.caff_files?.map((caff, index) =>
                 tag || name ? (
-                  caff.metaData?.includes(tag) || caff.fileName?.match(name) ? (
+                  caff.metaData?.includes(tag) ||
+                  caff.fileName?.toLowerCase().match(name.toLowerCase()) ? (
                     <Caff key={index} name={caff.fileName} {...caff} />
                   ) : (
                     ''
