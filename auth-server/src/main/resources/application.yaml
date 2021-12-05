@@ -4,14 +4,11 @@ server:
 
 logging:
   level:
-    root: INFO
-    org.springframework.boot: DEBUG
-    org.springframework.security: DEBUG
-    org.springframework.security.oauth2: DEBUG
-
-spring:
-  h2:
-    console:
-      enabled: true
-      settings:
-        web-allow-others: true
+    root: WARN
+    org.springframework.boot: WARN
+    org.springframework.security: WARN
+    org.springframework.security.oauth2: WARN
+    org.hibernate: ERROR
+    hu.bme.compsec.sudoku: TRACE
+  file:
+    name: ./audit/auth-server.log

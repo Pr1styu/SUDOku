@@ -6,6 +6,7 @@ build/
 !**/src/test/**/build/
 
 /workdir
+/audit
 
 ### STS ###
 .apt_generated

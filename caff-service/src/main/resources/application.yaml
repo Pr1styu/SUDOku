@@ -4,9 +4,6 @@ spring:
   profiles:
 #    active: default, dev
     active: default, prod
-  h2:
-    console:
-      enabled: true
   datasource:
     url: jdbc:h2:file:./db/caffdb
   jpa:
@@ -28,11 +25,9 @@ spring:
           issuer-uri: http://localhost:9000
 logging:
   level:
-    org:
-      hibernate:
-        SQL: INFO
-
-#security:
-#  client-id: caff-service
-#  client-secret: eb2d6d80-417c-44d0-8e4a-3b105e154258
+    root: WARN
+    org.hibernate: ERROR
+    hu.bme.compsec.sudoku: TRACE
+  file:
+    name: ./audit/caff-service.log
 
