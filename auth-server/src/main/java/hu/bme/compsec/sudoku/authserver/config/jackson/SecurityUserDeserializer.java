@@ -51,7 +51,6 @@ public class SecurityUserDeserializer extends JsonDeserializer<SecurityUser> {
                         ArrayNode arrayNode = (ArrayNode) objNode;
                         for (JsonNode elementNode : arrayNode) {
                             SimpleGrantedAuthority userAuthority = mapper.readValue(elementNode.traverse(mapper), SimpleGrantedAuthority.class);
-                            log.debug(userAuthority.toString());
                             userAuthorities.add(userAuthority);
                         }
                     }

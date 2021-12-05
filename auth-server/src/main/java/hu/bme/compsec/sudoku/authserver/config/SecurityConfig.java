@@ -2,14 +2,11 @@ package hu.bme.compsec.sudoku.authserver.config;
 
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
-import hu.bme.compsec.sudoku.common.security.UserRole;
-import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.OAuth2TokenType;
@@ -35,14 +32,12 @@ public class SecurityConfig {
 		http
 				.cors().and()
 				.authorizeRequests(authorizeRequests -> authorizeRequests
-						.requestMatchers(PathRequest.toH2Console()).hasRole(UserRole.ADMIN.name())
 						.mvcMatchers("/register").permitAll()
 						.anyRequest().authenticated()
 				)
 				.formLogin(withDefaults())
 				.csrf(csrfConfig -> csrfConfig
 						.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-						.ignoringRequestMatchers(PathRequest.toH2Console())
 				)
 				.headers().frameOptions().sameOrigin() // For h2 GUI only
 				.and()
