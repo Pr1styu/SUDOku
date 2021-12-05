@@ -125,9 +125,7 @@ public class UserService implements UserDetailsService {
                 .roles(List.of(UserRole.USER, UserRole.ADMIN))
                 .build();
 
-        log.info("Saving default user {}.", user);
         userRepository.save(user);
-        log.info("Saving default user {}.", admin);
         userRepository.save(admin);
     }
 
