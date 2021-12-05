@@ -38,7 +38,6 @@ public class SecurityUtils {
      */
     public static void checkPermission(Long userId) {
         var jwtUserId = getUserIdFromJwt();
-        // TODO: Fix these once we use UUIDs
         if (Objects.equals(userId, jwtUserId)) {
             return;
         } else {

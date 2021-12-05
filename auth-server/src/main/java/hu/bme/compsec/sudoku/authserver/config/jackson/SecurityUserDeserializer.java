@@ -28,7 +28,7 @@ public class SecurityUserDeserializer extends JsonDeserializer<SecurityUser> {
         final JsonNode authoritiesNode = readJsonNode(jsonNode, "authorities");
         Set<GrantedAuthority> authorities = getUserAuthorities(mapper, authoritiesNode);
 
-        Long id = readJsonNode(jsonNode, "id").asLong(); //TODO: UUID
+        Long id = readJsonNode(jsonNode, "id").asLong();
         String username = readJsonNode(jsonNode, "username").asText();
         JsonNode passwordNode = readJsonNode(jsonNode, "password");
         String password = passwordNode.asText("");
