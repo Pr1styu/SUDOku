@@ -12,6 +12,8 @@ import hu.bme.compsec.sudoku.caffservice.presentation.dto.CommentDTO;
 import hu.bme.compsec.sudoku.caffservice.presentation.mapping.CAFFMapper;
 import hu.bme.compsec.sudoku.caffservice.service.CAFFService;
 import hu.bme.compsec.sudoku.caffservice.service.CommentService;
+import hu.bme.compsec.sudoku.common.security.UserRole;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import static config.TestSecurityConfig.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -56,6 +59,13 @@ class CAFFControllerTest {
     private final Moshi moshi = new Moshi.Builder().build();
     private final JsonAdapter<CAFFFileDetailDTO> caffJsonAdapter = moshi.adapter(CAFFFileDetailDTO.class);
     private final JsonAdapter<CommentDTO> commentJsonAdapter = moshi.adapter(CommentDTO.class);
+
+    @BeforeEach
+    public void mockJWT() {
+        var userId = getRandomId();
+        mockAuthenticatedUserId(userId);
+        mockAuthWithUserRoleAndId(UserRole.ADMIN);
+    }
 
     @Test
     void shouldListAllFiles() throws Exception {
@@ -116,10 +126,14 @@ class CAFFControllerTest {
 
     @Test
     void shouldReturnBadRequestForUpload() throws Exception {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setBearerAuth(TestSecurityConfig.jwt().getTokenValue());
+
         MockMultipartFile multipartFile = helper.loadMultipartFile("1.caff");
         this.mockMvc.perform(multipart("/caff/upload")
                                 .file("caffFile", multipartFile.getBytes())
                                 .file(new MockMultipartFile("fileName", "testFileName".getBytes()))
+                                .headers(httpHeaders)
                                 .contentType("multipart/form-data")
                                 .accept("multipart/form-data")
                 )
@@ -142,9 +156,13 @@ class CAFFControllerTest {
         given(caffServiceMock.saveCaffFile(isNotNull(), isNotNull()))
                 .willReturn(mockCaffFile);
 
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setBearerAuth(TestSecurityConfig.jwt().getTokenValue());
+
         this.mockMvc.perform(multipart("/caff/upload")
                                 .file("caffFile", multipartFile.getBytes())
-                                .file(new MockMultipartFile("fileName", "1.caff".getBytes())))
+                                .file(new MockMultipartFile("fileName", "1.caff".getBytes()))
+                        .headers(httpHeaders))
                 .andExpect(status().isCreated())
                 .andExpect(header().string(HttpHeaders.LOCATION, "http://localhost/caff/" + mockId));
     }
@@ -177,24 +195,34 @@ class CAFFControllerTest {
 
     @Test
     void shouldDeleteFileAsAdmin() throws Exception {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setBearerAuth(TestSecurityConfig.jwt().getTokenValue());
         //TODO: consider implementing this to check responses
-        mockMvc.perform(delete("/caff/1"))
+        mockMvc.perform(delete("/caff/1")
+                        .headers(httpHeaders))
                 .andExpect(status().isOk());
     }
 
     @Test
     void shouldDeleteOwnFile() throws Exception {
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setBearerAuth(TestSecurityConfig.jwt().getTokenValue());
         //TODO: consider implementing this to check responses
         mockMvc.perform(delete("/caff/1")
-                        .with(user("admin").password("admin")))
+                        .headers(httpHeaders))
                 .andExpect(status().isOk());
     }
 
     @Test
     void shouldFailOnDeleteOthersFile() throws Exception {
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setBearerAuth(TestSecurityConfig.jwt().getTokenValue());
+
         //TODO: consider implementing this to check responses
         mockMvc.perform(delete("/caff/1")
-                        .with(user("admin").password("admin")))
+                        .headers(httpHeaders))
                 .andExpect(status().isOk());
     }
 
@@ -244,23 +272,33 @@ class CAFFControllerTest {
     @Test
     void shouldAddCommentSuccessfully() throws Exception {
         CommentDTO commentDTO = new CommentDTO("Test comment1", "admin");
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setBearerAuth(TestSecurityConfig.jwt().getTokenValue());
+
+
         given(commentServiceMock.addCommentToCaffFile(1L, commentDTO))
                 .willReturn(true);
 
         mockMvc.perform(post("/caff/1/comment")
-                        .with(user("admin").password("admin"))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(commentJsonAdapter.toJson(commentDTO)))
+                        .content(commentJsonAdapter.toJson(commentDTO))
+                        .headers(httpHeaders))
                 .andExpect(status().isAccepted());
     }
 
     @Test
     void shouldReturnNotFoundWhenAddingComment() throws Exception {
         CommentDTO commentDTO = new CommentDTO("Test comment1", "admin");
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setBearerAuth(TestSecurityConfig.jwt().getTokenValue());
+
         mockMvc.perform(post("/caff/2/comment")
                         .with(user("admin").password("admin"))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(commentJsonAdapter.toJson(commentDTO)))
+                        .content(commentJsonAdapter.toJson(commentDTO))
+                        .headers(httpHeaders))
                 .andExpect(status().isNotFound());
     }
 }

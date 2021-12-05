@@ -236,7 +236,7 @@ class CAFFServiceTest {
     }
 
     @Test
-    public void shouldThrowCaffFileNotFoundException() {
+    void shouldThrowCaffFileNotFoundException() {
         mockAuthenticatedUserId(getRandomId());
         mockAuthWithUserRoleAndId(UserRole.USER);
 
