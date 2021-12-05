@@ -35,7 +35,7 @@ const App: React.FC<RouteComponentProps> = (props) => {
 
   useEffect(() => {
     // variant could be success, error, warning, info, or default
-    const variant: VariantType = 'success';
+    const variant: VariantType = state.INFO_MESSAGE.type;
     const message = state.INFO_MESSAGE.message;
     message !== '' && enqueueSnackbar(message, { variant });
   }, [state.INFO_MESSAGE]);
