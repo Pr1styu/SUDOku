@@ -35,6 +35,9 @@ class CAFFServiceTest {
 
     public CAFFRepository caffRepository;
 
+    private Long[] randomIds;
+    private final long adminUserId = 1L;
+
     @BeforeAll
     public void setup() throws CaffFileFormatException, IOException, CAFFProcessorRuntimeException {
         CaffFileHelper helper = new CaffFileHelper();
@@ -48,25 +51,28 @@ class CAFFServiceTest {
         caffRepository = Mockito.mock(CAFFRepository.class);
         caffService = new CAFFService(caffRepository);
 
-        String[] fileNames = new String[] {"1.caff", "2.caff"};
+        String[] fileNames = new String[]{"1.caff", "2.caff", "3.caff"};
+        randomIds = new Long[]{getRandomId(), getRandomId(), getRandomId()};
 
-        Arrays.asList(fileNames).forEach(file -> {
-            int id = Integer.parseInt(Character.toString(file.charAt(0)));
-            try {
-                Mockito.when(caffRepository.findById((long) id)).thenReturn(Optional.ofNullable(helper.loadCaffFile(fileNames[id - 1])));
-            } catch (IOException | CaffFileFormatException | CAFFProcessorRuntimeException e) {
-                e.printStackTrace();
-            }
-        });
+        int idx = 0;
+        for (int i = 0; i < fileNames.length; i++) {
+            CAFFFile entity = helper.loadCaffFile(fileNames[idx]);
+            entity.setOwnerId(adminUserId);
+
+            CAFFFile entityWithId = helper.loadCaffFile(fileNames[idx]);
+            entityWithId.setId(randomIds[idx]);
+            entityWithId.setOwnerId(adminUserId);
+
+            Mockito.when(caffRepository.save(entity)).thenReturn(entityWithId);
+            Mockito.when(caffRepository.findById(randomIds[idx])).thenReturn(Optional.of(entityWithId));
+
+            idx++;
+        }
 
         ArrayList<CAFFFile> caffFiles = new ArrayList<>();
-        Arrays.asList(fileNames).forEach(file -> {
-            try {
-                caffFiles.add(helper.loadCaffFile(file));
-            } catch (IOException | CaffFileFormatException | CAFFProcessorRuntimeException e) {
-                e.printStackTrace();
-            }
-        });
+        for (int i = 0; i < fileNames.length - 1; i++) {
+            caffFiles.add(helper.loadCaffFile(fileNames[i]));
+        }
 
         CAFFFile newFile = helper.loadCaffFile("3.caff");
         ArrayList<CAFFFile> biggerList = new ArrayList<>(caffFiles);
@@ -84,14 +90,20 @@ class CAFFServiceTest {
 
     @Test
     void testFindById() {
-        Optional<CAFFFile> caff = caffService.getCaffFileById(1L);
+        mockAuthenticatedUserId(getRandomId());
+        mockAuthWithUserRoleAndId(UserRole.USER);
+
+        Optional<CAFFFile> caff = caffService.getCaffFileById(randomIds[0]);
         assertThat(caff).isPresent();
         assertThat(caff.get().getFileName()).isEqualTo("1.caff");
     }
 
     @Test
     void testMetaData() {
-        Optional<CAFFFile> caff = caffService.getCaffFileById(1L);
+        mockAuthenticatedUserId(getRandomId());
+        mockAuthWithUserRoleAndId(UserRole.USER);
+
+        Optional<CAFFFile> caff = caffService.getCaffFileById(randomIds[0]);
         assertThat(caff).isPresent();
 
         List<String> metaData = Arrays.asList("sunset", "landscape", "mountains");
@@ -100,6 +112,8 @@ class CAFFServiceTest {
 
     @Test
     void testCRUD() throws IOException, CaffFileNotFoundException {
+        mockAuthenticatedUserId(adminUserId);
+        mockAuthWithUserRoleAndId(UserRole.ADMIN);
 
         List<CAFFFile> caffFiles = caffService.getAllCaffFile();
         assertThat(caffFiles.size()).isEqualTo(2);
@@ -111,17 +125,14 @@ class CAFFServiceTest {
         caffFiles = caffService.getAllCaffFile();
         assertThat(caffFiles.size()).isEqualTo(3);
 
-
-        caffService.deleteCaffFile(3L);
-        caffService.deleteCaffFile(1L);
+        caffService.deleteCaffFile(randomIds[2]);
+        caffService.deleteCaffFile(randomIds[0]);
         caffFiles = caffService.getAllCaffFile();
         assertThat(caffFiles.size()).isEqualTo(1);
     }
 
     @Test
     void testSearchByMetaData() throws IOException {
-        var adminUserId = 1L;
-
         mockAuthenticatedUserId(adminUserId);
         mockAuthWithUserRoleAndId(UserRole.ADMIN);
 
@@ -188,7 +199,6 @@ class CAFFServiceTest {
         var fileId = getRandomId();
         var userId = getRandomId();
 
-
         mockAuthenticatedUserId(userId);
         mockAuthWithUserRoleAndId(UserRole.USER);
 
@@ -225,8 +235,15 @@ class CAFFServiceTest {
         Assertions.assertThrows(AccessDeniedException.class, () -> caffService.deleteCaffFile(otherFileId));
     }
 
-    // TODO: Create test for cover CaffFileNotFoundException thrown
+    @Test
+    public void shouldThrowCaffFileNotFoundException() {
+        mockAuthenticatedUserId(getRandomId());
+        mockAuthWithUserRoleAndId(UserRole.USER);
 
-    // TODO: Create test for cover InterruptedException handle
+        long randomId = getRandomId();
+        while (Arrays.asList(randomIds).contains(randomId)) randomId = getRandomId();
+        final Long id = randomId;
 
+        Assertions.assertThrows(CaffFileNotFoundException.class, () -> caffService.deleteCaffFile(id));
+    }
 }

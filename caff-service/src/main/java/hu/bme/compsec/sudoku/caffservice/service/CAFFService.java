@@ -74,6 +74,7 @@ public class CAFFService {
 
     /**
      * This method responsible for the Caff file deletion.
+     *
      * @return
      */
     @PreAuthorize("hasAuthority('caff:delete')")
@@ -89,7 +90,7 @@ public class CAFFService {
             caffRepository.delete(caffFileEntity);
             log.info("CAFF file with id {} deleted by user with id {}.", caffFileEntity.getId(), getUserIdFromJwt());
             return true;
-        }catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
     }
