@@ -4,6 +4,7 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
+import { SnackbarProvider } from 'notistack';
 import { store } from './state';
 import App from './App';
 import React from 'react';
@@ -13,9 +14,11 @@ import reportWebVitals from './reportWebVitals';
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
-      <Provider store={store}>
-        <App />
-      </Provider>
+      <SnackbarProvider maxSnack={5}>
+        <Provider store={store}>
+          <App />
+        </Provider>
+      </SnackbarProvider>
     </BrowserRouter>
   </React.StrictMode>,
   document.getElementById('root')

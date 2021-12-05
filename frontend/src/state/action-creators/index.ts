@@ -1,6 +1,7 @@
 import { ActionType } from '../action-types';
 import { AuthAction, CaffAction, MessageAction, TestAction, UserAction } from '../actions';
 import { Dispatch } from 'redux';
+import { VariantType } from 'notistack';
 import AuthService from '../../services/AuthService';
 import CaffService from '../../services/CaffService';
 import ICaff from '../../interfaces/caff';
@@ -39,11 +40,11 @@ export const bankrupt = () => {
   };
 };
 
-export const setInfoMessage = (message: string) => {
+export const setInfoMessage = (message: string, type: VariantType) => {
   return (dispatch: Dispatch<MessageAction>): void => {
     dispatch({
       type: ActionType.SET_INFO_MESSAGE,
-      payload: message,
+      payload: { message, type },
     });
   };
 };
@@ -57,7 +58,7 @@ export const clearInfoMessage = () => {
 };
 
 export const login = (username: string, password: string) => {
-  return (dispatch: Dispatch<AuthAction | MessageAction>): void => {
+  return (dispatch: Dispatch<AuthAction>): void => {
     AuthService.login(username, password);
     dispatch({
       type: ActionType.LOGIN_SUCCESS,
@@ -115,10 +116,15 @@ export const editUserData = (editedProperty: IPropertyUpdate) => {
 };
 
 export const saveUserDataEdit = (edited: IUserData) => {
-  return (dispatch: Dispatch<UserAction>): Promise<void> => {
+  return (dispatch: Dispatch<UserAction | MessageAction>): Promise<void> => {
     return UserService.updateUserData(authType, edited).then(() => {
       dispatch({
         type: ActionType.SAVE_USER_DATA_EDIT,
+      });
+
+      dispatch({
+        type: ActionType.SET_INFO_MESSAGE,
+        payload: { message: 'Updated profile', type: 'success' },
       });
 
       return Promise.resolve();
@@ -186,11 +192,16 @@ export const downloadCaffFile = (id: number, filename: string) => {
 };
 
 export const addComment = (comment: IComment, id: number) => {
-  return (dispatch: Dispatch<CaffAction>): Promise<void> => {
+  return (dispatch: Dispatch<CaffAction | MessageAction>): Promise<void> => {
     return CaffService.addComment(authType, comment, id).then(() => {
       dispatch({
         type: ActionType.ADD_COMMENT,
         payload: { comment, id },
+      });
+
+      dispatch({
+        type: ActionType.SET_INFO_MESSAGE,
+        payload: { message: 'Added comment', type: 'success' },
       });
 
       return Promise.resolve();
@@ -199,11 +210,16 @@ export const addComment = (comment: IComment, id: number) => {
 };
 
 export const uploadCaffFile = (fileName: string, file: File) => {
-  return (dispatch: Dispatch<CaffAction>): Promise<void> => {
+  return (dispatch: Dispatch<CaffAction | MessageAction>): Promise<void> => {
     return CaffService.uploadCaffFile(authType, fileName, file).then((response) => {
       dispatch({
         type: ActionType.UPLOAD_CAFF_FILE,
         payload: response.data,
+      });
+
+      dispatch({
+        type: ActionType.SET_INFO_MESSAGE,
+        payload: { message: 'Uploaded CAFF file', type: 'success' },
       });
 
       return Promise.resolve();
@@ -212,11 +228,16 @@ export const uploadCaffFile = (fileName: string, file: File) => {
 };
 
 export const deleteCaffFile = (id: number) => {
-  return (dispatch: Dispatch<CaffAction>): Promise<void> => {
+  return (dispatch: Dispatch<CaffAction | MessageAction>): Promise<void> => {
     return CaffService.deleteCaffFile(authType, id).then(() => {
       dispatch({
         type: ActionType.DELETE_CAFF_FILE,
         payload: id,
+      });
+
+      dispatch({
+        type: ActionType.SET_INFO_MESSAGE,
+        payload: { message: 'Deleted CAFF file', type: 'success' },
       });
 
       return Promise.resolve();

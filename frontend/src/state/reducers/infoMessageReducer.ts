@@ -1,9 +1,17 @@
 import { ActionType } from '../action-types';
 import { MessageAction } from '../actions';
 
-const initialState = '';
+const initialState = {
+  message: '',
+  type: '',
+};
 
-const reducer = (state: string = initialState, action: MessageAction): string => {
+type messageState = {
+  message: string;
+  type: string;
+};
+
+const reducer = (state: messageState = initialState, action: MessageAction): messageState => {
   switch (action.type) {
     case ActionType.SET_INFO_MESSAGE:
       return action.payload;

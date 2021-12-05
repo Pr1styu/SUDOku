@@ -3,6 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Box, Toolbar } from '@mui/material';
 import { Redirect, Route, RouteComponentProps, Switch, withRouter } from 'react-router-dom';
 import { State, actionCreators } from './state';
+import { VariantType, useSnackbar } from 'notistack';
 import { bindActionCreators } from 'redux';
 import { useDispatch, useSelector } from 'react-redux';
 import Menu from './components/Menu';
@@ -14,7 +15,8 @@ const App: React.FC<RouteComponentProps> = (props) => {
   const dispatch = useDispatch();
   const { getUserData, getAllCaffFiles } = bindActionCreators(actionCreators, dispatch);
 
-  const authState = useSelector((state: State) => state.AUTH);
+  const state = useSelector((state: State) => state);
+  const authState = state.AUTH;
   const startedRetrieving = useSelector((state: State) => state.CAFF.startedRetrieving);
 
   useEffect(() => {
@@ -28,6 +30,15 @@ const App: React.FC<RouteComponentProps> = (props) => {
   );
   const showMenu =
     loginAndRegisterPage.filter((route) => route.path === props.location.pathname).length === 0;
+
+  const { enqueueSnackbar } = useSnackbar();
+
+  useEffect(() => {
+    // variant could be success, error, warning, info, or default
+    const variant: VariantType = 'success';
+    const message = state.INFO_MESSAGE.message;
+    message !== '' && enqueueSnackbar(message, { variant });
+  }, [state.INFO_MESSAGE]);
 
   return (
     <Box sx={{ display: 'flex' }} className="app">

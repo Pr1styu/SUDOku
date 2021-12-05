@@ -1,4 +1,5 @@
 import { ActionType } from '../action-types';
+import { VariantType } from 'notistack';
 import ICaff from '../../interfaces/caff';
 import IComment from '../../interfaces/comment';
 import IPropertyUpdate from '../../interfaces/propertyUpdate';
@@ -24,7 +25,7 @@ export type TestAction = IDepositAction | IWithdrawAction | IBankruptAction;
 
 interface IMessageAction {
   type: ActionType.SET_INFO_MESSAGE;
-  payload: string;
+  payload: { message: string; type: VariantType };
 }
 
 interface IClearMessageAction {
