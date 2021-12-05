@@ -125,7 +125,6 @@ class CAFFServiceTest {
         caffFiles = caffService.getAllCaffFile();
         assertThat(caffFiles.size()).isEqualTo(3);
 
-
         caffService.deleteCaffFile(randomIds[2]);
         caffService.deleteCaffFile(randomIds[0]);
         caffFiles = caffService.getAllCaffFile();
@@ -200,7 +199,6 @@ class CAFFServiceTest {
         var fileId = getRandomId();
         var userId = getRandomId();
 
-
         mockAuthenticatedUserId(userId);
         mockAuthWithUserRoleAndId(UserRole.USER);
 
@@ -237,8 +235,15 @@ class CAFFServiceTest {
         Assertions.assertThrows(AccessDeniedException.class, () -> caffService.deleteCaffFile(otherFileId));
     }
 
-    // TODO: Create test for cover CaffFileNotFoundException thrown
+    @Test
+    public void shouldThrowCaffFileNotFoundException() {
+        mockAuthenticatedUserId(getRandomId());
+        mockAuthWithUserRoleAndId(UserRole.USER);
 
-    // TODO: Create test for cover InterruptedException handle
+        long randomId = getRandomId();
+        while (Arrays.asList(randomIds).contains(randomId)) randomId = getRandomId();
+        final Long id = randomId;
 
+        Assertions.assertThrows(CaffFileNotFoundException.class, () -> caffService.deleteCaffFile(id));
+    }
 }
